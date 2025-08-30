@@ -1,0 +1,31 @@
+# Ignore IntelliJ IDEA project files
+.idea/
+
+# Ignore Gradle files
+.gradle/
+build/
+
+# Ignore other common files and directories
+*.log
+*.class
+*.war
+*.iml
+*.ipr
+*.iws
+out/
+tmp/
+notuse/
+
+_*/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Java bytecode files
+*.class
+
+# Файлы из одного символа
+?
+
+#

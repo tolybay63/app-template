@@ -1,0 +1,6 @@
+spring:
+  config:
+    import:
+      - classpath:/application-kis-storage.properties
+      - classpath:/application-kis-dbtools.properties
+

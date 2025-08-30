@@ -1,0 +1,160 @@
+# Контейнер для пользователей
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+ou: users
+
+# Контейнер для групп
+dn: ou=groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: groups
+
+# Пользователь user1
+dn: uid=user1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user1
+cn: User One
+sn: One
+givenName: User
+uidNumber: 10001
+gidNumber: 1001
+homeDirectory: /home/user1
+loginShell: /bin/bash
+userPassword: {SSHA}kQDzqRj5Mez+Ijgvl4fgwYgFkOHo50i7
+mail: user1@example.com
+
+# Пользователь user2
+dn: uid=user2,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user2
+cn: User Two
+sn: Two
+givenName: User
+uidNumber: 10002
+gidNumber: 1001
+homeDirectory: /home/user2
+loginShell: /bin/bash
+userPassword: {SSHA}5bZ5+lSzrFZ+EAZNaHSY9OZhh47xo9yq
+mail: user2@example.com
+
+# Пользователь user3
+dn: uid=user3,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user3
+cn: User Three
+sn: Three
+givenName: User
+uidNumber: 10003
+gidNumber: 1001
+homeDirectory: /home/user3
+loginShell: /bin/bash
+userPassword: {SSHA}T4kxldmtD/nKlzCBXrwlVXc2pUNGoZAW
+mail: user3@example.com
+
+# Пользователь user4
+dn: uid=user4,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user4
+cn: User Four
+sn: Four
+givenName: User
+uidNumber: 10004
+gidNumber: 1001
+homeDirectory: /home/user4
+loginShell: /bin/bash
+userPassword: {SSHA}lgptSC+b5um32/xG6JXpcXlACkjyXqN6
+mail: user4@example.com
+
+# Пользователь user5
+dn: uid=user5,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user5
+cn: User Five
+sn: Five
+givenName: User
+uidNumber: 10005
+gidNumber: 1001
+homeDirectory: /home/user5
+loginShell: /bin/bash
+userPassword: {SSHA}rk9d5dQhbTf2s9e7W9BeDNjXiZGkF5Bc
+mail: user5@example.com
+
+# Пользователь user6
+dn: uid=user6,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user6
+cn: User Six
+sn: Six
+givenName: User
+uidNumber: 10006
+gidNumber: 1001
+homeDirectory: /home/user6
+loginShell: /bin/bash
+userPassword: {SSHA}5c5b9XY6bKpV4wvzFz2Wf+Lh2gQ2s5U9
+mail: user6@example.com
+
+# Пользователь user7
+dn: uid=user7,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user7
+cn: User Seven
+sn: Seven
+givenName: User
+uidNumber: 10007
+gidNumber: 1001
+homeDirectory: /home/user7
+loginShell: /bin/bash
+userPassword: {SSHA}kqINbVZ9HszL61FC3Wa9tFlwR5rGGdhF
+mail: user7@example.com
+
+# Пользователь user8
+dn: uid=user8,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user8
+cn: User Eight
+sn: Eight
+givenName: User
+uidNumber: 10008
+gidNumber: 1001
+homeDirectory: /home/user8
+loginShell: /bin/bash
+userPassword: {SSHA}SHDlnkbHtL+gT4zTxlJzkN7gxgH9QDAw
+mail: user8@example.com
+
+# Пользователь user9
+dn: uid=user9,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user9
+cn: User Nine
+sn: Nine
+givenName: User
+uidNumber: 10009
+gidNumber: 1001
+homeDirectory: /home/user9
+loginShell: /bin/bash
+userPassword: {SSHA}aJtbFsR00eW2g/L2NE6Ogl5NSCgOhj+1
+mail: user9@example.com
+
+# Пользователь user10
+dn: uid=user10,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user10
+cn: User Ten
+sn: Ten
+givenName: User
+uidNumber: 10010
+gidNumber: 1001
+homeDirectory: /home/user10
+loginShell: /bin/bash
+userPassword: {SSHA}YQyAqUuKq7sFh7PfpK2Qy6/dX5k1HlE4
+mail: user10@example.com
+

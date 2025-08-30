@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e  
+
+
+
+echo
+echo Остановка сервисов
+
+./env-stop
+
+echo
+echo Очистка томов
+
+cd clear
+
+./env-clear
+
+cd ..
+
+
+
+echo
+echo Запуск сервисов
+
+./env-start
+
+
+
+echo 
+echo Инициализация сервисов
+
+cd init
+
+./env-init
+
+cd ..
+

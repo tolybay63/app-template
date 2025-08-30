@@ -1,0 +1,5 @@
+# Скопированные артефакты для включения в контейнер
+kis-base/data/*
+kis-nginx/data/*
+kis-postgres/data/*
+product/data/*

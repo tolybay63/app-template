@@ -1,0 +1,52 @@
+#!/bin/bash
+set -e  
+
+
+echo
+echo Остановка сервисов
+
+
+cd docker-images
+
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  docker-compose -f docker-compose.mac.yml down
+else
+  docker-compose down
+fi
+
+
+echo
+echo Создание Docker-образов для сервисов
+
+cd kis-keycloak
+./make
+cd ..
+
+cd kis-keycloak-postgres
+./make
+cd ..
+
+cd kis-nginx
+./make
+cd ..
+
+cd kis-postgres
+./make
+cd ..
+
+cd libreoffice
+./make
+cd ..
+
+cd libreoffice-server
+./make
+cd ..
+
+cd tesseract
+./make
+cd ..
+
+
+
+cd ..

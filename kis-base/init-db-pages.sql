@@ -1,0 +1,8 @@
+DROP DATABASE IF EXISTS kis_pages;
+
+DROP USER IF EXISTS kis_pages;
+
+
+CREATE USER kis_pages WITH PASSWORD '123456';
+
+CREATE DATABASE kis_pages WITH OWNER kis_pages;

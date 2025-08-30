@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+#docker cp /Users/mihailsarenko/Source/kis-smart-catalog/init/test-ldap/test-ldap-data.ldif ldap-server:/test-ldap-data.ldif
+
+#docker exec -i ldap-server ldapdelete -D "cn=admin,dc=example,dc=com" -w adminpassword "dc=example,dc=com"
+
+#docker exec -i ldap-server ldapadd -x -D "cn=admin,dc=example,dc=com" -w adminpassword -f /test-ldap-data.ldif
+

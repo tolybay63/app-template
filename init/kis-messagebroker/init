@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Get the list of topics
+echo "Get the list of topics"
+TOPICS=$(docker exec kafka kafka-topics --bootstrap-server localhost:9092 --list)
+
+# Loop through each topic and delete it
+while IFS= read -r TOPIC; do
+  # Skip empty lines and trim whitespace
+  TOPIC=$(echo "$TOPIC" | xargs)
+  if [[ -z "$TOPIC" ]]; then
+    echo "Skipping empty topic."
+    continue
+  fi
+
+  echo "Deleting topic: $TOPIC"
+
+  # Check if the topic exists and delete it
+  docker exec kafka /bin/bash -c "
+    kafka-topics --bootstrap-server localhost:9092 --list | grep -q '^$TOPIC\$' && \
+    kafka-topics --bootstrap-server localhost:9092 --delete --topic '$TOPIC' || \
+    echo 'Topic $TOPIC does not exist, skipping delete.'
+  "
+done <<< "$TOPICS"
+
+echo "All topics processed."

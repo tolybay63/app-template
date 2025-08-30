@@ -1,0 +1,6 @@
+#!/bin/bash
+set +e
+
+docker volume rm docker-images_db_data_auth
+
+set -e

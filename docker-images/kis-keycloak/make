@@ -1,0 +1,5 @@
+# Собираем образ Docker
+docker build -t kis-keycloak .
+
+# Запускаем контейнер
+# docker run -d -p 8282:8282 kis-keycloak

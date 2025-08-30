@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group = 'kz.kis'
+version = '0.0.1'
+
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+    }
+}
+
+dependencies {
+    // Spring Data JDBC for database interactions
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.1.2'
+
+    // PostgreSQL JDBC Driver
+    implementation 'org.postgresql:postgresql:42.6.0'
+
+    // Spring JDBC module
+    implementation 'org.springframework:spring-jdbc:5.3.26'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    //
+    implementation project(':kis-core')
+    implementation project(':kis-annotations')
+
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

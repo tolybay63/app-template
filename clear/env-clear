@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+echo -------
+echo keycloak-postgres
+
+cd keycloak-postgres
+
+./clear
+
+cd ..

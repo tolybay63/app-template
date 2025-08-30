@@ -1,0 +1,105 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "hash": {
+        "type": "keyword"
+      },
+      "items": {
+        "type": "nested",
+        "properties": {
+          "fileId": {
+            "type": "keyword"
+          },
+          "name": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          },
+          "path": {
+            "type": "keyword"
+          },
+          "fileAttributes": {
+            "type": "nested",
+            "properties": {
+              "attributeTypeId": {
+                "type": "long"
+              },
+              "value": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                }
+              }
+            }
+          },
+          "deleted": {
+            "type": "keyword"
+          },
+          "itemType": {
+            "type": "long"
+          }
+        }
+      },
+      "textLocation": {
+        "type": "nested",
+        "properties": {
+          "text": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "orderNumber": {
+                "type": "integer"
+              },
+              "rowNumber": {
+                "type": "integer"
+              },
+              "columnNumber": {
+                "type": "integer"
+              },
+              "sheetNumber": {
+                "type": "integer"
+              },
+              "pageNumber": {
+                "type": "integer"
+              },
+              "paragraphNumber": {
+                "type": "integer"
+              },
+              "x1": {
+                "type": "float"
+              },
+              "x2": {
+                "type": "float"
+              },
+              "y1": {
+                "type": "float"
+              },
+              "y2": {
+                "type": "float"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

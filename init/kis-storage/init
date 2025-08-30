@@ -1,0 +1,60 @@
+#!/bin/bash
+set -e
+
+if [ ! -f /usr/local/bin/minioc ]
+then
+  echo
+  echo "Установка MinIO-клиента"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    wget -O minioc https://dl.min.io/client/mc/release/darwin-arm64/mc
+  else
+    wget -O minioc https://dl.min.io/client/mc/release/linux-amd64/mc
+  fi
+  chmod +x minioc
+  mv minioc /usr/local/bin/
+else
+  echo
+  echo "MinIO-клиент уже установлен"
+fi
+
+
+
+echo
+echo "Настройка соединения"
+
+minioc alias set kis-files http://localhost:9000 minioadmin minioadmin
+minioc alias set kis-pages http://localhost:8000 minioadmin minioadmin
+
+
+
+echo
+echo "Удаление существующих bucket-ов"
+
+set +e
+# Удаление всех объектов внутри bucket
+minioc rm --recursive --force kis-files/files; true
+minioc rm --recursive --force kis-pages/pages; true
+minioc rm --recursive --force kis-pages/pages-preview; true
+# Удаление самого bucket
+minioc rb kis-files/files; true
+minioc rb kis-pages/pages; true
+minioc rb kis-pages/pages-preview; true
+#
+set -e
+
+
+echo
+echo "Создание bucket-ов"
+
+minioc mb kis-files/files
+minioc mb kis-pages/pages
+minioc mb kis-pages/pages-preview
+
+
+
+echo
+echo "Список bucket-ов"
+
+minioc ls kis-files
+minioc ls kis-pages
+

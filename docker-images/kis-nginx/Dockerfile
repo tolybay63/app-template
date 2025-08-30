@@ -1,0 +1,22 @@
+# Используем официальный образ Nginx
+FROM nginx:alpine
+
+# Удаляем дефолтный конфиг nginx
+RUN rm /etc/nginx/nginx.conf
+
+# Копируем наш конфиг в контейнер
+COPY nginx.conf /etc/nginx/nginx.conf
+
+
+# Копируем страницы ошибок в контейнер
+COPY ./data/error-page /usr/share/nginx/error-page
+
+
+# Копируем статические файлы в папку /usr/share/nginx/html
+#COPY ./data/html /usr/share/nginx/html
+
+#
+CMD ["nginx", "-g", "daemon off;"]
+
+# Открываем порты
+EXPOSE 80 8080 8090 19090

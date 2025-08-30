@@ -1,0 +1,197 @@
+services:
+  kis-keycloak-postgres:
+    image: kis-keycloak-postgres
+    container_name: kis-keycloak-postgres
+    restart: on-failure
+    volumes:
+      - db_data_auth:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -p 5434
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 111
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: pg_isready -d postgres -p 5434
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    ports:
+      - 5434:5432
+    networks:
+      - app_network
+
+  kis-keycloak:
+    image: kis-keycloak
+    container_name: kis-keycloak
+    command:
+      - "start-dev"
+    environment:
+      KC_DB_URL: ${KC_DB_URL}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_DB_SCHEMA: ${KC_DB_SCHEMA}
+      KC_FEATURES: ${KC_FEATURES}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_HTTP_HOST: ${KC_HTTP_HOST}
+      KC_PROXY_ADDRESS_FORWARDING: ${KC_PROXY_ADDRESS_FORWARDING}
+      KC_HTTP_PORT: ${KC_HTTP_PORT}
+      KC_HTTP_ENABLED: ${KC_HTTP_ENABLED}
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HOSTNAME_FRONTEND: ${KC_HOSTNAME_FRONTEND}
+    env_file: ".env"
+    ports:
+      - 8282:8080
+    networks:
+      - app_network
+    depends_on:
+      kis-keycloak-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8080/realms/master" ]
+      interval: 10s
+      retries: 5
+      timeout: 10s
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 10485760  # 10 MB
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485760  # 10 MB
+      KAFKA_FETCH_MESSAGE_MAX_BYTES: 10485760  # 10 MB
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+
+  elasticsearch:
+    image: elasticsearch:8.9.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - app_network
+
+  kibana:
+    image: kibana:8.9.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - app_network
+
+  minio_files:
+    image: minio/minio:latest
+    container_name: minio_files
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data_files:/data
+    networks:
+      - app_network
+
+  minio_pages:
+    image: minio/minio:latest
+    container_name: minio_pages
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    command: server /data --address ":8000" --console-address ":8001"
+    volumes:
+      - minio_data_pages:/data
+    networks:
+      - app_network
+
+  db_files:
+    image: kis-postgres
+    container_name: db_files
+    volumes:
+      - db_data_files:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  db_pages:
+    image: kis-postgres
+    container_name: db_pages
+    volumes:
+      - db_data_pages:/var/lib/postgresql/data
+    command:
+      postgres -p 5433  # Указываем PostgreSQL слушать на порту 5433
+    ports:
+      - "5433:5433"
+    networks:
+      - app_network
+
+  db_messages:
+    image: kis-postgres
+    container_name: db_messages
+    volumes:
+      - db_data_messages:/var/lib/postgresql/data
+    command:
+      postgres -p 5431  # Указываем PostgreSQL слушать на порту 5431
+    ports:
+      - "5431:5431"
+    networks:
+      - app_network
+
+  nginx:
+    image: kis-nginx
+    container_name: kis_nginx
+    # Используем режим "host", а не "bridge", чтобы контейнер nginx не только ПРИНИМАЛ подключения,
+    # но и сам имел возможность сетевого подключения к другим процессам на хосте, например чтобы отработала
+    # настройка маршрутизации "proxy_pass http://localhost:19090/;"
+    network_mode: host
+    volumes:
+      - ./kis-nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  elasticsearch_data:
+  minio_data_files:
+  minio_data_pages:
+  db_data_files:
+  db_data_pages:
+  db_data_messages:
+  db_data_auth:
+  redis_data:
+
+networks:
+  app_network:
+    driver: bridge

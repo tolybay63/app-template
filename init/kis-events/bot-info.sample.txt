@@ -1,0 +1,2 @@
+token: 7626491281:AACCmFXOoffg6K3VR2zk3rlibMk9rep0oSu
+username: my_test_dev_bot

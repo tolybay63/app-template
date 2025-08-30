@@ -1,0 +1,121 @@
+#!/bin/sh
+set -e  
+
+
+
+# Инициализация сторонних сервисов
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  echo -------
+  echo test-ldap
+
+  cd test-ldap
+
+  ./init
+  echo test users dowloaded
+  cd ..
+else
+  echo done
+fi
+
+echo -------
+echo kis-keycloak
+
+cd kis-keycloak
+
+./init
+
+cd ..
+
+
+
+echo -------
+echo kis-base
+
+cd kis-base
+
+./init
+
+cd ..
+
+
+
+echo -------
+echo kis-storage
+
+cd kis-storage
+
+./init
+
+cd ..
+
+
+
+echo -------
+echo kis-indexer
+
+cd kis-indexer
+
+./init
+
+cd ..
+
+
+
+echo -------
+echo kis-messagebroker
+
+cd kis-messagebroker
+
+./init
+
+cd ..
+
+
+
+echo -------
+echo kis-redis
+
+cd kis-redis
+
+
+
+cd ..
+
+
+
+# Инициализация бизнес-логики
+
+
+
+echo -------
+echo kis-base
+
+cd ../kis-base
+
+
+# Создаёт структуру БД
+./gradlew bootRun
+
+#
+if [[ "$(uname)" == "Darwin" ]]; then
+  echo "Тут должен быть chmod чего то там"
+else
+  chmod 777 -R ./build
+fi
+
+
+cd ../init
+
+
+
+echo -------
+echo kis-events
+
+cd kis-events
+
+./init
+
+cd ..
+
+
