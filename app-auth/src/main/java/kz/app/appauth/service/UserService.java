@@ -6,6 +6,9 @@ import kz.app.appauth.manager.*;
 import kz.app.appauth.manager.impl.*;
 import kz.app.appauth.persistance.constant.*;
 import kz.app.appauth.persistance.entity.*;
+import kz.app.appcore.model.*;
+import kz.app.appcore.utils.*;
+import kz.app.appdbtools.repository.*;
 import kz.app.appfile.constants.*;
 import lombok.*;
 import org.springframework.security.core.*;
@@ -21,6 +24,7 @@ import static kz.app.appauth.persistance.constant.CookieNames.*;
 @Service
 @AllArgsConstructor
 public class UserService {
+
     private final Db db;
     private final Map<String, UserEntity> usersCache;
     private final Map<Long, Object> userPermissionsCache;

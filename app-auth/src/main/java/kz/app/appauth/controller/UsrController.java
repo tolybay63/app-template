@@ -2,8 +2,9 @@ package kz.app.appauth.controller;
 
 import kz.app.appauth.persistance.entity.*;
 import kz.app.appauth.service.*;
-import kz.app.appauth.service.auth.*;
 import kz.app.appauth.service.auth.impl.*;
+import kz.app.appcore.model.*;
+import kz.app.appcore.utils.*;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class UsrController {
     private final UserService userService;
     private final UserSynchronizer userSynchronizer;
     private final UsrAttributeService usrAttributeService;
-    private final AuthWebService IAuthService;
+    private final AuthWebService authWebService;
 
     @GetMapping("/setOwnUsr")
     public ResponseEntity<Void> setOwnUser(
@@ -61,7 +62,7 @@ public class UsrController {
         String email = UtCnv.toString(rec.get("email"));
         String password = UtCnv.toString(rec.get("password"));
 
-        long id = IAuthService.signUp(username, password, email, "", "");
+        long id = authWebService.signUp(username, password, email, "", "");
 
         return ResponseEntity.ok(id);
     }

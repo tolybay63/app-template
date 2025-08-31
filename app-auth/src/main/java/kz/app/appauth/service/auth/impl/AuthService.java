@@ -8,6 +8,7 @@ import kz.app.appauth.persistance.entity.*;
 import kz.app.appauth.service.*;
 import kz.app.appauth.service.auth.*;
 import kz.app.appcore.model.*;
+import kz.app.appcore.utils.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.springframework.http.*;

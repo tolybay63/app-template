@@ -1,15 +1,14 @@
-package kz.app.appauth.controller.auth;
+package kz.app.appauth.controller;
 
 import jakarta.servlet.http.*;
 import kz.app.appauth.manager.*;
-import kz.app.appauth.manager.impl.*;
 import kz.app.appauth.persistance.entity.*;
 import kz.app.appauth.service.*;
 import kz.app.appauth.service.auth.impl.*;
 import kz.app.appcore.model.*;
+import kz.app.appcore.utils.*;
 import lombok.*;
 import org.springframework.http.*;
-import org.springframework.security.core.*;
 import org.springframework.security.core.context.*;
 import org.springframework.security.web.authentication.logout.*;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthWebController {
+
     private final UserService userService;
     private final AuthWebService authWebService;
     private final ContextManager contextManager;
     private final SecurityContextLogoutHandler securityContextLogoutHandler;
-    private final AuthAgentService authAgentService;
 
     @PostMapping("/login")
     public ResponseEntity<DbRec> login(
@@ -35,23 +34,6 @@ public class AuthWebController {
 
         // Возвращаем на фронт
         return ResponseEntity.ok(authWebService.buildUserResponse(request));
-    }
-
-    @PostMapping("/agent/login")
-    public ResponseEntity<Void> agentTokens(
-            @RequestBody DbRec creds
-    ) throws Exception {
-
-        contextManager.createContext(creds);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/agent/creds")
-    public ResponseEntity<DbRec> agentTokens(
-            HttpServletRequest request
-    ) throws Exception {
-
-        return ResponseEntity.ok(authAgentService.authAgent(request));
     }
 
     @PostMapping("/logout")

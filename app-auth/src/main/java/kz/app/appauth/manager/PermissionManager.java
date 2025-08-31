@@ -6,6 +6,7 @@ import kz.app.appauth.exceptions.*;
 import kz.app.appauth.persistance.constant.*;
 import kz.app.appauth.service.*;
 import kz.app.appauth.utils.*;
+import kz.app.appcore.utils.*;
 import kz.app.appfile.constants.*;
 import kz.app.appfile.service.*;
 import org.springframework.http.*;

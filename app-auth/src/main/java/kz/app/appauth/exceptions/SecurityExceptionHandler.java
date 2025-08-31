@@ -1,6 +1,7 @@
 package kz.app.appauth.exceptions;
 
 import jakarta.servlet.http.*;
+import kz.app.appcore.utils.*;
 import net.minidev.json.*;
 
 public class SecurityExceptionHandler {

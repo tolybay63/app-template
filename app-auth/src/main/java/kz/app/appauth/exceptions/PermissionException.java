@@ -1,5 +1,6 @@
 package kz.app.appauth.exceptions;
 
+import kz.app.appcore.utils.*;
 import lombok.*;
 import net.minidev.json.*;
 import org.springframework.http.*;

@@ -18,7 +18,8 @@ public class GrpController {
     @GetMapping("/create")
     public ResponseEntity<Void> createGrp(
             @RequestParam(name = "name") String name
-    ) {
+    ) throws Exception {
+        grpService.createGrp(name);
         return ResponseEntity.ok().build();
     }
 }

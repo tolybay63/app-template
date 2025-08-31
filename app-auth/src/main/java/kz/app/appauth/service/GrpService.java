@@ -1,6 +1,9 @@
 package kz.app.appauth.service;
 
 import jakarta.annotation.*;
+import kz.app.appcore.model.*;
+import kz.app.appcore.utils.*;
+import kz.app.appdbtools.repository.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
@@ -40,7 +43,6 @@ public class GrpService {
 
     public void deleteUsrFromGrp(Long grp, Long usr) throws Exception {
         db.deleteRec("UsrGrp", UtCnv.toMap("grp", grp, "usr", usr));
-        ;
     }
 
     public void addUserInGroup(Long grp, Long usr) throws Exception {
