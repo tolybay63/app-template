@@ -1,5 +1,6 @@
 package kz.app.appadmin.service;
 
+import kz.app.appcore.model.DbRec;
 import kz.app.appdbtools.repository.*;
 import org.springframework.stereotype.*;
 
@@ -31,6 +32,12 @@ public class AdminDao {
         return "Hello";
     }
 
+    public List<DbRec> loadUsers(long id) throws Exception {
+
+        return db.loadSql("""
+            select * from AuthUser where authUserGr=:id
+        """, Map.of("id", id));
+    }
 
 
 }

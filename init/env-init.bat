@@ -23,7 +23,7 @@ echo app-database
 
 cd app-database
 
-call init.bat
+rem call init.bat
 
 cd ..
 
@@ -61,7 +61,7 @@ echo app-database
 cd app-database
 
 rem Создаёт структуру БД
-call gradlew bootRun
+rem call gradlew bootRun
 
 cd ..
 
