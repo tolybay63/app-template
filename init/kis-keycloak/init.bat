@@ -8,23 +8,28 @@ set attempt=1
 echo Попытка %attempt%...
 
 :: Получение токена доступа для администратора
-for /f "delims=" %%i in ('curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^| jq -r .access_token') do set ACCESS_TOKEN=%%i
+rem for /f "delims=" %%i in ('curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^| jq -r .access_token') do set ACCESS_TOKEN=%%i
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token
 
 :: Проверка, что токен получен
-if "!ACCESS_TOKEN!"=="" (
-    echo ACCESS_TOKEN is empty 1>&2
-    set /a attempt+=1
-    if !attempt! LEQ %MAX_ATTEMPTS% (
-        timeout /t 15 >nul
-        goto retry
-    )
-    exit /b 1
-)
+rem if "!ACCESS_TOKEN!"=="" (
+rem     echo ACCESS_TOKEN is empty 1>&2
+rem     set /a attempt+=1
+rem     if !attempt! LEQ %MAX_ATTEMPTS% (
+rem         timeout /t 15 >nul
+rem         goto retry
+rem     )
+rem     exit /b 1
+rem )
 
 :: Проверка, что токен получен
 if "%ACCESS_TOKEN%"=="" (
     echo ACCESS_TOKEN is empty
-    exit /b 1
+    rem exit /b 1
 )
 
 :: Создание scope - ов

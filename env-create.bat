@@ -1,13 +1,12 @@
-echo on
-echo ��⠭���� �ࢨᮢ
+echo off
 
+echo stop docker
 
 cd docker-images
 docker-compose down
 
 
-echo
-echo �������� Docker-��ࠧ�� ��� �ࢨᮢ
+echo build docker images
 cd kis-keycloak-postgres
 call make.bat
 cd ..
@@ -21,28 +20,10 @@ call make.bat
 cd ..
 
 cd kis-postgres
-call make
-cd ..
-
-cd libreoffice
-REM call make
-cd ..
-
-cd libreoffice-server
-call make
-cd ..
-
-cd tesseract
-REM call make
-cd ..
-
-cd kis-redis
-REM call make
+call make.bat
 cd ..
 
 
-echo
-echo ����� �ࢨᮢ
 
 
 docker-compose -f docker-compose.win.yml up -d

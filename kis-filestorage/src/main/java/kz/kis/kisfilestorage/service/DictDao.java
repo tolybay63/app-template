@@ -6,6 +6,8 @@ import org.springframework.stereotype.*;
 
 import java.util.*;
 
+// dao utils
+
 /**
  *
  */
@@ -35,22 +37,6 @@ public class DictDao {
         //
         List<DbRec> res = db.loadSql(sqlLoadDict(tableName), null);
 
-        // Специальные постобработчики
-        if (dictName.equals("AttributeType")) {
-            for (DbRec rec : res) {
-                Object value = rec.get("renderParam");
-                rec.remove("renderparam");
-                rec.put("renderParam", value);
-                //
-                value = rec.get("render");
-                if (value != null) {
-                    String valueString = value.toString();
-                    value = Arrays.stream(valueString.split(",")).toList();
-                }
-                rec.put("render", value);
-            }
-        }
-
         //
         return res;
     }
@@ -58,9 +44,9 @@ public class DictDao {
     private String sqlLoadDict(String tableName) {
         return """
                 select *
-                from %s
+                from DictValue
                 order by id
-                """.formatted(tableName);
+                """;
     }
 
 }

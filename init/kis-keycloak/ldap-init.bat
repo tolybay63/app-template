@@ -10,12 +10,16 @@ set "LOGIN=batman@kazinfosystems.kz"
 set "PASSWORD=Axario09S"
 
 :: Получение access token
-for /f "delims=" %%i in ('curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^| jq -r ".access_token"') do set "ACCESS_TOKEN=%%i"
+rem for /f "delims=" %%i in ('curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^| jq -r ".access_token"') do set "ACCESS_TOKEN=%%i"
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^
+curl -s --data "client_id=admin-cli" --data "username=smart_catalog" --data "password=Grpn404tfgNbp09we21" --data "grant_type=password" http://localhost:8282/realms/master/protocol/openid-connect/token ^
 
-if "%ACCESS_TOKEN%"=="" (
-    echo ACCESS_TOKEN is empty 1>&2
-    exit /b 1
-)
+:: Проверяем результат
+rem if "%ACCESS_TOKEN%"=="" (
+rem    echo ACCESS_TOKEN is empty
+rem    exit /b 1
+rem )
 
 :: Удаление компонента
 curl -X DELETE "http://localhost:8282/admin/realms/master/components/Ld6R3o3pT_64Kr9Nk3m8yQ" ^
