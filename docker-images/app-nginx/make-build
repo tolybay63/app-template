@@ -1,0 +1,18 @@
+# Образ для prod режима
+
+# Дистрибутивы к себе (иначе сборка образа ругается, что файлы снаружи лежат)
+rm -r -f ./data/html
+mkdir ./data
+mkdir ./data/html
+mkdir ./data/error-page
+
+#
+cp -r ../../build/spa/. ./data/html/
+
+#
+cp -r ../../app-web/public/error-page/* ./data/error-page
+
+
+# Собираем образ Docker
+docker build -t app-nginx .
+

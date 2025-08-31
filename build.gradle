@@ -31,7 +31,7 @@ subprojects {
     }
 }
 
-project(':kis-base') {
+project(':app-database') {
     apply plugin: 'org.springframework.boot'
 
     bootJar {
@@ -42,23 +42,23 @@ project(':kis-base') {
         enabled = false
     }
 
-    task runKisBase(type: JavaExec) {
+    task runAppDatabase(type: JavaExec) {
         group = 'database'
-        description = 'Runs the KisBaseApplication to initialize the database'
+        description = 'Runs the AppDatabaseApplication to initialize the database'
         classpath = sourceSets.main.runtimeClasspath
-        main = 'kz.kis.kisbase.KisBaseApplication'
+        main = 'kz.app.appdatabase.AppDatabaseApplication'
     }
 }
 
-task runKisBase {
-    dependsOn ':kis-base:runKisBase'
+task runAppDatabase {
+    dependsOn ':app-database:runAppDatabase'
 }
 
 subprojects {
-    if (project.name != 'kis-base') {
+    if (project.name != 'app-database') {
         tasks.withType(JavaCompile) {
             if (!gradle.startParameter.taskNames.contains('test')) {
-                dependsOn rootProject.tasks.runKisBase
+                dependsOn rootProject.tasks.runAppDatabase
             }
         }
     }
@@ -66,13 +66,13 @@ subprojects {
 
 tasks.withType(Test) {
     doFirst {
-        rootProject.tasks.runKisBase.enabled = false
+        rootProject.tasks.runAppDatabase.enabled = false
     }
 }
 
 tasks.withType(JavaCompile) {
     if (!gradle.startParameter.taskNames.contains('test')) {
-        dependsOn rootProject.tasks.runKisBase
+        dependsOn rootProject.tasks.runAppDatabase
     }
 }
 

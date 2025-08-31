@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd docker-images
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  docker-compose -f docker-compose.mac.yml down
+else
+  docker-compose down
+fi
+
+cd ..

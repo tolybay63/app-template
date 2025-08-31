@@ -1,0 +1,23 @@
+# Образ для dev режима
+
+# Дистрибутивы к себе (иначе сборка образа ругается, что файлы снаружи лежат)
+rm -r -f ./data
+mkdir ./data
+#mkdir ./data/html
+mkdir ./data/error-page
+
+#
+#cp -r ../../app-web/dist/spa/. ./data/html/
+
+#
+cp -r ../../app-web/public/error-page/* ./data/error-page
+
+
+# Собираем образ Docker
+if [[ "$(uname)" == "Darwin" ]]; then
+    docker build -f Dockerfile.mac -t app-nginx .
+    echo "Hello mac!"
+else
+    docker build -t app-nginx .
+fi
+

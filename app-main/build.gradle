@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'kz.app'
+version = '0.0.1'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework:spring-webflux:6.1.13'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    implementation project(':app-core')
+    implementation project(':app-dbtools')
+    //implementation project(':app-auth')
+    implementation project(':app-storage')
+    implementation project(':app-messagebroker')
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.testcontainers:testcontainers:1.17.1'
+    testImplementation 'org.testcontainers:junit-jupiter:1.17.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+test {
+    // Show standard output and error in the console during test execution
+    testLogging {
+        showStandardStreams = true  // Ensure this is enabled to capture logs in console
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}

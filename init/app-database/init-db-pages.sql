@@ -1,0 +1,8 @@
+DROP DATABASE IF EXISTS app_pages;
+
+DROP USER IF EXISTS app_pages;
+
+
+CREATE USER app_pages WITH PASSWORD '123456';
+
+CREATE DATABASE app_pages WITH OWNER app_pages;

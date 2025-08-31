@@ -8,20 +8,9 @@ rem Инициализация сторонних сервисов
 
 
 echo -------
-echo kis-keycloak
+echo app-keycloak
 
-cd kis-keycloak
-
-call init.bat
-
-cd ..
-
-
-
-echo -------
-echo kis-base
-
-cd kis-base
+cd app-keycloak
 
 call init.bat
 
@@ -30,20 +19,9 @@ cd ..
 
 
 echo -------
-echo kis-storage
+echo app-database
 
-cd kis-storage
-
-call init.bat
-
-cd ..
-
-
-
-echo -------
-echo kis-indexer
-
-cd kis-indexer
+cd app-database
 
 call init.bat
 
@@ -52,9 +30,20 @@ cd ..
 
 
 echo -------
-echo kis-messagebroker
+echo app-storage
 
-cd kis-messagebroker
+cd app-storage
+
+call init.bat
+
+cd ..
+
+
+
+echo -------
+echo app-messagebroker
+
+cd app-messagebroker
 
 call init.bat
 
@@ -67,37 +56,13 @@ rem Инициализация бизнес-логики
 
 
 echo -------
-echo kis-base
+echo app-database
 
-cd kis-base
+cd app-database
 
 rem Создаёт структуру БД
 call gradlew bootRun
 
 cd ..
-
-
-
-echo -------
-echo kis-events
-
-cd kis-events
-
-call init.bat
-
-cd ..
-
-
-
-echo -------
-echo kis-redis
-
-cd kis-redis
-
-call init.bat
-
-cd ..
-
-
 
 

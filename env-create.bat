@@ -7,19 +7,19 @@ docker-compose down
 
 
 echo build docker images
-cd kis-keycloak-postgres
+cd app-keycloak-postgres
 call make.bat
 cd ..
 
-cd kis-keycloak
+cd app-keycloak
 call make.bat
 cd ..
 
-cd kis-nginx
+cd app-nginx
 call make.bat
 cd ..
 
-cd kis-postgres
+cd app-postgres
 call make.bat
 cd ..
 

@@ -19,20 +19,9 @@ else
 fi
 
 echo -------
-echo kis-keycloak
+echo app-keycloak
 
-cd kis-keycloak
-
-./init
-
-cd ..
-
-
-
-echo -------
-echo kis-base
-
-cd kis-base
+cd app-keycloak
 
 ./init
 
@@ -41,20 +30,9 @@ cd ..
 
 
 echo -------
-echo kis-storage
+echo app-database
 
-cd kis-storage
-
-./init
-
-cd ..
-
-
-
-echo -------
-echo kis-indexer
-
-cd kis-indexer
+cd app-database
 
 ./init
 
@@ -63,9 +41,9 @@ cd ..
 
 
 echo -------
-echo kis-messagebroker
+echo app-storage
 
-cd kis-messagebroker
+cd app-storage
 
 ./init
 
@@ -74,11 +52,11 @@ cd ..
 
 
 echo -------
-echo kis-redis
+echo app-messagebroker
 
-cd kis-redis
+cd app-messagebroker
 
-
+./init
 
 cd ..
 
@@ -89,9 +67,9 @@ cd ..
 
 
 echo -------
-echo kis-base
+echo app-database
 
-cd ../kis-base
+cd ../app-database
 
 
 # Создаёт структуру БД
@@ -106,16 +84,5 @@ fi
 
 
 cd ../init
-
-
-
-echo -------
-echo kis-events
-
-cd kis-events
-
-./init
-
-cd ..
 
 

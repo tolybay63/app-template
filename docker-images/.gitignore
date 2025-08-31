@@ -1,5 +1,5 @@
 # Скопированные артефакты для включения в контейнер
-kis-base/data/*
-kis-nginx/data/*
-kis-postgres/data/*
+app-database/data/*
+app-nginx/data/*
+app-postgres/data/*
 product/data/*

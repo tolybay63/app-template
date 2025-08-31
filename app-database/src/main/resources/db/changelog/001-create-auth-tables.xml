@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="001-create-usr-table" author="app">
+        <createTable tableName="Usr">
+            <column name="id" type="BIGINT" autoIncrement="true" startWith="1000">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="002-create-grp-table" author="app">
+        <createTable tableName="Grp">
+            <column name="id" type="bigint" autoIncrement="true" startWith="1000">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003-create-usrgrp-table" author="app">
+        <createTable tableName="UsrGrp">
+            <column name="id" type="bigint" autoIncrement="true" startWith="1000">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="grp" type="bigint">
+                <constraints nullable="false" foreignKeyName="grpId"
+                             referencedTableName="Grp" referencedColumnNames="id"/>
+            </column>
+            <column name="usr" type="bigint">
+                <constraints nullable="false" foreignKeyName="usrId"
+                             referencedTableName="Usr" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="004-create-permission-table" author="app">
+        <createTable tableName="Permission">
+            <column name="id" type="bigint" autoIncrement="true" startWith="1000">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="usr" type="bigint">
+                <constraints foreignKeyName="usrId" referencedTableName="Usr"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="grp" type="bigint">
+                <constraints foreignKeyName="grpId" referencedTableName="Grp"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="permission" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permissionType" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="Permission"
+                columnNames="usr, permissionType"
+                constraintName="uc_usr_permissionType"
+        />
+
+    </changeSet>
+</databaseChangeLog>

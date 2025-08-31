@@ -1,0 +1,60 @@
+#!/bin/bash
+set -e
+
+if [ ! -f /usr/local/bin/minioc ]
+then
+  echo
+  echo "Установка MinIO-клиента"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    wget -O minioc https://dl.min.io/client/mc/release/darwin-arm64/mc
+  else
+    wget -O minioc https://dl.min.io/client/mc/release/linux-amd64/mc
+  fi
+  chmod +x minioc
+  mv minioc /usr/local/bin/
+else
+  echo
+  echo "MinIO-клиент уже установлен"
+fi
+
+
+
+echo
+echo "Настройка соединения"
+
+minioc alias set app-files http://localhost:9000 minioadmin minioadmin
+minioc alias set app-pages http://localhost:8000 minioadmin minioadmin
+
+
+
+echo
+echo "Удаление существующих bucket-ов"
+
+set +e
+# Удаление всех объектов внутри bucket
+minioc rm --recursive --force app-files/files; true
+minioc rm --recursive --force app-pages/pages; true
+minioc rm --recursive --force app-pages/pages-preview; true
+# Удаление самого bucket
+minioc rb app-files/files; true
+minioc rb app-pages/pages; true
+minioc rb app-pages/pages-preview; true
+#
+set -e
+
+
+echo
+echo "Создание bucket-ов"
+
+minioc mb app-files/files
+minioc mb app-pages/pages
+minioc mb app-pages/pages-preview
+
+
+
+echo
+echo "Список bucket-ов"
+
+minioc ls app-files
+minioc ls app-pages
+

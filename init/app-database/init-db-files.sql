@@ -1,0 +1,8 @@
+DROP DATABASE IF EXISTS app_files;
+
+DROP USER IF EXISTS app_files;
+
+
+CREATE USER app_files WITH PASSWORD '123456';
+
+CREATE DATABASE app_files WITH OWNER app_files;

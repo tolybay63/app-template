@@ -1,2 +1,0 @@
-token: 7626490089:AAECmFXOofft6K8VR2zk3rlibMk9rep0oZk
-username: dvsa_test_dev_bot

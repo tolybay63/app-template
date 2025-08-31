@@ -19,31 +19,19 @@ fi
 echo
 echo Создание Docker-образов для сервисов
 
-cd kis-keycloak
+cd app-keycloak
 ./make
 cd ..
 
-cd kis-keycloak-postgres
+cd app-keycloak-postgres
 ./make
 cd ..
 
-cd kis-nginx
+cd app-nginx
 ./make
 cd ..
 
-cd kis-postgres
-./make
-cd ..
-
-cd libreoffice
-./make
-cd ..
-
-cd libreoffice-server
-./make
-cd ..
-
-cd tesseract
+cd app-postgres
 ./make
 cd ..
 

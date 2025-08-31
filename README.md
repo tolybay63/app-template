@@ -2,7 +2,7 @@
 
 Программный продукт KIS Smart Catalog — это комплексное решение для хранения, обработки, анализа и поиска документов.
 
-Проект kis-smartcatalog — это общий проект, состоит из нескольких микросервисов, каждый из которых выполняет свою роль.
+Проект app-smartcatalog — это общий проект, состоит из нескольких микросервисов, каждый из которых выполняет свою роль.
 Например: индексация и поиск данных через Elasticsearch.
 
 ## Модули
@@ -10,13 +10,13 @@
 Некоторые модули являются отдельными микросервисами, некоторые - общие модули или библиотеки. Проект включает следующие
 модули:
 
-- `kis-core` — общая базовая функциональность.
-- `kis-dbtools` — библиотека для работы с базой данных. Подробнее см. [kis-dbtools/README.md](kis-dbtools/README.md).
-- `kis-base` — предоставляет управление структурой базы данных. Подробнее см. [kis-base/README.md](kis-base/README.md)
-- `kis-auth` — отвечает за аутентификацию и авторизацию пользователей.
-- `kis-messagebroker` — управляет сообщениями в Kafka.
-- `kis-storage` — модуль для работы с MinIO, который хранит файлы.
-- `kis-web` — подпроект Quasar, web-фронт проекта.
+- `app-core` — общая базовая функциональность.
+- `app-dbtools` — библиотека для работы с базой данных. Подробнее см. [app-dbtools/README.md](app-dbtools/README.md).
+- `app-database` — предоставляет управление структурой базы данных. Подробнее см. [app-database/README.md](app-database/README.md)
+- `app-auth` — отвечает за аутентификацию и авторизацию пользователей.
+- `app-messagebroker` — управляет сообщениями в Kafka.
+- `app-storage` — модуль для работы с MinIO, который хранит файлы.
+- `app-web` — подпроект Quasar, web-фронт проекта.
 
 ## Требования к среде разработчика
 
@@ -28,8 +28,20 @@
 - **Gradle 8.10** (для сборки и запуска проектов)
 - **Docker** и **Docker Compose** (для запуска сторонних решений в контейнерах)
 
-Дополнительно под Windows 
-- **jq** утилита (скачиваем с https://jqlang.org, делаем jq доступной в путях)             
+Дополнительные утилиты:
+
+- **jq** утилита работы с json (под Windows скачиваем с https://jqlang.org, делаем jq доступной в путях)
+
+##### Замечания и подсказки
+
+Под Windows для установки Docker нужно инициализировать для подсистемы linux
+
+```shell
+
+wsl --install
+
+wsl -l -v
+```
 
 ### Для работы приложения
 
@@ -53,8 +65,8 @@
 Склонируйте проект на ваш локальный компьютер:
 
 ```bash
-git clone https://github.com/your-repo/kis-smartcatalog.git
-cd kis-smartcatalog
+git clone https://github.com/your-repo/app-smartcatalog.git
+cd app-smartcatalog
 ```
 
 ### 2. Установка инструментов
@@ -164,8 +176,8 @@ env-init.bat
 После первичной инициализации сторонних сервисов некоторые модули дополнительно инициализируют свои сервисы сами, при
 своём первом запуске:
 
-- таблицы в базах Postgres создает модуль `kis-base`
-- топики в Kafka создает модуль `kis-messagebroker`
+- таблицы в базах Postgres создает модуль `app-database`
+- топики в Kafka создает модуль `app-messagebroker`
 
 #### Вариант Б. Первичная инициализация вручную.
 
@@ -175,10 +187,10 @@ env-init.bat
 сервисов (создайте необходимые базы, топики и т.п.)
 самостоятельно.
 
-- Настройка БД Postgres, см. [kis-base/README.md](kis-base/README.md)
-- Настройка MinIO, см. [kis-storage/README.md](kis-storage/README.md)
-- Настройка Kafka, см. [kis-messagebroker/README.md](kis-messagebroker/README.md)
-- Настройка Elasticsearch, см. [kis-indexer/README.md](kis-indexer/README.md)
+- Настройка БД Postgres, см. [app-database/README.md](app-database/README.md)
+- Настройка MinIO, см. [app-storage/README.md](app-storage/README.md)
+- Настройка Kafka, см. [app-messagebroker/README.md](app-messagebroker/README.md)
+- Настройка Elasticsearch, см. [app-indexer/README.md](app-indexer/README.md)
 
 ### 5. Запуск и остановка сторонних сервисов
 
@@ -224,7 +236,7 @@ docker-compose down
 Для тестирования только отдельных модулей nginx не требуется.
 
 Для тестирования сервисов вместе с запуском web-приложения
-(модуль `kis-web` [kis-web](kis-web/README.md)), нужно _дополнительно_ запустить контейнер `kis-nginx`:
+(модуль `app-web` [app-web](app-web/README.md)), нужно _дополнительно_ запустить контейнер `app-nginx`:
 
 ```shell
 cd docker-images 
@@ -233,85 +245,25 @@ docker-compose -f ./docker-compose.nginx.yml up -d
 
 Контейнер nginx будет прокси-сервером, обеспечивает единый сетевой адрес для web-приложения и для сервисов:
 
-Если модуль `kis-filestorage` запущен на локальном адресе `http://localhost:19090`, то он будет доступен по
+Если модуль `app-filestorage` запущен на локальном адресе `http://localhost:19090`, то он будет доступен по
 адресу `http://localhost/api/`, а по адресу `http://localhost/` будет доступно веб-приложение.
 
 ### 6. Запуск проекта при разработке
 
 Для запуска проекта необходимо запустить следующие модули (каждый в одельном командом интерпретаторе):
 
-- `kis-filestorage`
-- `kis-parser`
-- `kis-indexer`
-- `kis-rast`
-- `kis-ocr`
+- `app-filestorage`
+- `app-parser`
+- `app-indexer`
+- `app-rast`
+- `app-ocr`
 
-Например, для `kis-filestorage`:
+Например, для `app-filestorage`:
 
 ```
-cd kis-filestorage
+cd app-filestorage
  
 ./gradlew bootRun
-```
-
-Для `kis-rast`
-
-Чтобы эксель файлы растеризовались в dzi надо запустить сервер Libreoffice.
-В докере он запускается сам, локально можно запустить через команду
-
-`soffice --headless --accept="socket,host=localhost,port=10002;urp;"`
-
-При удачном запуске на экране увидим что-то типа:
-
-```
-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-### 7. Тестирование
-
-Чтобы запустить тесты в каждом из модулей, выполните команду:
-
-```bash
-./gradlew test
-```
-
-Эта команда запустит все тесты, определенные в модуле и выведет результаты.
-
-### 8. Использование API
-
-#### 8.1 Загрузка файла
-
-Для загрузки файла в систему используйте следующий эндпоинт микросервиса `kis-filestorage`: `dir/uploadFile`
-
-Через Postman:
-
-```bash
-POST http://localhost:8082/dir/uploadFile
-```
-
-Через команду `curl`:
-
-```bash
-curl -F "file=@testfile.txt" -F "directoryId=1" -F "author=test-author" http://localhost:8082/dir/uploadFile
-```
-
-#### 8.2 Поиск данных
-
-Для поиска по тексту через Elasticsearch используйте следующий эндпоинт микросервиса
-`/search/find`
-
-Через Postman:
-
-```bash
-POST http://localhost:8084/search/find
-```
-
-Через команду `curl`:
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"searchField": "testfile"}' http://localhost:8084/search/find
 ```
 
 ## Сборка проекта для развертывания
@@ -325,10 +277,3 @@ curl -X POST -H "Content-Type: application/json" -d '{"searchField": "testfile"}
 Каждый модуль соберется в свою папку, см. папки `*/build/libs/*.jar`
 
 Подробная инструкция по разворачиванию на тестовом сервере [README.test-srv.md](README.test-srv.md).
-
-### Сборка проекта c тестами:
-
-```bash
-./gradlew clean build
-```
-
