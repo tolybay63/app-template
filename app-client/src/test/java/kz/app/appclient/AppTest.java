@@ -1,6 +1,6 @@
-package kz.app.appadmin;
+package kz.app.appclient;
 
-import kz.app.appadmin.service.AdminDao;
+import kz.app.appclient.service.ClientDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appdbtools.repository.Db;
@@ -13,13 +13,16 @@ import java.util.List;
 @SpringBootTest
 public class AppTest {
 
+    
     @Autowired
-    AdminDao adminDao;
+     ClientDao clientDao;
 
     @Test
-    void test1() throws Exception {
-        List<DbRec> res = adminDao.loadUsers(2);
+    public void testLoad() throws Exception {
+        List<DbRec> res = clientDao.loadClient(0);
         UtDb.outTable(res);
     }
+
+
 
 }
