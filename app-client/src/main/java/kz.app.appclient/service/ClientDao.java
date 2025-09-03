@@ -3,15 +3,20 @@ package kz.app.appclient.service;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;
+import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
+import org.simpleframework.xml.core.Commit;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class ClientDao {
-    private final Db db;
 
+    private final Db db;
+    //private final ModelDao db;
 
     public ClientDao(Db db) {
         this.db = db;
@@ -57,6 +62,12 @@ public class ClientDao {
     }
 
     List<DbRec> saveClient(String mode, DbRec params) {
+        UtEntityData ue = new UtEntityData(db, "Obj");
+
+       // ue.insertEntity()
+
+
+
 
 
 

@@ -3,7 +3,6 @@ package kz.app.appadmin;
 import kz.app.appadmin.service.AdminDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
-import kz.app.appdbtools.repository.Db;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,10 +1,9 @@
-package kz.app.appclient;
+package kz.app.appdata;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-
 
 @SpringBootApplication
 @EnableAsync
@@ -12,12 +11,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appcore",
         "kz.app.appdbtools",
         "kz.app.appstorage",
-        "kz.app.appclient",
+        "kz.app.appdata",
 })
-public class AppClientApplication {
+public class AppDataApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppClientApplication.class, args);
+        SpringApplication.run(AppDataApplication.class, args);
     }
 
 }
