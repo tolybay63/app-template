@@ -3,6 +3,7 @@ package kz.app.appauth.dao;
 import jakarta.annotation.*;
 import kz.app.appcore.model.*;
 import kz.app.appcore.utils.*;
+import kz.app.appdbtools.repository.Db;
 import kz.app.appfile.constants.*;
 import kz.app.appfile.service.*;
 import lombok.*;

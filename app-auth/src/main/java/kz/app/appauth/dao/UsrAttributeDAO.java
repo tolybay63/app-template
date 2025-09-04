@@ -1,6 +1,9 @@
 package kz.app.appauth.dao;
 
 import kz.app.appauth.persistance.constant.*;
+import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtCnv;
+import kz.app.appdbtools.repository.Db;
 import lombok.*;
 import org.springframework.stereotype.*;
 
