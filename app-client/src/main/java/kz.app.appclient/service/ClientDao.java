@@ -3,17 +3,18 @@ package kz.app.appclient.service;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;
+import kz.app.appcore.utils.UtPeriod;
 import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
-import kz.app.appdata.service.consts.FD_AttribValType_consts;
-import kz.app.appdata.service.consts.FD_InputType_consts;
-import kz.app.appdata.service.consts.FD_PeriodType_consts;
-import kz.app.appdata.service.consts.FD_PropType_consts;
+import kz.app.appcore.utils.consts.FD_AttribValType_consts;
+import kz.app.appcore.utils.consts.FD_InputType_consts;
+import kz.app.appcore.utils.consts.FD_PeriodType_consts;
+import kz.app.appcore.utils.consts.FD_PropType_consts;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,7 +56,8 @@ public class ClientDao {
 
         //
 
-        List<DbRec> st = db.loadSql("""
+        return
+                db.loadSql("""
                     select o.id, o.cls, v.name,
                         v1.id as idBIN, v1.strVal as BIN,
                         v2.id as idContactPerson, v2.strVal as ContactPerson,
@@ -72,9 +74,7 @@ public class ClientDao {
                         left join DataProp d4 on d4.objorrelobj=o.id and d4.prop=:Prop_Description  --1137
                         left join DataPropVal v4 on d4.id=v4.dataprop
                     where
-        """+whe, map);
-
-        return st;
+                """+whe, map);
     }
 
     private void validateForDelete(long id, int isObj) throws Exception {
@@ -92,7 +92,7 @@ public class ClientDao {
     }
 
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
-        long own = 0;
+        long own;
         UtEntityData ue = new UtEntityData(db, "Obj");
 
         if (UtCnv.toString(params.get("name")).trim().isEmpty())
@@ -144,8 +144,8 @@ public class ClientDao {
         long objRef = params.getLong("obj" + keyValue);
         long propVal = params.getLong("pv" + keyValue);
 
-        //Store stProp = apiMeta().get(ApiMeta).getPropInfo(cod)
-        List<DbRec> stProp = new ArrayList<DbRec>();//todo
+        //List<DbRec> stProp = new ArrayList<DbRec>();//todo
+        List<DbRec> stProp = metaDao.getPropInfo(cod);
         //
         long prop = stProp.getFirst().getLong("id");
         long propType = stProp.getFirst().getLong("propType");
@@ -158,17 +158,16 @@ public class ClientDao {
 
         //
         long idDP;
-        //StoreRecord recDP = mdb.createStoreRecord("DataProp");
         UtEntityData ue = new UtEntityData(db, "DataProp");
         DbRec recDP = ue.setDomain("DataProp", params);
         String whe = isObj ? "and isObj=1 " : "and isObj=0 ";
         if (stProp.getFirst().getLong("statusFactor") > 0) {
-            long fv = 1000; //todo apiMeta().get(ApiMeta).getDefaultStatus(prop)
-            whe += "and status = ${fv} ";
+            long fv = metaDao.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop)
+            whe += "and status = " + fv;
         } else {
             whe += "and status is null ";
         }
-        whe += "and provider is null ";
+        whe += " and provider is null ";
         //todo if (stProp.get(0).getLong("providerTyp") > 0)
 
         if (stProp.getFirst().getLong("providerTyp") > 0) {
@@ -187,7 +186,7 @@ public class ClientDao {
             recDP.put("objOrRelObj", own);
             recDP.put("prop", prop);
             if (stProp.getFirst().getLong("statusFactor") > 0) {
-                long fv = 1000; //todo apiMeta().get(ApiMeta).getDefaultStatus(prop);
+                long fv = metaDao.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop);
                 recDP.put("status", fv);
             }
             if (stProp.getFirst().getLong("providerTyp") > 0) {
@@ -262,10 +261,13 @@ public class ClientDao {
         if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate ==propType) {
             if (cod.equalsIgnoreCase("Prop_StartKm")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
-                    double v = UtCnv.toDouble(params.get(keyValue));
+                    var v = UtCnv.toDouble(params.get(keyValue));
                     v = v / koef;
-                    if (digit != null) v = Math.round(digit);
-                    recDPV.put("numberval", v);
+                    if (digit != null) {
+                        String vf = new DecimalFormat("#0.00").format(v);
+                        v = Double.parseDouble(vf);
+                    }
+                    recDPV.put("numberVal", v);
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -286,13 +288,11 @@ public class ClientDao {
             if (!params.containsKey("dte"))
                 params.put("dte", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
 
-/*
             UtPeriod utPeriod = new UtPeriod();
-            XDate d1 = utPeriod.calcDbeg(UtCnv.toDate(params.get("dte")), recDP.getLong("periodType"), 0);
-            XDate d2 = utPeriod.calcDend(UtCnv.toDate(params.get("dte")), recDP.getLong("periodType"), 0);
-            recDPV.put("dbeg", d1.toString(XDateTimeFormatter.ISO_DATE));
-            recDPV.put("dend", d2.toString(XDateTimeFormatter.ISO_DATE));
-*/
+            LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
+            LocalDate d2 = utPeriod.calcDend(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
+            recDPV.put("dbeg", d1);
+            recDPV.put("dend", d2);
 
         } else {
             recDPV.put("dbeg", LocalDate.parse("1800-01-01", DateTimeFormatter.ISO_DATE));

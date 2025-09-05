@@ -37,5 +37,34 @@ public class MetaDao {
         return map;
     }
 
+    public List<DbRec> getPropInfo(String codProp) throws Exception {
+        List<DbRec> res = db.loadSql("""
+                select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isdependvalueonperiod as dependPeriod,
+                    p.statusFactor, p.providerTyp, m.kfrombase as koef, p.digit
+                from Prop p
+                    left join Attrib a on a.id=p.attrib
+                    left join Measure m on m.id=p.measure
+                where p.cod like :c
+            """, Map.of("c", codProp));
+
+        if (res.isEmpty()) {
+            throw new XError("NotFoundPropCod@" + codProp);
+        }
+        return res;
+    }
+
+    public long getDefaultStatus(long prop) throws Exception {
+        List<DbRec> st = db.loadSql("""
+            select factorVal from PropStatus where prop=:prop and isDefault is true
+        """, Map.of("prop", prop));
+        if (st.isEmpty())
+            throw new XError("Not found default status");
+
+        return st.getFirst().getLong("factorVal");
+    }
+
+
+
+
 
 }
