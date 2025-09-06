@@ -17,4 +17,4 @@ docker exec db_pages psql -U postgres -h localhost -p 5433 -a --set ON_ERROR_STO
 
 echo ""
 echo "db messages"
-docker exec db_messages psql -U postgres -h localhost -p 5433 -a --set ON_ERROR_STOP=on -f /home/init-db-messages.sql
+docker exec db_messages psql -U postgres -h localhost -p 5431 -a --set ON_ERROR_STOP=on -f /home/init-db-messages.sql
