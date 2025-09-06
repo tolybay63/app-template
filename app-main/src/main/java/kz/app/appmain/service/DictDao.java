@@ -6,14 +6,11 @@ import org.springframework.stereotype.*;
 
 import java.util.*;
 
-// dao utils
-
 /**
  *
  */
 @Component
 public class DictDao {
-
 
     private final Db db;
 

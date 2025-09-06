@@ -2,7 +2,7 @@ package kz.app.apptempstorage.config;
 
 import kz.app.appdbtools.config.DbToolsConfig;
 import kz.app.appdbtools.repository.Db;
-import kz.app.apptempstorage.PostgreMessageDataStorage;
+import kz.app.apptempstorage.MessageDataStoragePostgre;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -18,7 +18,8 @@ public class TemporaryStorageConfig {
     }
 
     @Bean
-    public PostgreMessageDataStorage postgreTemporaryStorage() {
-        return new PostgreMessageDataStorage(db);
+    public MessageDataStoragePostgre postgreTemporaryStorage() {
+        return new MessageDataStoragePostgre(db);
     }
+
 }

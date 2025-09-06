@@ -18,7 +18,7 @@ import java.util.*;
 
 @AutoConfiguration
 @EnableKafka
-public class AppMessageBrokerAutoConfiguration {
+public class AppMessageBrokerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger("config");
 
@@ -47,7 +47,7 @@ public class AppMessageBrokerAutoConfiguration {
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         log.info("=========================");
-        log.info("AppMessageBrokerAutoConfiguration.consumerFactory");
+        log.info("AppMessageBrokerConfiguration.consumerFactory");
         log.info("bootstrapServers: " + bootstrapServers);
         log.info("");
 
@@ -68,44 +68,14 @@ public class AppMessageBrokerAutoConfiguration {
         return factory;
     }
 
-    // Define Kafka topics
     @Bean
-    public NewTopic parserInTopic() {
-        return new NewTopic("app-parser-in", 1, (short) 1);
+    public NewTopic topicAppFuncIn() {
+        return new NewTopic("app-func-in", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic parserOutTopic() {
-        return new NewTopic("app-parser-out", 1, (short) 1);
+    public NewTopic topicAppFuncOut() {
+        return new NewTopic("app-func-out", 1, (short) 1);
     }
 
-    @Bean
-    public NewTopic searchInTopic() {
-        return new NewTopic("app-indexer-in", 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic searchOutTopic() {
-        return new NewTopic("app-indexer-out", 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic rastInTopic() {
-        return new NewTopic("app-rast-in", 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic rastOutTopic() {
-        return new NewTopic("app-rast-out", 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic ocrInTopic() {
-        return new NewTopic("app-ocr-in", 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic ocrOutTopic() {
-        return new NewTopic("app-ocr-out", 1, (short) 1);
-    }
 }
