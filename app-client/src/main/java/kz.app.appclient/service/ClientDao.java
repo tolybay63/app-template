@@ -117,6 +117,7 @@ public class ClientDao {
     }
 
     private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
+        //UtEntityData ue = new UtEntityData(db, "DataProp");
         long own = params.getLong("own");
         String keyValue = cod.split("_")[1];
         long objRef = params.getLong("obj" + keyValue);
@@ -135,7 +136,7 @@ public class ClientDao {
         long idDP;
         UtEntityData ue = new UtEntityData(db, "DataProp");
         DbRec recDP = ue.setDomain("DataProp", params);
-        String whe = "and isObj="+ isObj;
+        String whe = "and isObj="+ isObj+" ";
         if (stProp.getFirst().getLong("statusFactor") > 0) {
             long fv = metaService.getDefaultStatus(prop);
             whe += "and status = " + fv;
@@ -156,6 +157,7 @@ public class ClientDao {
         if (!stDP.isEmpty()) {
             idDP = stDP.getFirst().getLong("id");
         } else {
+            recDP.put("id", ue.getNextId("DataProp"));
             recDP.put("isObj", isObj);
             recDP.put("objOrRelObj", own);
             recDP.put("prop", prop);
@@ -176,6 +178,7 @@ public class ClientDao {
         //
         //StoreRecord recDPV = mdb.createStoreRecord("DataPropVal")
         DbRec recDPV = ue.setDomain("DataPropVal", params);
+        recDP.put("id", ue.getNextId("DataPropVal"));
         recDPV.put("dataProp", idDP);
         // Attrib
         if (FD_AttribValType_consts.str == attribValType) {
