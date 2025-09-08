@@ -28,6 +28,18 @@ public class AppClientTest {
     }
 
     @Test
+    public void testSave_ins() throws Exception {
+        DbRec map = new DbRec();
+        map.put("name", "Test Save");
+        map.put("BIN", "1241414494");
+        map.put("ContactPerson", "Фамилия И.О");
+        map.put("ContactDetails", "г. Астана, ул. 45б, офис 11, тел. 85-858-85");
+        map.put("Description", "test 01");
+        List<DbRec> res = clientDao.saveClient("ins", map);
+        UtDb.outTable(res);
+    }
+
+    @Test
     public void testInsertEntity() throws Exception {
         DbRec map = new DbRec();
         for (int idx = 1; idx <= 3; idx++) {
