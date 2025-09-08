@@ -38,25 +38,11 @@ public class ClientDao {
 
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
         long cls = UtCnv.toLong(map.get("Cls_Client"));
-
         String whe = "o.id=:id";
         if (id == 0) whe = "o.cls=:Cls_Client";
-
-        //map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", "", "Prop_%")
         map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         map.put("Cls_Client", cls);
         //
-/*
-        DbRec map = new DbRec();
-        map.put("Cls_Client", 1126);
-        map.put("Prop_BIN", 1168);
-        map.put("Prop_ContactPerson", 1169);
-        map.put("Prop_ContactDetails", 1170);
-        map.put("Prop_Description", 1137);
-*/
-
-        //
-
         return db.loadSql("""
                     select o.id, o.cls, v.name,
                         v1.id as idBIN, v1.strVal as BIN,
@@ -97,9 +83,8 @@ public class ClientDao {
 
         if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
         DbRec par = new DbRec(params);
-        //par.put("cls", 1126);
+
         if (mode.equalsIgnoreCase("ins")) {
-            //todo Map<String, Long> map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Cls", "Cls_Client", "")
             DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
             par.put("cls", map.getLong("Cls_Client"));
             par.putIfAbsent("fullname", par.get("name"));
@@ -108,15 +93,15 @@ public class ClientDao {
             params.put("own", own);
             //1 Prop_BIN
             if (params.getString("BIN").isEmpty()) throw new XError("[BIN] не указан");
-            else fillProperties(true, "Prop_BIN", params);
+            else fillProperties(1, "Prop_BIN", params);
             //2 Prop_ContactPerson
             if (params.getString("ContactPerson").isEmpty()) throw new XError("[ContactPerson] не указан");
-            else fillProperties(true, "Prop_ContactPerson", params);
+            else fillProperties(1, "Prop_ContactPerson", params);
             //3 Prop_ContactDetails
             if (params.getString("ContactDetails").isEmpty()) throw new XError("[ContactDetails] не указан");
-            else fillProperties(true, "Prop_ContactDetails", params);
+            else fillProperties(1, "Prop_ContactDetails", params);
             //4 Prop_Description
-            if (!params.getString("Description").isEmpty()) fillProperties(true, "Prop_Description", params);
+            if (!params.getString("Description").isEmpty()) fillProperties(1, "Prop_Description", params);
         } else if (mode.equalsIgnoreCase("upd")) {
             own = params.getLong("id");
             par.putIfAbsent("fullname", par.get("name"));
@@ -131,13 +116,12 @@ public class ClientDao {
 
     }
 
-    private void fillProperties(boolean isObj, String cod, DbRec params) throws Exception {
+    private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
         long own = params.getLong("own");
         String keyValue = cod.split("_")[1];
         long objRef = params.getLong("obj" + keyValue);
         long propVal = params.getLong("pv" + keyValue);
-
-        //List<DbRec> stProp = new ArrayList<DbRec>();//todo
+        //
         List<DbRec> stProp = metaService.getPropInfo(cod);
         //
         long prop = stProp.getFirst().getLong("id");
@@ -147,20 +131,18 @@ public class ClientDao {
         double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
         if (koef == 0) koef = 1;
         if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
-
         //
         long idDP;
         UtEntityData ue = new UtEntityData(db, "DataProp");
         DbRec recDP = ue.setDomain("DataProp", params);
-        String whe = isObj ? "and isObj=1 " : "and isObj=0 ";
+        String whe = "and isObj="+ isObj;
         if (stProp.getFirst().getLong("statusFactor") > 0) {
-            long fv = metaService.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop)
+            long fv = metaService.getDefaultStatus(prop);
             whe += "and status = " + fv;
         } else {
             whe += "and status is null ";
         }
         whe += " and provider is null ";
-        //todo if (stProp.get(0).getLong("providerTyp") > 0)
 
         if (stProp.getFirst().getLong("providerTyp") > 0) {
             whe += "and periodType is not null ";
@@ -178,7 +160,7 @@ public class ClientDao {
             recDP.put("objOrRelObj", own);
             recDP.put("prop", prop);
             if (stProp.getFirst().getLong("statusFactor") > 0) {
-                long fv = metaService.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop);
+                long fv = metaService.getDefaultStatus(prop);
                 recDP.put("status", fv);
             }
             if (stProp.getFirst().getLong("providerTyp") > 0) {
@@ -197,7 +179,9 @@ public class ClientDao {
         recDPV.put("dataProp", idDP);
         // Attrib
         if (FD_AttribValType_consts.str == attribValType) {
-            if (cod.equalsIgnoreCase("Prop_BIN") || cod.equalsIgnoreCase("Prop_ContactPerson") || cod.equalsIgnoreCase("Prop_ContactDetails")) {
+            if (cod.equalsIgnoreCase("Prop_BIN") ||
+                    cod.equalsIgnoreCase("Prop_ContactPerson") ||
+                        cod.equalsIgnoreCase("Prop_ContactDetails")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("strVal", params.getString(keyValue));
                 }
