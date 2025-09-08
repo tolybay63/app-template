@@ -36,23 +36,25 @@ public class ClientDao {
 
     public List<DbRec> loadClient(long id) throws Exception {
 
-        //DbRec map = metaDao.getIdFromCodOfEntity("Cls", "Cls_Client", "");
-        //long cls= UtCnv.toLong(map.get("Cls_Client"));
+        DbRec map = metaDao.getIdFromCodOfEntity("Cls", "Cls_Client", "");
+        long cls= UtCnv.toLong(map.get("Cls_Client"));
 
         String whe = "o.id=:id";
         if (id==0)
             whe = "o.cls=:Cls_Client";
 
         //map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", "", "Prop_%")
-        //map = metaDao.getIdFromCodOfEntity("Prop", "", "Prop_%");
-        //map.put("Cls_Client", cls);
+        map = metaDao.getIdFromCodOfEntity("Prop", "", "Prop_%");
+        map.put("Cls_Client", cls);
         //
+/*
         DbRec map = new DbRec();
         map.put("Cls_Client", 1126);
         map.put("Prop_BIN", 1168);
         map.put("Prop_ContactPerson", 1169);
         map.put("Prop_ContactDetails", 1170);
         map.put("Prop_Description", 1137);
+*/
 
         //
 
