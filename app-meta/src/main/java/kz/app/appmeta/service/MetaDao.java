@@ -12,15 +12,11 @@ import java.util.Map;
 @Component
 public class MetaDao {
 
-    private final Db db;
     private final Db dbMeta;
 
-
-    public MetaDao(Db db, @Qualifier("dbMeta") Db dbMeta) {
-        this.db = db;
+    public MetaDao(@Qualifier("dbMeta") Db dbMeta) {
         this.dbMeta = dbMeta;
     }
-
 
     public DbRec getIdFromCodOfEntity(String entity, String cod, String prefixcod) throws Exception {
         String sql = "select id, cod from " + entity + " where cod like :cod";

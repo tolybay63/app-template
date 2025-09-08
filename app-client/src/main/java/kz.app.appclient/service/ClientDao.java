@@ -25,24 +25,25 @@ import java.util.Map;
 public class ClientDao {
 
     private final Db db;
-    private final MetaDao metaDao;
 
-    public ClientDao(Db db, MetaDao metaDao) {
+    private final MetaDao metaService;
+
+    public ClientDao(Db db, MetaDao metaService) {
         this.db = db;
-        this.metaDao = metaDao;
+        this.metaService = metaService;
     }
 
 
     public List<DbRec> loadClient(long id) throws Exception {
 
-        DbRec map = metaDao.getIdFromCodOfEntity("Cls", "Cls_Client", "");
+        DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
         long cls = UtCnv.toLong(map.get("Cls_Client"));
 
         String whe = "o.id=:id";
         if (id == 0) whe = "o.cls=:Cls_Client";
 
         //map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", "", "Prop_%")
-        map = metaDao.getIdFromCodOfEntity("Prop", "", "Prop_%");
+        map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         map.put("Cls_Client", cls);
         //
 /*
@@ -96,10 +97,11 @@ public class ClientDao {
 
         if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
         DbRec par = new DbRec(params);
-        par.put("cls", 1126);
+        //par.put("cls", 1126);
         if (mode.equalsIgnoreCase("ins")) {
             //todo Map<String, Long> map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Cls", "Cls_Client", "")
-            //par.put("cls", 1126);
+            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
+            par.put("cls", map.getLong("Cls_Client"));
             par.putIfAbsent("fullname", par.get("name"));
             own = ue.insertEntity(par);
             //...
@@ -136,7 +138,7 @@ public class ClientDao {
         long propVal = params.getLong("pv" + keyValue);
 
         //List<DbRec> stProp = new ArrayList<DbRec>();//todo
-        List<DbRec> stProp = metaDao.getPropInfo(cod);
+        List<DbRec> stProp = metaService.getPropInfo(cod);
         //
         long prop = stProp.getFirst().getLong("id");
         long propType = stProp.getFirst().getLong("propType");
@@ -152,7 +154,7 @@ public class ClientDao {
         DbRec recDP = ue.setDomain("DataProp", params);
         String whe = isObj ? "and isObj=1 " : "and isObj=0 ";
         if (stProp.getFirst().getLong("statusFactor") > 0) {
-            long fv = metaDao.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop)
+            long fv = metaService.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop)
             whe += "and status = " + fv;
         } else {
             whe += "and status is null ";
@@ -176,7 +178,7 @@ public class ClientDao {
             recDP.put("objOrRelObj", own);
             recDP.put("prop", prop);
             if (stProp.getFirst().getLong("statusFactor") > 0) {
-                long fv = metaDao.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop);
+                long fv = metaService.getDefaultStatus(prop); //todo apiMeta().get(ApiMeta).getDefaultStatus(prop);
                 recDP.put("status", fv);
             }
             if (stProp.getFirst().getLong("providerTyp") > 0) {
