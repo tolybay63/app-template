@@ -1,4 +1,4 @@
-package kz.app.appdbtools.config;
+package kz.app.appmain.config;
 
 import kz.app.appdbtools.repository.*;
 import kz.app.appdbtools.repository.impl.*;
@@ -11,47 +11,32 @@ import util.*;
 import javax.sql.*;
 
 @Configuration
-@ComponentScan(basePackages = "kz.app.appdbtools")
-//@PropertySource("classpath:application.properties")
-public class DbToolsConfig {
+public class DbToolsConfigApp {
 
-    private static final Logger log = LoggerFactory.getLogger(DbToolsConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(DbToolsConfigApp.class);
 
-    @Value("${spring.datasource.url}")
+    @Value("${app.datasource.url}")
     private String dbUrl;
 
-    @Value("${spring.datasource.username}")
+    @Value("${app.datasource.username}")
     private String dbUsername;
 
-    @Value("${spring.datasource.password}")
+    @Value("${app.datasource.password}")
     private String dbPassword;
 
     @Value("${spring.datasource.driver-class-name}")
     private String dbDriver;
 
-    @Bean
-    public SqlParamInterceptor sqlParamInterceptor() {
-        return new LoggingParamInterceptor();
-    }
 
-/*
-    @Bean
-    public Db db(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new JdbcTemplateDbImpl(jdbcTemplate, namedParameterJdbcTemplate);
-    }
-*/
-
-    @Bean
-    @Primary
-    public Db db(DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
+    @Bean(name = "appDb")
+    public Db db(@Qualifier("appDataSource") DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
         return new JdbcDbImpl(dataSource, sqlParamInterceptor);
     }
 
-    @Bean
-    @Primary
+    @Bean(name = "appDataSource")
     public DataSource dataSource() {
         log.info("=========================");
-        log.info("DbToolsConfig.dataSource");
+        log.info("DbToolsConfigApp.dataSource");
         log.info("url: " + dbUrl);
         log.info("username: " + dbUsername);
         log.info("password: " + UtMask.mask(dbPassword));
@@ -64,13 +49,5 @@ public class DbToolsConfig {
                                 .driverClassName(dbDriver)
                                 .build();
     }
-
-/*
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dbToolsDataSource) {
-        return new JdbcTemplate(dbToolsDataSource);
-    }
-*/
-
 
 }

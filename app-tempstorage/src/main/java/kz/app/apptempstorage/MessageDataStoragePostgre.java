@@ -11,14 +11,12 @@ import java.time.*;
 import java.util.*;
 
 @Service
-public class PostgreMessageDataStorage implements MessageDataStorage {
+public class MessageDataStoragePostgre implements MessageDataStorage {
 
     private final Db db;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final SecureRandom rnd = new SecureRandom();
-
-    public PostgreMessageDataStorage(Db db) {
+    public MessageDataStoragePostgre(Db db) {
         this.db = db;
     }
 
@@ -54,6 +52,8 @@ public class PostgreMessageDataStorage implements MessageDataStorage {
             throw new RuntimeException("Failed to read data from message storage", e);
         }
     }
+
+    private final SecureRandom rnd = new SecureRandom();
 
     private String genGuid() {
         return UtString.toHexString(rnd.nextLong());

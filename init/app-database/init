@@ -2,8 +2,9 @@
 set -e
 
 
-docker cp init-db-files.sql db_files:/home/init-db-files.sql
-docker cp init-db-pages.sql db_pages:/home/init-db-pages.sql
+docker cp init-db-files.sql    db_files:/home/init-db-files.sql
+docker cp init-db-pages.sql    db_pages:/home/init-db-pages.sql
+docker cp init-db-messages.sql db_messages:/home/init-db-messages.sql
 
 
 echo
@@ -18,3 +19,10 @@ echo db pages
 #export PGPASSWORD=$(<password.txt)
 #psql -U postgres -h localhost -p 5433 -a --set ON_ERROR_STOP=on -f init-db-pages.sql
 docker exec db_pages psql -U postgres -h localhost -p 5433 -a --set ON_ERROR_STOP=on -f /home/init-db-pages.sql
+
+
+echo
+echo db messages
+#export PGPASSWORD=$(<password.txt)
+#psql -U postgres -h localhost -p 5431 -a --set ON_ERROR_STOP=on -f init-db-messages.sql
+docker exec db_messages psql -U postgres -h localhost -p 5431 -a --set ON_ERROR_STOP=on -f /home/init-db-messages.sql

@@ -3,7 +3,6 @@ package kz.app.apptempstorage;
 import kz.app.appcore.model.*;
 import kz.app.appdbtools.repository.*;
 import kz.app.apptempstorage.config.*;
-import kz.app.apptempstorage.config.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.context.*;
@@ -13,13 +12,13 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = TemporaryStorageConfig.class)
-class PostgreMessageDataStorageTest {
+class MessageDataStoragePostgreTest {
 
     @Autowired
     private Db db;
 
     @Autowired
-    private PostgreMessageDataStorage storage;
+    private MessageDataStoragePostgre storage;
 
     @Test
     void testWriteAndRead() {

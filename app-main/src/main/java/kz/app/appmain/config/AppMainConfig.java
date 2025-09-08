@@ -1,9 +1,9 @@
 package kz.app.appmain.config;
 
-import kz.app.appmessagebroker.AppMessageBrokerAutoConfiguration;
+import kz.app.appmessagebroker.AppMessageBrokerConfiguration;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@Import(AppMessageBrokerAutoConfiguration.class)
+@Import(AppMessageBrokerConfiguration.class)
 public class AppMainConfig {
 }
