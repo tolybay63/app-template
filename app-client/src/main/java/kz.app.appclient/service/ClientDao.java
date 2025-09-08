@@ -5,11 +5,11 @@ import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtPeriod;
 import kz.app.appcore.utils.XError;
-import kz.app.appdata.service.UtEntityData;
 import kz.app.appcore.utils.consts.FD_AttribValType_consts;
 import kz.app.appcore.utils.consts.FD_InputType_consts;
 import kz.app.appcore.utils.consts.FD_PeriodType_consts;
 import kz.app.appcore.utils.consts.FD_PropType_consts;
+import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,11 +36,10 @@ public class ClientDao {
     public List<DbRec> loadClient(long id) throws Exception {
 
         DbRec map = metaDao.getIdFromCodOfEntity("Cls", "Cls_Client", "");
-        long cls= UtCnv.toLong(map.get("Cls_Client"));
+        long cls = UtCnv.toLong(map.get("Cls_Client"));
 
         String whe = "o.id=:id";
-        if (id==0)
-            whe = "o.cls=:Cls_Client";
+        if (id == 0) whe = "o.cls=:Cls_Client";
 
         //map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", "", "Prop_%")
         map = metaDao.getIdFromCodOfEntity("Prop", "", "Prop_%");
@@ -58,8 +56,7 @@ public class ClientDao {
 
         //
 
-        return
-                db.loadSql("""
+        return db.loadSql("""
                     select o.id, o.cls, v.name,
                         v1.id as idBIN, v1.strVal as BIN,
                         v2.id as idContactPerson, v2.strVal as ContactPerson,
@@ -76,11 +73,11 @@ public class ClientDao {
                         left join DataProp d4 on d4.objorrelobj=o.id and d4.prop=:Prop_Description  --1137
                         left join DataPropVal v4 on d4.id=v4.dataprop
                     where
-                """+whe, map);
+                """ + whe, map);
     }
 
     private void validateForDelete(long id, int isObj) throws Exception {
-        if (isObj==1) {
+        if (isObj == 1) {
             //...
         } else {
             //...
@@ -97,8 +94,7 @@ public class ClientDao {
         long own;
         UtEntityData ue = new UtEntityData(db, "Obj");
 
-        if (UtCnv.toString(params.get("name")).trim().isEmpty())
-            throw new XError("[name] не указан");
+        if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
         DbRec par = new DbRec(params);
         par.put("cls", 1126);
         if (mode.equalsIgnoreCase("ins")) {
@@ -109,23 +105,16 @@ public class ClientDao {
             //...
             params.put("own", own);
             //1 Prop_BIN
-            if (params.getString("BIN").isEmpty())
-                throw new XError("[BIN] не указан");
-            else
-                fillProperties(true, "Prop_BIN", params);
+            if (params.getString("BIN").isEmpty()) throw new XError("[BIN] не указан");
+            else fillProperties(true, "Prop_BIN", params);
             //2 Prop_ContactPerson
-            if (params.getString("ContactPerson").isEmpty())
-                throw new XError("[ContactPerson] не указан");
-            else
-                fillProperties(true, "Prop_ContactPerson", params);
+            if (params.getString("ContactPerson").isEmpty()) throw new XError("[ContactPerson] не указан");
+            else fillProperties(true, "Prop_ContactPerson", params);
             //3 Prop_ContactDetails
-            if (params.getString("ContactDetails").isEmpty())
-                throw new XError("[ContactDetails] не указан");
-            else
-                fillProperties(true, "Prop_ContactDetails", params);
+            if (params.getString("ContactDetails").isEmpty()) throw new XError("[ContactDetails] не указан");
+            else fillProperties(true, "Prop_ContactDetails", params);
             //4 Prop_Description
-            if (!params.getString("Description").isEmpty())
-                fillProperties(true, "Prop_Description", params);
+            if (!params.getString("Description").isEmpty()) fillProperties(true, "Prop_Description", params);
         } else if (mode.equalsIgnoreCase("upd")) {
             own = params.getLong("id");
             par.putIfAbsent("fullname", par.get("name"));
@@ -155,8 +144,7 @@ public class ClientDao {
         Integer digit = null;
         double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
         if (koef == 0) koef = 1;
-        if (stProp.getFirst().get("digit") != null)
-            digit = stProp.getFirst().getInt("digit");
+        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
 
         //
         long idDP;
@@ -178,9 +166,9 @@ public class ClientDao {
             whe += "and periodType is null";
         }
         List<DbRec> stDP = db.loadSql("""
-            select id from DataProp
-            where objOrRelObj=:own and prop=:prop
-        """ + whe, Map.of("own", own, "prop", prop));
+                    select id from DataProp
+                    where objOrRelObj=:own and prop=:prop
+                """ + whe, Map.of("own", own, "prop", prop));
         if (!stDP.isEmpty()) {
             idDP = stDP.getFirst().getLong("id");
         } else {
@@ -207,9 +195,7 @@ public class ClientDao {
         recDPV.put("dataProp", idDP);
         // Attrib
         if (FD_AttribValType_consts.str == attribValType) {
-            if (cod.equalsIgnoreCase("Prop_BIN") ||
-                    cod.equalsIgnoreCase("Prop_ContactPerson") ||
-                    cod.equalsIgnoreCase("Prop_ContactDetails")) {
+            if (cod.equalsIgnoreCase("Prop_BIN") || cod.equalsIgnoreCase("Prop_ContactPerson") || cod.equalsIgnoreCase("Prop_ContactDetails")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("strVal", params.getString(keyValue));
                 }
@@ -233,8 +219,7 @@ public class ClientDao {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
                 }
-            } else
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            } else throw new XError("for dev: [{0}] отсутствует в реализации", cod);
         }
 
         // For FV
@@ -260,7 +245,7 @@ public class ClientDao {
         }
 
         // For Meter
-        if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate ==propType) {
+        if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
             if (cod.equalsIgnoreCase("Prop_StartKm")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     var v = UtCnv.toDouble(params.get(keyValue));
@@ -318,9 +303,6 @@ public class ClientDao {
         //    au = 1//throw new XError("notLogined")
         return au;
     }
-
-
-
 
 
 }

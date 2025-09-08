@@ -3,6 +3,7 @@ package kz.app.appmeta.service;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.Map;
 public class MetaDao {
 
     private final Db db;
+    private final Db dbMeta;
 
 
-    public MetaDao(Db db) {
+    public MetaDao(Db db, @Qualifier("dbMeta") Db dbMeta) {
         this.db = db;
+        this.dbMeta = dbMeta;
     }
 
 
@@ -25,7 +28,7 @@ public class MetaDao {
             //prefixcod = prefixcod + "%";
             sql = "select id, cod from " + entity + " where cod like :prefixcod";
         }
-        List<DbRec> st = db.loadSql(sql, Map.of("cod", cod, "prefixcod", prefixcod));
+        List<DbRec> st = dbMeta.loadSql(sql, Map.of("cod", cod, "prefixcod", prefixcod));
         if (st.isEmpty()) {
             String cd = cod.isEmpty() ? prefixcod : cod;
             throw new XError("NotFoundCod@{0}", cd);
@@ -38,14 +41,14 @@ public class MetaDao {
     }
 
     public List<DbRec> getPropInfo(String codProp) throws Exception {
-        List<DbRec> res = db.loadSql("""
-                select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isdependvalueonperiod as dependPeriod,
-                    p.statusFactor, p.providerTyp, m.kfrombase as koef, p.digit
-                from Prop p
-                    left join Attrib a on a.id=p.attrib
-                    left join Measure m on m.id=p.measure
-                where p.cod like :c
-            """, Map.of("c", codProp));
+        List<DbRec> res = dbMeta.loadSql("""
+                    select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isdependvalueonperiod as dependPeriod,
+                        p.statusFactor, p.providerTyp, m.kfrombase as koef, p.digit
+                    from Prop p
+                        left join Attrib a on a.id=p.attrib
+                        left join Measure m on m.id=p.measure
+                    where p.cod like :c
+                """, Map.of("c", codProp));
 
         if (res.isEmpty()) {
             throw new XError("NotFoundPropCod@" + codProp);
@@ -54,17 +57,14 @@ public class MetaDao {
     }
 
     public long getDefaultStatus(long prop) throws Exception {
-        List<DbRec> st = db.loadSql("""
-            select factorVal from PropStatus where prop=:prop and isDefault is true
-        """, Map.of("prop", prop));
+        List<DbRec> st = dbMeta.loadSql("""
+                    select factorVal from PropStatus where prop=:prop and isDefault is true
+                """, Map.of("prop", prop));
         if (st.isEmpty())
             throw new XError("Not found default status");
 
         return st.getFirst().getLong("factorVal");
     }
-
-
-
 
 
 }
