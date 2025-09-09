@@ -73,6 +73,16 @@ public class ClientDao {
 
     public void deleteClientWithProps(long id) throws Exception {
         validateForDelete(id, 1);
+        db.execSql("""
+            delete from DataPropVal
+            where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);
+            delete from DataProp where id in (
+                select id from dataprop
+                except
+                select dataProp as id from DataPropVal
+            );
+        """, Map.of("id", id));
+        //
         UtEntityData ue = new UtEntityData(db, "Obj");
         ue.deleteEntity(id);
     }
@@ -117,7 +127,7 @@ public class ClientDao {
     }
 
     private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
-        //UtEntityData ue = new UtEntityData(db, "DataProp");
+
         long own = params.getLong("own");
         String keyValue = cod.split("_")[1];
         long objRef = params.getLong("obj" + keyValue);
@@ -148,7 +158,7 @@ public class ClientDao {
         if (stProp.getFirst().getLong("providerTyp") > 0) {
             whe += "and periodType is not null ";
         } else {
-            whe += "and periodType is null";
+            whe += "and periodType is null ";
         }
         List<DbRec> stDP = db.loadSql("""
                     select id from DataProp
@@ -176,11 +186,10 @@ public class ClientDao {
             idDP = db.insertRec("DataProp", recDP);
         }
         //
-        //StoreRecord recDPV = mdb.createStoreRecord("DataPropVal")
         DbRec recDPV = ue.setDomain("DataPropVal", params);
         recDP.put("id", ue.getNextId("DataPropVal"));
         recDPV.put("dataProp", idDP);
-        // Attrib
+        // Attrib str
         if (FD_AttribValType_consts.str == attribValType) {
             if (cod.equalsIgnoreCase("Prop_BIN") ||
                     cod.equalsIgnoreCase("Prop_ContactPerson") ||
@@ -192,7 +201,7 @@ public class ClientDao {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
-        //
+        // Attrib multiStr
         if (FD_AttribValType_consts.multistr == attribValType) {
             if (cod.equalsIgnoreCase("Prop_Description")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
@@ -202,7 +211,7 @@ public class ClientDao {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
-
+        // Attrib dt
         if (FD_AttribValType_consts.dt == attribValType) {
             if (cod.equalsIgnoreCase("Prop_CreatedAt")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
@@ -210,8 +219,7 @@ public class ClientDao {
                 }
             } else throw new XError("for dev: [{0}] отсутствует в реализации", cod);
         }
-
-        // For FV
+        // FV
         if (FD_PropType_consts.factor == propType) {
             if (cod.equalsIgnoreCase("Prop_UserSex")) {    //template
                 if (propVal > 0) {
@@ -221,8 +229,7 @@ public class ClientDao {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
-
-        // For Measure
+        // Measure
         if (FD_PropType_consts.measure == propType) {
             if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
                 if (propVal > 0) {
@@ -232,8 +239,7 @@ public class ClientDao {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
-
-        // For Meter
+        // Meter
         if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
             if (cod.equalsIgnoreCase("Prop_StartKm")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
@@ -249,6 +255,7 @@ public class ClientDao {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
+        // Typ
         if (FD_PropType_consts.typ == propType) {
             if (cod.equalsIgnoreCase("Prop_LocationClsSection")) {
                 if (objRef > 0) {
@@ -274,7 +281,7 @@ public class ClientDao {
             recDPV.put("dbeg", LocalDate.parse("1800-01-01", DateTimeFormatter.ISO_DATE));
             recDPV.put("dend", LocalDate.parse("3333-12-31", DateTimeFormatter.ISO_DATE));
         }
-
+        //
         long au = getUser();
         recDPV.put("authUser", au);
         recDPV.put("inputType", FD_InputType_consts.app);
