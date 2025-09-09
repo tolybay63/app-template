@@ -40,17 +40,7 @@ public class AppClientTest {
     }
 
     @Test
-    public void testInsertEntity() throws Exception {
-        DbRec map = new DbRec();
-        for (int idx = 1; idx <= 3; idx++) {
-            map.put("name", "AAA " + idx);
-            List<DbRec> res = clientDao.saveClient("ins", map);
-            UtDb.outTable(res);
-        }
-    }
-
-    @Test
-    public void testUpdateEntity() throws Exception {
+    public void testSave_upd() throws Exception {
         DbRec map = new DbRec();
         map.put("id", 1011);
 
@@ -62,32 +52,13 @@ public class AppClientTest {
         UtDb.outTable(res);
     }
 
-
-
     @Test
     public void testDelete() throws Exception {
         clientDao.deleteClientWithProps(1013);
     }
 
     @Test
-    public void testInsert() throws Exception {
-        List<DbRec> res = db.loadList("ObjVer", null);
-        UtDb.outTable(res);
-
-        long idValue = 777666;
-        long id = db.insertRec("ObjVer", UtCnv.toMap("id", idValue, "name", "name" + idValue));
-        System.out.println("id: " + id);
-
-        long id1 = db.insertRec("ObjVer", UtCnv.toMap("name", "name1"));
-        System.out.println("id1: " + id1);
-
-        res = db.loadList("ObjVer", null);
-        UtDb.outTable(res);
-    }
-
-
-    @Test
-    public void testSetEntity() throws Exception {
+    public void testSetEntityId() throws Exception {
         List<DbRec> res = db.loadSql("select table_name " +
                 "from information_schema.tables t " +
                 "where table_schema='public'", null);
