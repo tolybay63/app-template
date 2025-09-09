@@ -38,10 +38,14 @@ public class ClientDao {
 
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
         long cls = UtCnv.toLong(map.get("Cls_Client"));
-        String whe = "o.id=:id";
-        if (id == 0) whe = "o.cls=:Cls_Client";
         map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
-        map.put("Cls_Client", cls);
+        String whe = "o.id=:id";
+        if (id == 0) {
+            whe = "o.cls=:Cls_Client";
+            map.put("Cls_Client", cls);
+        } else {
+            map.put("id", id);
+        }
         //
         return db.loadSql("""
                     select o.id, o.cls, v.name,
@@ -91,10 +95,9 @@ public class ClientDao {
         long own;
         UtEntityData ue = new UtEntityData(db, "Obj");
 
-        if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
         DbRec par = new DbRec(params);
-
         if (mode.equalsIgnoreCase("ins")) {
+            if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
             DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
             par.put("cls", map.getLong("Cls_Client"));
             par.putIfAbsent("fullname", par.get("name"));
@@ -114,7 +117,6 @@ public class ClientDao {
             if (!params.getString("Description").isEmpty()) fillProperties(1, "Prop_Description", params);
         } else if (mode.equalsIgnoreCase("upd")) {
             own = params.getLong("id");
-            par.putIfAbsent("fullname", par.get("name"));
             ue.updateEntity(par);
             //...
 

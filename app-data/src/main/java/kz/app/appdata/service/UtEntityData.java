@@ -54,7 +54,7 @@ public class UtEntityData {
             lst.add(r.getString("column_name"));
         }
         for (String key : params.keySet()) {
-            if (lst.contains(key)) {
+            if (lst.contains(key.toLowerCase())) {
                 rec.put(key, params.get(key));
             }
         }

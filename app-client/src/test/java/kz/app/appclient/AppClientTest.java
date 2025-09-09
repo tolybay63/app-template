@@ -42,10 +42,10 @@ public class AppClientTest {
     @Test
     public void testSave_upd() throws Exception {
         DbRec map = new DbRec();
-        map.put("id", 1011);
+        map.put("id", 1014);
 
-        map.put("name", "AAA");
-        map.put("fullname", "AAA AAA AAA");
+        //map.put("name", "AAA");
+        //map.put("fullname", "AAA AAA AAA");
         map.put("cmt", "version 1 ");
         map.put("cmtVer", "Version 2");
         List<DbRec> res = clientDao.saveClient("upd", map);
