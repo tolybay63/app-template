@@ -3,6 +3,7 @@ package kz.app.appplan.service;
 import kz.app.appcore.model.DbRec;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,26 +22,22 @@ public class PlanDao {
 
 
     public List<DbRec> loadPlan(DbRec params) throws Exception {
-
-        DbRec pms = metaService.getIdFromCodOfEntity("Typ", "Typ_WorkPlan", "");
-        List<DbRec> stCls = db.loadSql("""
-            select c.id , v.name
-            from Cls c, ClsVer v
-            where c.id=v.ownerVer and v.lastVer=1 and typ=:Typ_WorkPlan
-        """, pms);
-        //Set<Object> idsCls = stCls.getUniqueValues("id");
-        Set<Long> idsCls = stCls.stream()
+        List<DbRec> st = metaService.getCls("Typ_WorkPlan");
+        Set<Long> ids = st.stream()
                 .map(map -> (Long) map.get("id"))
                 .collect(Collectors.toSet());
-        String wheCls = idsCls.stream()
+        String whe = "(" + ids.stream()
                 .map(String::valueOf)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(",")) + ")";
 
 
 
 
+        return db.loadSql("""
+            select o.*, v.name, v.fullName, v.dbeg, v.dend from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls in
+        """+whe+" order by o.id", null);
 
-        return stCls;
+
     }
 
 }

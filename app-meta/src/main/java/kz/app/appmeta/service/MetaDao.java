@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class MetaDao {
@@ -21,7 +23,6 @@ public class MetaDao {
     public DbRec getIdFromCodOfEntity(String entity, String cod, String prefixcod) throws Exception {
         String sql = "select id, cod from " + entity + " where cod like :cod";
         if (!prefixcod.isEmpty()) {
-            //prefixcod = prefixcod + "%";
             sql = "select id, cod from " + entity + " where cod like :prefixcod";
         }
         List<DbRec> st = dbMeta.loadSql(sql, Map.of("cod", cod, "prefixcod", prefixcod));
@@ -35,6 +36,36 @@ public class MetaDao {
         }
         return map;
     }
+
+    public String getIdsCls(String codTyp) throws Exception {
+        DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");
+        long id = pms.getLong(codTyp);
+        List<DbRec> st = dbMeta.loadSql("select id from Cls where typ=:id", Map.of("id", id));
+        if (st.isEmpty()) {
+            throw new XError("NotFoundCod@{0}", codTyp);
+        }
+        Set<Long> ids = st.stream()
+                .map(map -> (Long) map.get("id"))
+                .collect(Collectors.toSet());
+        String whe = ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        return "(" + whe + ")";
+    }
+
+    public List<DbRec> getCls(String codTyp) throws Exception {
+        DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");
+        long id = pms.getLong(codTyp);
+        List<DbRec> st = dbMeta.loadSql("""
+            select c.id, v.name  from Cls c, ClsVer v
+            where c.id=v.ownerVer and v.lastVer=1 and c.typ=:id
+        """, Map.of("id", id));
+        if (st.isEmpty()) {
+            throw new XError("NotFoundCod@{0}", codTyp);
+        }
+        return st;
+    }
+
 
     public List<DbRec> getPropInfo(String codProp) throws Exception {
         List<DbRec> res = dbMeta.loadSql("""
