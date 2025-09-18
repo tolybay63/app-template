@@ -1,4 +1,4 @@
-package kz.app.appplan;
+package kz.app.appmeta;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,16 +11,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages = {
         "kz.app.appcore",
         "kz.app.appdbtools",
-        "kz.app.appstorage",
         "kz.app.appmeta",
-        "kz.app.appplan",
-        "kz.app.structure",
 })
 
-public class AppPlanApplication {
+public class AppMetaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppPlanApplication.class, args);
+        SpringApplication.run(AppMetaApplication.class, args);
     }
 
 }

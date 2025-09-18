@@ -1,5 +1,7 @@
 package kz.app.appcore.utils;
 
+import kz.app.appcore.model.DbRec;
+
 import java.math.*;
 import java.text.*;
 import java.util.*;
@@ -440,13 +442,13 @@ public class UtCnv {
      * UtCnv.toMap(map1, "param1", value1, map2, map3)
      * </pre>
      */
-    public static Map<String, Object> toMap(Object... arr) {
+    public static DbRec toMap(Object... arr) {
         Map<String, Object> m = new LinkedHashMap<String, Object>();
         if (arr == null) {
-            return m;
+            return (DbRec) m;
         }
         if (arr.length == 0) {
-            return m;
+            return (DbRec) m;
         }
         int i = 0;
         while (i < arr.length) {
@@ -462,7 +464,7 @@ public class UtCnv {
                 m.put(k, v);
             }
         }
-        return m;
+        return (DbRec) m;
     }
 
     ////// vfs
