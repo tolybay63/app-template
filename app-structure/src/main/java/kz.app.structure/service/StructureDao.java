@@ -25,7 +25,7 @@ public class StructureDao {
 
     public List<DbRec> getObj(long cls) throws Exception {
         List<DbRec> st = dbStructure.loadSql("""
-            select * from Cls where cls=:cls
+            select * from Obj where cls=:cls
         """, Map.of("cls", cls));
         if (st.isEmpty()) {
             throw new XError("Not fount Object (cls={0})", cls);
@@ -34,7 +34,7 @@ public class StructureDao {
     }
 
 
-    public Set<Object> getIdsObjLocation(long obj) {
+    public Set<Object> getIdsObjLocation(long obj) throws Exception {
         List<DbRec> st = dbStructure.loadSql("""
            WITH RECURSIVE r AS (
                SELECT o.id, v.objParent as parent
