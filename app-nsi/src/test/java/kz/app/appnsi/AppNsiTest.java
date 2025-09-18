@@ -1,8 +1,8 @@
-package kz.app.appplan;
+package kz.app.appnsi;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
-import kz.app.appplan.service.PlanDao;
+import kz.app.appnsi.service.NsiDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,17 +10,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-public class AppPlanTest {
+public class AppNsiTest {
 
     @Autowired
-     PlanDao planDao;
+    NsiDao nsiDao;
 
     @Test
     void test1() throws Exception {
-        DbRec params = new DbRec();
-        List<DbRec> res = planDao.loadPlan(params);
+        List<DbRec> res = nsiDao.loadDefects(0L);
         UtDb.outTable(res);
     }
+
 
 
 }
