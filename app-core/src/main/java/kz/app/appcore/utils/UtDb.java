@@ -1,7 +1,6 @@
 package kz.app.appcore.utils;
 
 import kz.app.appcore.model.*;
-import kz.app.appcore.model.*;
 
 import java.util.*;
 
@@ -43,7 +42,7 @@ public class UtDb {
         System.out.println(sb);
     }
 
-    public static void outRecord(Map<String, Object> rec) {
+    public static void outRecord(Map<Long, DbRec> rec) {
         System.out.println(rec.toString());
     }
 

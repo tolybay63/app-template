@@ -1,4 +1,4 @@
-package kz.app.appplan;
+package kz.app.appnsi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,15 +13,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appdbtools",
         "kz.app.appstorage",
         "kz.app.appmeta",
-        "kz.app.appplan",
-        "kz.app.structure",
-        "kz.app.appnsi",
 })
 
-public class AppPlanApplication {
+public class AppNsiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppPlanApplication.class, args);
+        SpringApplication.run(AppNsiApplication.class, args);
     }
 
 }
