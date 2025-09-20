@@ -63,10 +63,10 @@ public class StructureDao {
                 .collect(Collectors.toSet());
     }
 
-    public List<DbRec> objIdName(String ids) throws Exception {
+    public List<DbRec> objIdName(String idsCls) throws Exception {
         return dbStructure.loadSql("""
-                     select o.id, v.name from Obj o, ObjVer v where o.id=v.ownerVer and o.id in
-                """ + ids, null);
+                     select o.id, v.name from Obj o, ObjVer v where o.id=v.ownerVer and o.cls in
+                """ + idsCls, null);
 
     }
 

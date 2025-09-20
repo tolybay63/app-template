@@ -89,7 +89,7 @@ module.exports = configure(function (ctx) {
       // extractCSS: false,
 
       // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
-      // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
+      // "chain" is a webpack-chain structure https://github.com/neutrinojs/webpack-chain
 
       chainWebpack (chain) {
         chain.plugin('eslint-webpack-plugin')
@@ -246,7 +246,7 @@ module.exports = configure(function (ctx) {
         appId: 'quasar-project'
       },
 
-      // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
+      // "chain" is a webpack-chain structure https://github.com/neutrinojs/webpack-chain
 
       chainWebpackMain (chain) {
         chain.plugin('eslint-webpack-plugin')

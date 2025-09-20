@@ -111,7 +111,7 @@ export RESULT=$(curl -X POST "http://localhost:8282/admin/realms/master/componen
             "memberof.ldap.attribute": [
                 "MemberOf"
             ],
-            "group.object.classes": [
+            "group.structure.classes": [
                 "group"
             ],
             "groups.path": [
