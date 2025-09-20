@@ -1,17 +1,14 @@
 package kz.app.appplan.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtPeriod;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.appnsi.service.NsiDao;
-import kz.app.object.service.ObjectDao;
+import kz.app.apppersonnal.service.PersonnalDao;
 import kz.app.structure.service.StructureDao;
-import org.springframework.beans.factory.annotation.Qualifier;
+import kz.app.object.service.ObjectDao;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -27,13 +24,16 @@ public class PlanDao {
     private final StructureDao structureService;
     private final NsiDao nsiService;
     private final ObjectDao objectService;
+    private final PersonnalDao personnalService;
 
-    public PlanDao(Db dbPlan, MetaDao metaService, StructureDao structureService, NsiDao nsiService, ObjectDao objectService) {
+    public PlanDao(Db dbPlan, MetaDao metaService, StructureDao structureService, NsiDao nsiService,
+                   ObjectDao objectService, PersonnalDao personnalService) {
         this.dbPlan = dbPlan;
         this.metaService = metaService;
         this.structureService = structureService;
         this.nsiService = nsiService;
         this.objectService = objectService;
+        this.personnalService = personnalService;
     }
 
 
@@ -48,11 +48,7 @@ public class PlanDao {
         String wheV1 = " ";
         String wheV7 = " ";
         //
-        Map<Long, DbRec> mapClsWork = new HashMap<>();
-        for (DbRec map : st) {
-            Long id = map.getLong("id");
-            mapClsWork.put(id, map);
-        }
+        Map<Long, DbRec> mapClsWork = getMapping(st);
         //
         DbRec paramSql = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         //
@@ -169,18 +165,29 @@ public class PlanDao {
         Map<Long, DbRec> mapObject = getMapping(stObject);
         //
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Personnel", "");
+        //select o.id, o.cls, v.name, v.fullName, null as nameCls from Obj o...
+        List<DbRec> stUser = personnalService.getObjList(map.getLong("Cls_Personnel"));
+        Map<Long, DbRec> mapUser = getMapping(stUser);
 
-        /*
-        map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Cls", "Cls_Personnel", "")
-        //
-        Store stUser = loadSqlService("""
-            select o.id, o.cls, v.fullName
-            from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls=${map.get("Cls_Personnel")}
-        """, "", "personnaldata")
-        StoreIndex indUser = stUser.getIndex("id")
-
-         */
-
+        for (DbRec rec : stPlan) {
+            if (mapClsWork.containsKey(rec.getLong("cls"))) {
+                rec.put("nameCls", mapClsWork.get(rec.getLong("cls")).getString("name"));
+            }
+            if (mapLocation.containsKey(rec.getLong("objLocationClsSection"))) {
+                rec.put("nameLocationClsSection", mapLocation.get(rec.getLong("objLocationClsSection")).getString("name"));
+            }
+            if (mapWork.containsKey(rec.getLong("objWork"))) {
+                rec.put("nameClsWork", mapWork.get(rec.getLong("objWork")).getString("nameClsWork"));
+                rec.put("fullNameWork", mapWork.get(rec.getLong("objWork")).getString("fullName"));
+            }
+            if (mapObject.containsKey(rec.getLong("objObject"))) {
+                rec.put("fullNameObject", mapObject.get(rec.getLong("objObject")).getString("fullName"));
+                rec.put("nameClsObject", mapObject.get(rec.getLong("objObject")).getString("nameClsObject"));
+            }
+            if (mapUser.containsKey(rec.getLong("objUser"))) {
+                rec.put("fullNameUser", mapUser.get(rec.getLong("objUser")).getString("fullName"));
+            }
+        }
 
         //
         return stPlan;
