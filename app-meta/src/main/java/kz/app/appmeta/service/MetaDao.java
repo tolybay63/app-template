@@ -6,6 +6,7 @@ import kz.app.appdbtools.repository.Db;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,19 @@ public class MetaDao {
         }
         return map;
     }
+
+    public Map<Long, Long> mapEntityIdFromPV(String entity, boolean keyIsPropVal) throws Exception {
+        Map<Long, Long> res = new HashMap<>();
+        List<DbRec> st = dbMeta.loadSql("select id,"+entity+" from PropVal where "+entity+ " is not null", null);
+        for (DbRec r : st) {
+            if (keyIsPropVal)
+                res.put(r.getLong("id"), r.getLong(entity));
+            else
+                res.put(r.getLong(entity), r.getLong("id"));
+        }
+        return res;
+    }
+
 
     public String getIdsCls(String codTyp) throws Exception {
         DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");

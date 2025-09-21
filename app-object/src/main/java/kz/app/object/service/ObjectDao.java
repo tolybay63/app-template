@@ -1,4 +1,4 @@
-package kz.app.appnsi.service;
+package kz.app.object.service;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appdbtools.repository.Db;
@@ -7,28 +7,34 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
+
 
 @Component
-public class NsiDao {
-    private final Db dbNsi;
+public class ObjectDao {
+
+    private final Db dbObject;
     private final MetaDao metaService;
 
-    public NsiDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService) {
-        this.dbNsi = dbNsi;
+    public ObjectDao(@Qualifier("dbObject") Db dbObject, MetaDao metaService) {
+        this.dbObject = dbObject;
         this.metaService = metaService;
     }
 
-    public List<DbRec> loadDefects(long obj) {
+
+    public List<DbRec> loadObjectServed(long id) {
 
 
         return null;
     }
 
+
     public List<DbRec> getObjInfo(String idsCls) throws Exception {
-        return dbNsi.loadSql("""
-            select o.id, o.cls, v.fullName, null as nameClsWork
+        return dbObject.loadSql("""
+            select o.id, o.cls, v.fullName, null as nameClsObject
             from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls in
         """+idsCls, null);
     }
+
+
+
 }

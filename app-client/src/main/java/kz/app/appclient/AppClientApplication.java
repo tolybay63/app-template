@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages = {
         "kz.app.appcore",
         "kz.app.appdbtools",
-        "kz.app.appstorage",
+        //"kz.app.appstorage",
         "kz.app.appclient",
         "kz.app.appmeta",
 })

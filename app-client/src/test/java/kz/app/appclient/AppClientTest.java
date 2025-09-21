@@ -45,18 +45,19 @@ public class AppClientTest {
     @Test
     public void testSave_upd() throws Exception {
         DbRec map = new DbRec();
-        map.put("id", 1010);
+        map.put("id", 1014);
         map.put("name", "Test Save Spring Upd");
         map.put("cmtVer", "For Spring Upd");
-
-        map.put("idBIN", "1023");
+/*
+        map.put("idBIN", 1023);
         map.put("BIN", "123456789012");
         map.put("idContactPerson", 1024);
         map.put("ContactPerson", "Фамилия И.О. Spring");
         map.put("idContactDetails", 1025);
         map.put("ContactDetails", "г. Астана, Spring");
         map.put("idDescription", 1026);
-        map.put("Description", "test 01 Spring Upd");
+ */
+        map.put("Description", "Test Save Spring Upd Description");
         List<DbRec> res = clientDao.saveClient("upd", map);
         UtDb.outTable(res);
     }

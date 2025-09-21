@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.*;
         "kz.app.appfile",
         "kz.app.appsearchtools",
         "kz.app.appauth",
-        "kz.app.appstorage",
+        //"kz.app.appstorage",
 })
 public class AppMainApplication {
 
