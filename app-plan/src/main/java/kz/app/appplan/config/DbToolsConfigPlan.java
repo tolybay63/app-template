@@ -1,4 +1,4 @@
-package kz.app.appmain.config;
+package kz.app.appplan.config;
 
 import kz.app.appdbtools.repository.Db;
 import kz.app.appdbtools.repository.SqlParamInterceptor;
@@ -15,43 +15,43 @@ import util.UtMask;
 import javax.sql.DataSource;
 
 @Configuration
-public class DbToolsConfigApp {
+public class DbToolsConfigPlan {
 
-    private static final Logger log = LoggerFactory.getLogger(DbToolsConfigApp.class);
+    private static final Logger log = LoggerFactory.getLogger(DbToolsConfigPlan.class);
 
-    @Value("${app.datasource.url}")
+    @Value("${nsi.datasource.url}")
     private String dbUrl;
 
-    @Value("${app.datasource.username}")
+    @Value("${nsi.datasource.username}")
     private String dbUsername;
 
-    @Value("${app.datasource.password}")
+    @Value("${nsi.datasource.password}")
     private String dbPassword;
 
     @Value("${spring.datasource.driver-class-name}")
     private String dbDriver;
 
 
-    @Bean(name = "appDb")
-    public Db db(@Qualifier("appDataSource") DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
+    @Bean(name = "dbPlan")
+    public Db db(@Qualifier("dataSourcePlan") DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
         return new JdbcDbImpl(dataSource, sqlParamInterceptor);
     }
 
-    @Bean(name = "appDataSource")
+    @Bean(name = "dataSourcePlan")
     public DataSource dataSource() {
         log.info("=========================");
-        log.info("DbToolsConfigApp.dataSource");
+        log.info("DbToolsConfigPlan.dataSource");
         log.info("url: " + dbUrl);
         log.info("username: " + dbUsername);
         log.info("password: " + UtMask.mask(dbPassword));
         log.info("");
 
         return DataSourceBuilder.create()
-                                .url(dbUrl)
-                                .username(dbUsername)
-                                .password(dbPassword)
-                                .driverClassName(dbDriver)
-                                .build();
+                .url(dbUrl)
+                .username(dbUsername)
+                .password(dbPassword)
+                .driverClassName(dbDriver)
+                .build();
     }
 
 }

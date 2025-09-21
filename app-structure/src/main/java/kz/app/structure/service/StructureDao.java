@@ -1,7 +1,6 @@
 package kz.app.structure.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,10 +24,7 @@ public class StructureDao {
 
 
     public DbRec getObjRec(long id) throws Exception {
-        List<DbRec> st = dbStructure.loadSql("""
-                    select * from Obj where id=:id
-                """, Map.of("id", id));
-        return st.getFirst();
+        return dbStructure.loadRec("Obj", id, false);
     }
 
 
@@ -63,11 +59,11 @@ public class StructureDao {
                 .collect(Collectors.toSet());
     }
 
-    public List<DbRec> objIdName(String idsCls) throws Exception {
+    public List<DbRec> objIdName(String idsObj, String idsCls) throws Exception {
+        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbStructure.loadSql("""
-                     select o.id, v.name from Obj o, ObjVer v where o.id=v.ownerVer and o.cls in
-                """ + idsCls, null);
-
+                     select o.id, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+                """ + whe, null);
     }
 
 

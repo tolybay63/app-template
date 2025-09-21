@@ -4,8 +4,8 @@ import kz.app.appcore.utils.consts.FD_PeriodType_consts;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 
 //@Component
 public class UtPeriod {

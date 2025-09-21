@@ -1,6 +1,7 @@
 package kz.app.appcore.utils;
 
-import kz.app.appcore.model.*;
+import kz.app.appcore.model.DbRec;
+import kz.app.appcore.model.MapNumber;
 
 import java.util.*;
 

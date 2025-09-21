@@ -1,15 +1,18 @@
 package kz.app.apptempstorage;
 
-import kz.app.appcore.model.*;
-import kz.app.appdbtools.repository.*;
-import kz.app.apptempstorage.config.*;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.test.context.*;
+import kz.app.appcore.model.FileData;
+import kz.app.appdbtools.repository.Db;
+import kz.app.apptempstorage.config.TemporaryStorageConfig;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = TemporaryStorageConfig.class)
 class MessageDataStoragePostgreTest {

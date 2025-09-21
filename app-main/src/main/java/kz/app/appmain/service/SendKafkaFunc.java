@@ -1,11 +1,12 @@
 package kz.app.appmain.service;
 
-import kz.app.appcore.utils.*;
-import kz.app.appmessagebroker.model.*;
-import kz.app.appmessagebroker.service.*;
-import org.springframework.stereotype.*;
+import kz.app.appcore.utils.UtCnv;
+import kz.app.appcore.utils.UtString;
+import kz.app.appmessagebroker.model.Message;
+import kz.app.appmessagebroker.service.MessageService;
+import org.springframework.stereotype.Component;
 
-import java.security.*;
+import java.security.SecureRandom;
 
 @Component
 public class SendKafkaFunc {

@@ -1,8 +1,9 @@
 package kz.app.appdbtools.repository;
 
-import kz.app.appcore.model.*;
+import kz.app.appcore.model.DbRec;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public interface Db {
 

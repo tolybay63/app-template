@@ -1,9 +1,9 @@
 package kz.app.appcore.model;
 
-import kz.app.appcore.utils.*;
-import kz.app.appcore.utils.*;
+import kz.app.appcore.utils.UtCnv;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DbRec extends HashMap<String, Object> {
 

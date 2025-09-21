@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appnsi",
         "kz.app.object",
         "kz.app.apppersonnal",
+        "kz.app.appplan",
 })
 
 public class AppInspectionApplication {

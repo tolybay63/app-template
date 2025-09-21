@@ -1,10 +1,11 @@
 package kz.app.appmain.service;
 
-import kz.app.appcore.model.*;
-import kz.app.appdbtools.repository.*;
-import org.springframework.stereotype.*;
+import kz.app.appcore.model.DbRec;
+import kz.app.appdbtools.repository.Db;
+import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  *

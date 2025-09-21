@@ -1,12 +1,17 @@
 package kz.app.appcore.utils;
 
-import org.apache.commons.io.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
 
 import java.io.*;
-import java.nio.charset.*;
-import java.nio.file.*;
-import java.security.*;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Утилиты для работы с файлами и их именами.

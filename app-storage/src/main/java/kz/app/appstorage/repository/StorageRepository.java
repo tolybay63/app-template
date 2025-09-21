@@ -1,7 +1,7 @@
 package kz.app.appstorage.repository;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Работа с хранилищем контента (файлы по хэшу, например Minio)

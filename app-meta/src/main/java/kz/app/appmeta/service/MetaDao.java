@@ -38,6 +38,15 @@ public class MetaDao {
         return map;
     }
 
+    public List<DbRec> getFactorValsInfo(String idsPV) throws Exception {
+        return dbMeta.loadSql("""
+            select pv.id, pv.factorVal, f.name
+            from PropVal pv
+                left join Factor f on pv.factorVal=f.id
+            where pv.id in
+        """ + idsPV,  null);
+    }
+
     public Map<Long, Long> mapEntityIdFromPV(String entity, boolean keyIsPropVal) throws Exception {
         Map<Long, Long> res = new HashMap<>();
         List<DbRec> st = dbMeta.loadSql("select id,"+entity+" from PropVal where "+entity+ " is not null", null);

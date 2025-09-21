@@ -1,14 +1,18 @@
 package kz.app.appstorage.components;
 
 import io.minio.*;
-import kz.app.appcore.utils.*;
-import kz.app.appstorage.repository.*;
-import kz.app.appstorage.repository.*;
-import org.slf4j.*;
+import kz.app.appcore.utils.UtString;
+import kz.app.appstorage.repository.StorageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.file.*;
-import java.security.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.SecureRandom;
 
 public class MinioStorageRepository implements StorageRepository {
 

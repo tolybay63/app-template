@@ -1,14 +1,15 @@
 package kz.app.appmessagebroker.service.impl;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
-import kz.app.appmessagebroker.model.*;
-import kz.app.appmessagebroker.service.*;
-import org.apache.kafka.clients.consumer.*;
-import org.slf4j.*;
-import org.springframework.kafka.core.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kz.app.appmessagebroker.model.Message;
+import kz.app.appmessagebroker.service.MessageService;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Абстракция канала отправки и приёма сообщений

@@ -1,7 +1,7 @@
 package kz.app.appdbtools.repository;
 
-import com.fasterxml.jackson.databind.module.*;
-import org.postgresql.util.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.postgresql.util.PGobject;
 
 public class PGobjectModule extends SimpleModule {
 

@@ -1,14 +1,20 @@
 package kz.app.appcore.utils;
 
-import org.apache.commons.text.*;
-import org.apache.commons.text.matcher.*;
+import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.text.matcher.StringMatcher;
 
-import java.io.*;
-import java.nio.charset.*;
-import java.security.*;
-import java.util.*;
-import java.util.stream.*;
-import java.util.zip.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.zip.CRC32;
 
 /**
  * Утилиты для строк

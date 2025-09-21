@@ -1,8 +1,7 @@
 package kz.app.appmessagebroker.service;
 
-import kz.app.appmessagebroker.model.*;
-import kz.app.appmessagebroker.model.*;
-import org.apache.kafka.clients.consumer.*;
+import kz.app.appmessagebroker.model.Message;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 /**
  * Умение парсить сообщения

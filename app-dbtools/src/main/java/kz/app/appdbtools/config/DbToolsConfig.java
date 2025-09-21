@@ -1,14 +1,20 @@
 package kz.app.appdbtools.config;
 
-import kz.app.appdbtools.repository.*;
-import kz.app.appdbtools.repository.impl.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.jdbc.*;
-import org.springframework.context.annotation.*;
-import util.*;
+import kz.app.appdbtools.repository.Db;
+import kz.app.appdbtools.repository.SqlParamInterceptor;
+import kz.app.appdbtools.repository.impl.JdbcDbImpl;
+import kz.app.appdbtools.repository.impl.LoggingParamInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import util.UtMask;
 
-import javax.sql.*;
+import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan(basePackages = "kz.app.appdbtools")

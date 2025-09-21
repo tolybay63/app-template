@@ -1,6 +1,7 @@
 package kz.app.appdbtools.repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public interface DbTyped {
 

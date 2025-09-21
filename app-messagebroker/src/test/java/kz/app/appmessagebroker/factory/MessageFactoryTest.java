@@ -1,16 +1,15 @@
 package kz.app.appmessagebroker.factory;
 
-import kz.app.appmessagebroker.config.*;
-import kz.app.appmessagebroker.model.*;
-import kz.app.appmessagebroker.service.*;
-import org.junit.jupiter.api.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.test.context.*;
-import org.springframework.kafka.annotation.*;
-import org.springframework.kafka.test.context.*;
+import kz.app.appmessagebroker.config.MessageBrokerConfig;
+import kz.app.appmessagebroker.model.Message;
+import kz.app.appmessagebroker.service.MessageService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 
-import java.util.*;
+import java.util.Map;
 
 @EmbeddedKafka(partitions = 1, topics = {"test-topic", "test-topic-out"})
 @EnableKafka

@@ -6,9 +6,11 @@ import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.appnsi.service.NsiDao;
 import kz.app.apppersonnal.service.PersonnalDao;
-import kz.app.structure.service.StructureDao;
 import kz.app.object.service.ObjectDao;
+import kz.app.structure.service.StructureDao;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,7 +28,7 @@ public class PlanDao {
     private final ObjectDao objectService;
     private final PersonnalDao personnalService;
 
-    public PlanDao(Db dbPlan, MetaDao metaService, StructureDao structureService, NsiDao nsiService,
+    public PlanDao(@Qualifier("dbPlan") Db dbPlan, MetaDao metaService, StructureDao structureService, NsiDao nsiService,
                    ObjectDao objectService, PersonnalDao personnalService) {
         this.dbPlan = dbPlan;
         this.metaService = metaService;
@@ -59,7 +61,7 @@ public class PlanDao {
 
             DbRec mapCls = metaService.getIdFromCodOfEntity("Cls", "Cls_LocationSection", "");
             DbRec objRec = structureService.getObjRec(params.getLong("objLocation"));
-            long clsLocation = objRec.getLong("cls");
+            long clsLocation = objRec==null ? 0 : objRec.getLong("cls");
 
             if (clsLocation == mapCls.getLong("Cls_LocationSection")) {
                 Set<Object> idsObjLocation = structureService.getIdsObjLocation(params.getLong("objLocation"));
@@ -136,7 +138,7 @@ public class PlanDao {
         //... Пересечение
         String wheCls = metaService.getIdsCls("Typ_Location");
         //select o.id, v.name from Obj o, ObjVer v
-        List<DbRec> stLocation = structureService.objIdName(wheCls);
+        List<DbRec> stLocation = structureService.objIdName("", wheCls);
         Map<Long, DbRec> mapLocation = getMapping(stLocation);
         //
         //select c.id, v.name  from Cls c, ClsVer v
@@ -145,7 +147,7 @@ public class PlanDao {
         //
         String idsCls = getWhereIds(stCls);
         //select o.id, o.cls, v.fullName, null as nameClsWork from o, ObjVer v
-        List<DbRec> stWork = nsiService.getObjInfo(idsCls);
+        List<DbRec> stWork = nsiService.getObjInfo("", idsCls);
         for (DbRec map : stWork) {
             map.put("nameClsWork", mapCls.get(map.getLong("cls")).getString("name"));
         }
@@ -156,7 +158,7 @@ public class PlanDao {
         idsCls = getWhereIds(stCls);
         mapCls = getMapping(stCls);
         //select o.id, o.cls, v.fullName, null as nameClsObject from Obj
-        List<DbRec> stObject = objectService.getObjInfo(idsCls);
+        List<DbRec> stObject = objectService.getObjInfo("", idsCls);
         for (DbRec map : stObject) {
             if (mapCls.containsKey(map.getLong("cls"))) {
                 map.put("nameClsObject", mapCls.get(map.getLong("cls")).getString("name"));
@@ -194,6 +196,24 @@ public class PlanDao {
 
     }
 
+    public List<DbRec> loadWorkPlan(DbRec params) throws Exception {
+
+        return dbPlan.loadSql("""
+            select o.id, v1.obj as objWork, v2.obj as objObject, v3.dateTimeVal as PlanDateEnd, v4.dateTimeVal as ActualDateEnd
+            from Obj o
+                left join DataProp d1 on d1.objorrelobj=o.id and d1.prop=:Prop_Work
+                left join DataPropVal v1 on d1.id=v1.dataProp
+                left join DataProp d2 on d2.objorrelobj=o.id and d2.prop=:Prop_Object
+                left join DataPropVal v2 on d2.id=v2.dataProp
+                left join DataProp d3 on d3.objorrelobj=o.id and d3.prop=:Prop_PlanDateEnd
+                left join DataPropVal v3 on d3.id=v3.dataProp
+                left join DataProp d4 on d4.objorrelobj=o.id and d4.prop=:Prop_FactDateEnd
+                left join DataPropVal v4 on d4.id=v4.dataProp
+            where o.id in
+        """+params.getString("ids"), params);
+    }
+
+    //todo Кандидат для общего использования
     private Map<Long, DbRec> getMapping(List<DbRec> lst) {
         Map<Long, DbRec> res = new HashMap<>();
         for (DbRec map : lst) {
@@ -202,6 +222,7 @@ public class PlanDao {
         return res;
     }
 
+    //todo Кандидат для общего использования
     // return (id1,id2,...)
     private String getWhereIds(List<DbRec> lst) {
         // Получение Set значений id

@@ -1,20 +1,23 @@
 package kz.app.appmessagebroker;
 
-import com.fasterxml.jackson.databind.*;
-import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.autoconfigure.*;
-import org.springframework.context.annotation.*;
-import org.springframework.kafka.annotation.*;
-import org.springframework.kafka.config.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.listener.*;
+import org.springframework.kafka.listener.ContainerProperties;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @AutoConfiguration
 @EnableKafka

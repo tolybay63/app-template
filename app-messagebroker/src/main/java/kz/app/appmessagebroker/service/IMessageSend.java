@@ -1,6 +1,6 @@
 package kz.app.appmessagebroker.service;
 
-import kz.app.appmessagebroker.model.*;
+import kz.app.appmessagebroker.model.Message;
 
 /**
  * Умение отправлять сообщения в очередь/шину

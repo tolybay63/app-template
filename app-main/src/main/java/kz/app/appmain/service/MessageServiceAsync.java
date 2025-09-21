@@ -1,21 +1,20 @@
 package kz.app.appmain.service;
 
-import com.fasterxml.jackson.databind.*;
-import kz.app.appmain.event.*;
-import kz.app.appmain.model.*;
-import kz.app.appmessagebroker.model.*;
-import kz.app.appmessagebroker.service.*;
-import kz.app.appmessagebroker.service.impl.*;
-import kz.app.appmain.event.*;
-import kz.app.appmain.model.*;
-import org.slf4j.*;
-import org.springframework.context.*;
-import org.springframework.context.event.*;
-import org.springframework.kafka.core.*;
-import org.springframework.scheduling.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kz.app.appmain.event.QueueMessageAdded;
+import kz.app.appmain.model.QueuedMessage;
+import kz.app.appmessagebroker.model.Message;
+import kz.app.appmessagebroker.service.MessageService;
+import kz.app.appmessagebroker.service.impl.MessageServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Обеспечивает отложенную (асинхронную) отправку сообщений.

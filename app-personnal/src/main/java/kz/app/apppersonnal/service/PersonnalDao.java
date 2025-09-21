@@ -21,11 +21,11 @@ public class PersonnalDao {
         this.metaService = metaService;
     }
 
-    public List<DbRec> getObjInfo(String idsCls) throws Exception {
+    public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
+        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbPersonnal.loadSql("""
-            select o.id, o.cls, v.name, v.fullName, null as nameCls
-            from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls in
-        """+idsCls, null);
+             select o.id, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+        """ + whe, null);
     }
 
     public List<DbRec> getObjList(long cls) throws Exception {

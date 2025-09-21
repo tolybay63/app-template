@@ -1,16 +1,21 @@
 package kz.app.appmain;
 
-import kz.app.appcore.model.*;
-import kz.app.appcore.utils.*;
-import kz.app.appdbtools.repository.*;
-import kz.app.appmain.service.*;
-import kz.app.appstorage.repository.*;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.test.context.*;
+import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtCnv;
+import kz.app.appcore.utils.UtDb;
+import kz.app.appcore.utils.UtFile;
+import kz.app.appdbtools.repository.Db;
+import kz.app.appmain.service.DictDao;
+import kz.app.appstorage.repository.StorageRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @SpringBootTest
 class AppTest {

@@ -52,14 +52,16 @@ public class NsiDao {
         for (DbRec record : st) {
             record.put("fvDefectsCategory", mapPV.get(record.getLong("pvDefectsCategory")));
         }
-
+        //
         return st;
     }
 
-    public List<DbRec> getObjInfo(String idsCls) throws Exception {
+    public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
+        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbNsi.loadSql("""
-            select o.id, o.cls, v.fullName, null as nameClsWork
-            from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls in
-        """+idsCls, null);
+                     select o.id, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+                """ + whe, null);
     }
+
+
 }

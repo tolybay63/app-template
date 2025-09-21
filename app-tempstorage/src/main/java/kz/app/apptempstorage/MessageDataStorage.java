@@ -1,6 +1,6 @@
 package kz.app.apptempstorage;
 
-import java.util.*;
+import java.util.List;
 
 public interface MessageDataStorage {
 

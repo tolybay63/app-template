@@ -1,4 +1,4 @@
-import { boot } from 'quasar/wrappers'
+import {boot} from 'quasar/wrappers'
 import axios from 'axios'
 
 // Be careful when using SSR for cross-request state pollution

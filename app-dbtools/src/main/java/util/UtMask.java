@@ -1,6 +1,6 @@
 package util;
 
-import kz.app.appcore.utils.*;
+import kz.app.appcore.utils.UtString;
 
 public class UtMask {
 

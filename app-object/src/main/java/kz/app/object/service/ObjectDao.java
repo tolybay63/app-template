@@ -27,13 +27,24 @@ public class ObjectDao {
         return null;
     }
 
-
-    public List<DbRec> getObjInfo(String idsCls) throws Exception {
+    public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
+        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbObject.loadSql("""
-            select o.id, o.cls, v.fullName, null as nameClsObject
-            from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.cls in
-        """+idsCls, null);
+             select o.id, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+        """ + whe, null);
     }
+
+    public List<DbRec> getObjInfoFromData(DbRec params) throws Exception {
+        return dbObject.loadSql("""
+            select o.id, v.obj, ov.name
+            from Obj o
+                left join DataProp d on d.objorrelobj=o.id and prop=:Prop_Section
+                left join DataPropVal v on d.id=v.dataProp
+                left join ObjVer ov on v.obj=ov.ownerVer and ov.lastVer=1
+            where o.id in
+        """ + params.getString("ids"), params);
+    }
+
 
 
 
