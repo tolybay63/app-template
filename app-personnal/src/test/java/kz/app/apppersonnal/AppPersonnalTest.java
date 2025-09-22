@@ -1,8 +1,8 @@
-package kz.app.appobject;
+package kz.app.apppersonnal;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
-import kz.app.appobject.service.ObjectDao;
+import kz.app.apppersonnal.service.PersonnalDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,23 +10,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-public class AppObjectTest {
+public class AppPersonnalTest {
 
     @Autowired
-    ObjectDao objectDao;
+    PersonnalDao personnalDao;
 
     @Test
     void Test1() throws Exception {
-        List<DbRec> res = objectDao.loadObjectServed(0);
+        List<DbRec> res = personnalDao.getObjList(1064);
         UtDb.outTable(res);
     }
 
-    @Test
-    void Test2() throws Exception {
-        List<DbRec> res = objectDao.getObjInfo("(1068,1069,1070)", "");
-        UtDb.outTable(res);
-
-    }
 
 
 

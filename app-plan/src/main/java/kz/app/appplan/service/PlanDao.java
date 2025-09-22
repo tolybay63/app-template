@@ -82,10 +82,10 @@ public class PlanDao {
             UtPeriod utPeriod = new UtPeriod();
             LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
             LocalDate d2 = utPeriod.calcDend(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
-            wheV7 = " and v7.dateTimeVal between :d1 and :d2";
+            wheV7 = " and v7.dateTimeVal between '"+d1+"' and '" + d2 +"'";
             //
-            paramSql.put("d1", d1);
-            paramSql.put("d2", d2);
+            //paramSql.put("d1", d1);
+            //paramSql.put("d2", d2);
         }
 
         String sqlPlan = """
@@ -108,8 +108,7 @@ public class PlanDao {
                 left join ObjVer v on o.id=v.ownerver and v.lastver=1
                 left join DataProp d1 on d1.objorrelobj=o.id and d1.prop=:Prop_LocationClsSection
                 inner join DataPropVal v1 on d1.id=v1.dataprop
-            """ + wheV1 +
-            """
+            """ + wheV1 + """
                 left join DataProp d2 on d2.objorrelobj=o.id and d2.prop=:Prop_Object
                 left join DataPropVal v2 on d2.id=v2.dataprop
                 left join DataProp d3 on d3.objorrelobj=o.id and d3.prop=:Prop_StartKm
