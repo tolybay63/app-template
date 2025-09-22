@@ -77,10 +77,10 @@ public class InspectionDao {
             UtPeriod utPeriod = new UtPeriod();
             LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
             LocalDate d2 = utPeriod.calcDend(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
-            wheV7 = " and v7.dateTimeVal between :d1 and :d2";
+            wheV7 = " and v7.dateTimeVal between '"+ d1 +"' and '" + d2 + "'";
             //
-            paramSql.put("d1", d1);
-            paramSql.put("d2", d2);
+            //paramSql.put("d1", d1);
+            //paramSql.put("d2", d2);
         }
         map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         List<DbRec> stInspection = dbInspection.loadSql("""
