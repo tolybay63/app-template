@@ -24,7 +24,7 @@ public class PersonnalDao {
     public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
         String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbPersonnal.loadSql("""
-             select o.id, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+             select o.id, o.cls, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
         """ + whe, null);
     }
 
