@@ -1,4 +1,4 @@
-package kz.app.object;
+package kz.app.appobject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appdbtools",
         //"kz.app.appstorage",
         "kz.app.appmeta",
+        "kz.app.appobject",
 })
 
 public class AppObjectApplication {

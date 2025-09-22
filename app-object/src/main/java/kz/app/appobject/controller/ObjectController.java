@@ -1,7 +1,7 @@
-package kz.app.object.controller;
+package kz.app.appobject.controller;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.object.service.ObjectDao;
+import kz.app.appobject.service.ObjectDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

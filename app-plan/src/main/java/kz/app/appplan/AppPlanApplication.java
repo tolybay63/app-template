@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appplan",
         "kz.app.structure",
         "kz.app.appnsi",
-        "kz.app.object",
+        "kz.app.appobject",
         "kz.app.apppersonnal",
 })
 

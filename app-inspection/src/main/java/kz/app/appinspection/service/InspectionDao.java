@@ -7,7 +7,7 @@ import kz.app.appmeta.service.MetaDao;
 import kz.app.appnsi.service.NsiDao;
 import kz.app.apppersonnal.service.PersonnalDao;
 import kz.app.appplan.service.PlanDao;
-import kz.app.object.service.ObjectDao;
+import kz.app.appobject.service.ObjectDao;
 import kz.app.structure.service.StructureDao;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package kz.app.object.config;
+package kz.app.appobject.config;
 
 import kz.app.appdbtools.repository.Db;
 import kz.app.appdbtools.repository.SqlParamInterceptor;

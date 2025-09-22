@@ -1,4 +1,4 @@
-package kz.app.object.service;
+package kz.app.appobject.service;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appdbtools.repository.Db;
@@ -6,7 +6,9 @@ import kz.app.appmeta.service.MetaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -22,9 +24,14 @@ public class ObjectDao {
 
 
     public List<DbRec> loadObjectServed(long id) {
-
-
-        return null;
+        //
+        List<DbRec> res = new ArrayList<>();
+        DbRec rec = new DbRec();
+        rec.put("id", id);
+        rec.put("name", "aaa_"+id);
+        res.add(rec);
+        //
+        return res;
     }
 
     public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
