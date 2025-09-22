@@ -1,4 +1,4 @@
-package kz.app.appplan.config;
+package kz.app.appinspection.config;
 
 import kz.app.appdbtools.repository.Db;
 import kz.app.appdbtools.repository.SqlParamInterceptor;
@@ -15,32 +15,32 @@ import util.UtMask;
 import javax.sql.DataSource;
 
 @Configuration
-public class DbToolsConfigPlan {
+public class DbToolsConfigInspection {
 
-    private static final Logger log = LoggerFactory.getLogger(DbToolsConfigPlan.class);
+    private static final Logger log = LoggerFactory.getLogger(DbToolsConfigInspection.class);
 
-    @Value("${plan.datasource.url}")
+    @Value("${inspection.datasource.url}")
     private String dbUrl;
 
-    @Value("${plan.datasource.username}")
+    @Value("${inspection.datasource.username}")
     private String dbUsername;
 
-    @Value("${plan.datasource.password}")
+    @Value("${inspection.datasource.password}")
     private String dbPassword;
 
     @Value("${spring.datasource.driver-class-name}")
     private String dbDriver;
 
 
-    @Bean(name = "dbPlan")
-    public Db db(@Qualifier("dataSourcePlan") DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
+    @Bean(name = "dbInspection")
+    public Db db(@Qualifier("dataSourceInspection") DataSource dataSource, SqlParamInterceptor sqlParamInterceptor) {
         return new JdbcDbImpl(dataSource, sqlParamInterceptor);
     }
 
-    @Bean(name = "dataSourcePlan")
+    @Bean(name = "dataSourceInspection")
     public DataSource dataSource() {
         log.info("=========================");
-        log.info("DbToolsConfigPlan.dataSource");
+        log.info("DbToolsConfigInspection.dataSource");
         log.info("url: " + dbUrl);
         log.info("username: " + dbUsername);
         log.info("password: " + UtMask.mask(dbPassword));
