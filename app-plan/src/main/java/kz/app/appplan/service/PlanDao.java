@@ -149,7 +149,8 @@ public class PlanDao {
         //select o.id, o.cls, v.fullName, null as nameClsWork from o, ObjVer v
         List<DbRec> stWork = nsiService.getObjInfo("", idsCls);
         for (DbRec map : stWork) {
-            map.put("nameClsWork", mapCls.get(map.getLong("cls")).getString("name"));
+            if (mapCls.get(map.getLong("cls")) != null)
+                map.put("nameClsWork", mapCls.get(map.getLong("cls")).getString("name"));
         }
         Map<Long, DbRec> mapWork = getMapping(stWork);
         //

@@ -20,7 +20,7 @@ public class AppPlanTest {
         DbRec params = new DbRec();
         params.put("date", "2025-07-29");
         params.put("periodType", 11);
-        params.put("objLocation", 1070);
+        params.put("objLocation", 1077);
         List<DbRec> res = planDao.loadPlan(params);
         UtDb.outTable(res);
     }
