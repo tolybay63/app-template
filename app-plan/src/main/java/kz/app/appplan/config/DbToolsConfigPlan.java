@@ -19,7 +19,7 @@ public class DbToolsConfigPlan {
 
     private static final Logger log = LoggerFactory.getLogger(DbToolsConfigPlan.class);
 
-    @Value("${nsi.datasource.url}")
+    @Value("${plan.datasource.url}")
     private String dbUrl;
 
     @Value("${nsi.datasource.username}")
