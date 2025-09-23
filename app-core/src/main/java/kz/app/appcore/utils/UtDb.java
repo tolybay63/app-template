@@ -92,6 +92,13 @@ public class UtDb {
         }
     }
 
+    public static Map<Long, DbRec> getMapping(List<DbRec> lst) {
+        Map<Long, DbRec> res = new HashMap<>();
+        for (DbRec map : lst) {
+            res.put(map.getLong("id"), map);
+        }
+        return res;
+    }
 
 
 }

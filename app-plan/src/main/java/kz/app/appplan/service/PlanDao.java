@@ -1,6 +1,7 @@
 package kz.app.appplan.service;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtPeriod;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
@@ -41,12 +42,12 @@ public class PlanDao {
 
     public List<DbRec> loadPlan(DbRec params) throws Exception {
         List<DbRec> st = metaService.getCls("Typ_WorkPlan");
-        String ids = getWhereIds(st);
+        String ids = UtDb.getWhereIds(st, "id");
         String whe = "";
         String wheV1 = " ";
         String wheV7 = " ";
         //
-        Map<Long, DbRec> mapClsWork = getMapping(st);
+        Map<Long, DbRec> mapClsWork = UtDb.getMapping(st);
         //
         DbRec paramSql = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         //
@@ -56,7 +57,6 @@ public class PlanDao {
             whe = " o.cls in " + ids;
 
             DbRec mapCls = metaService.getIdFromCodOfEntity("Cls", "Cls_LocationSection", "");
-
 
             DbRec objRec = structureService.getObjRec(params.getLong("objLocation"));
             long clsLocation = objRec==null ? 0 : objRec.getLong("cls");
@@ -83,9 +83,6 @@ public class PlanDao {
             LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
             LocalDate d2 = utPeriod.calcDend(LocalDate.parse(dte, DateTimeFormatter.ISO_DATE), pt, 0);
             wheV7 = " and v7.dateTimeVal between '"+d1+"' and '" + d2 +"'";
-            //
-            //paramSql.put("d1", d1);
-            //paramSql.put("d2", d2);
         }
 
         String sqlPlan = """
@@ -138,25 +135,25 @@ public class PlanDao {
         String wheCls = metaService.getIdsCls("Typ_Location");
         //select o.id, v.name from Obj o, ObjVer v
         List<DbRec> stLocation = structureService.objIdName("", wheCls);
-        Map<Long, DbRec> mapLocation = getMapping(stLocation);
+        Map<Long, DbRec> mapLocation = UtDb.getMapping(stLocation);
         //
         //select c.id, v.name  from Cls c, ClsVer v
         List<DbRec> stCls = metaService.getCls("Typ_Work");
-        Map<Long, DbRec> mapCls = getMapping(stCls);
+        Map<Long, DbRec> mapCls = UtDb.getMapping(stCls);
         //
-        String idsCls = getWhereIds(stCls);
+        String idsCls = UtDb.getWhereIds(stCls, "id");
         //select o.id, o.cls, v.fullName, null as nameClsWork from o, ObjVer v
         List<DbRec> stWork = nsiService.getObjInfo("", idsCls);
         for (DbRec map : stWork) {
             if (mapCls.get(map.getLong("cls")) != null)
                 map.put("nameClsWork", mapCls.get(map.getLong("cls")).getString("name"));
         }
-        Map<Long, DbRec> mapWork = getMapping(stWork);
+        Map<Long, DbRec> mapWork = UtDb.getMapping(stWork);
         //
         //select c.id, v.name  from Cls c, ClsVer v
         stCls = metaService.getCls("Typ_Object");
-        idsCls = getWhereIds(stCls);
-        mapCls = getMapping(stCls);
+        idsCls = UtDb.getWhereIds(stCls, "id");
+        mapCls = UtDb.getMapping(stCls);
         //select o.id, o.cls, v.fullName, null as nameClsObject from Obj
         List<DbRec> stObject = objectService.getObjInfo("", idsCls);
         for (DbRec map : stObject) {
@@ -164,12 +161,12 @@ public class PlanDao {
                 map.put("nameClsObject", mapCls.get(map.getLong("cls")).getString("name"));
             }
         }
-        Map<Long, DbRec> mapObject = getMapping(stObject);
+        Map<Long, DbRec> mapObject = UtDb.getMapping(stObject);
         //
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Personnel", "");
         //select o.id, o.cls, v.name, v.fullName, null as nameCls from Obj o...
         List<DbRec> stUser = personnalService.getObjList(map.getLong("Cls_Personnel"));
-        Map<Long, DbRec> mapUser = getMapping(stUser);
+        Map<Long, DbRec> mapUser = UtDb.getMapping(stUser);
 
         for (DbRec rec : stPlan) {
             if (mapClsWork.containsKey(rec.getLong("cls"))) {
@@ -190,7 +187,6 @@ public class PlanDao {
                 rec.put("fullNameUser", mapUser.get(rec.getLong("objUser")).getString("fullName"));
             }
         }
-
         //
         return stPlan;
 
@@ -211,30 +207,6 @@ public class PlanDao {
                 left join DataPropVal v4 on d4.id=v4.dataProp
             where o.id in
         """+params.getString("ids"), params);
-    }
-
-    //todo Кандидат для общего использования
-    private Map<Long, DbRec> getMapping(List<DbRec> lst) {
-        Map<Long, DbRec> res = new HashMap<>();
-        for (DbRec map : lst) {
-            res.put(map.getLong("id"), map);
-        }
-        return res;
-    }
-
-    //todo Кандидат для общего использования
-    // return (id1,id2,...)
-    private String getWhereIds(List<DbRec> lst) {
-        // Получение Set значений id
-        Set<Long> idSet = lst.stream()
-                .map(map -> (Long) map.get("id"))
-                .collect(Collectors.toSet());
-        // Преобразование Set в строку через запятую
-        String ids = "(" + idSet.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",")) + ")";
-        if (ids.equals("()")) ids = "(0)";
-        return ids;
     }
 
 }

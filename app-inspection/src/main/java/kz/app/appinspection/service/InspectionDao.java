@@ -1,6 +1,7 @@
 package kz.app.appinspection.service;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtPeriod;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
@@ -138,28 +139,28 @@ public class InspectionDao {
             where
         """ + whe, map);
         //... Пересечение
-        String idsObjLocation = getWhereIds(stInspection, "objLocationClsSection");
+        String idsObjLocation = UtDb.getWhereIds(stInspection, "objLocationClsSection");
         List<DbRec> stObjLocation = structureService.objIdName(idsObjLocation, "");
-        Map<Long, DbRec> mapLocation = getMapping(stObjLocation);
+        Map<Long, DbRec> mapLocation = UtDb.getMapping(stObjLocation);
         //
-        String idsWorkPlan = getWhereIds(stInspection, "objWorkPlan");
+        String idsWorkPlan = UtDb.getWhereIds(stInspection, "objWorkPlan");
         map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
         map.put("ids", idsWorkPlan);
         List<DbRec> stWorkPlanProps = planService.loadWorkPlan(map);
-        Map<Long, DbRec> mapWorkPlan = getMapping(stWorkPlanProps);
+        Map<Long, DbRec> mapWorkPlan = UtDb.getMapping(stWorkPlanProps);
         //
-        String pvsFlagDefect = getWhereIds(stInspection, "pvFlagDefect");
+        String pvsFlagDefect = UtDb.getWhereIds(stInspection, "pvFlagDefect");
         List<DbRec> stFlagDefect = metaService.getFactorValsInfo(pvsFlagDefect);
-        Map<Long, DbRec> mapFlagDefect = getMapping(stFlagDefect);
+        Map<Long, DbRec> mapFlagDefect = UtDb.getMapping(stFlagDefect);
         //
-        String pvsFlagParameter = getWhereIds(stInspection, "pvFlagParameter");
+        String pvsFlagParameter = UtDb.getWhereIds(stInspection, "pvFlagParameter");
         List<DbRec> stFlagParameter = metaService.getFactorValsInfo(pvsFlagParameter);
-        Map<Long, DbRec> mapFlagParameter = getMapping(stFlagParameter);
+        Map<Long, DbRec> mapFlagParameter = UtDb.getMapping(stFlagParameter);
         //
         map = metaService.getIdFromCodOfEntity("Cls", "Cls_Personnel", "");
         //select o.id, o.cls, v.fullName
         List<DbRec> stUser = personnalService.getObjList(map.getLong("Cls_Personnel"));
-        Map<Long, DbRec> mapUser = getMapping(stUser);
+        Map<Long, DbRec> mapUser = UtDb.getMapping(stUser);
         //
         for (DbRec r : stInspection) {
             if (mapLocation.get(r.getLong("objLocationClsSection")) != null)
@@ -183,15 +184,15 @@ public class InspectionDao {
             }
         }
         //
-        String idsWork = getWhereIds(stInspection, "objWork");
+        String idsWork = UtDb.getWhereIds(stInspection, "objWork");
         //select o.id, v.fullName from Obj
         List<DbRec> stWork = nsiService.getObjInfo(idsWork, "");
-        Map<Long, DbRec> mapWork = getMapping(stWork);
+        Map<Long, DbRec> mapWork = UtDb.getMapping(stWork);
         //
-        String idsObject = getWhereIds(stInspection, "objObject");
+        String idsObject = UtDb.getWhereIds(stInspection, "objObject");
         //select o.id, v.fullName from Obj
         List<DbRec> stObject = objectService.getObjInfo(idsWork, "");
-        Map<Long, DbRec> mapObject = getMapping(stObject);
+        Map<Long, DbRec> mapObject = UtDb.getMapping(stObject);
         //
         for (DbRec r : stInspection) {
             if (mapWork.get(r.getLong("objWork")) != null)
@@ -203,7 +204,7 @@ public class InspectionDao {
         map = metaService.getIdFromCodOfEntity("Prop", "Prop_Section", "");
         map.put("ids", idsObject);
         stObject = objectService.getObjInfoFromData(map);
-        mapObject = getMapping(stObject);
+        mapObject = UtDb.getMapping(stObject);
         //
         for (DbRec r : stInspection) {
             if (mapObject.get(r.getLong("objObject")) != null) {
@@ -215,28 +216,5 @@ public class InspectionDao {
         return stInspection;
     }
 
-    //todo Кандидат для общего использования
-    private Map<Long, DbRec> getMapping(List<DbRec> lst) {
-        Map<Long, DbRec> res = new HashMap<>();
-        for (DbRec map : lst) {
-            res.put(map.getLong("id"), map);
-        }
-        return res;
-    }
-
-    //todo Кандидат для общего использования
-    // return (id1,id2,...)
-    private String getWhereIds(List<DbRec> lst, String fld) {
-        // Получение Set значений id
-        Set<Long> idSet = lst.stream()
-                .map(map -> (Long) map.get(fld))
-                .collect(Collectors.toSet());
-        // Преобразование Set в строку через запятую
-        String ids = "(" + idSet.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",")) + ")";
-        if (ids.equals("()")) ids = "(0)";
-        return ids;
-    }
 
 }
