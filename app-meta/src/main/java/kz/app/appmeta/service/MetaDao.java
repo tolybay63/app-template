@@ -6,10 +6,7 @@ import kz.app.appdbtools.repository.Db;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -116,5 +113,12 @@ public class MetaDao {
         return st.getFirst().getLong("factorVal");
     }
 
+    public List<DbRec> getIdsPV(int isObj, long clsORrel) throws Exception {
+        String fld = "cls";
+        if (isObj == 0)
+            fld = "relcls";
+        return dbMeta.loadSql("select id as pv from PropVal where " +fld + "=:clsORrel",
+                Map.of("clsORrel", clsORrel));
+    }
 
 }

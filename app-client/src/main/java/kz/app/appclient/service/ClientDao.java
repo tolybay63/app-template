@@ -2,9 +2,7 @@ package kz.app.appclient.service;
 
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtPeriod;
-import kz.app.appcore.utils.XError;
+import kz.app.appcore.utils.*;
 import kz.app.appcore.utils.consts.FD_AttribValType_consts;
 import kz.app.appcore.utils.consts.FD_InputType_consts;
 import kz.app.appcore.utils.consts.FD_PeriodType_consts;
@@ -12,6 +10,7 @@ import kz.app.appcore.utils.consts.FD_PropType_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -20,19 +19,18 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
 public class ClientDao {
 
-    private final Db db;
+    private final Db dbClient;
 
     private final MetaDao metaService;
 
-    public ClientDao(Db db, MetaDao metaService) {
-        this.db = db;
+    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService) {
+        this.dbClient = dbClient;
         this.metaService = metaService;
     }
 
@@ -50,7 +48,7 @@ public class ClientDao {
             map.put("id", id);
         }
         //
-        return db.loadSql("""
+        return dbClient.loadSql("""
                     select o.id, o.cls, v.name,
                         v1.id as idBIN, v1.strVal as BIN,
                         v2.id as idContactPerson, v2.strVal as ContactPerson,
@@ -70,17 +68,51 @@ public class ClientDao {
                 """ + whe, map);
     }
 
-    private void validateForDelete(long id, int isObj) throws Exception {
-        if (isObj == 1) {
-            //...
-        } else {
-            //...
+    /**
+     *
+     * @param owner id Obj or RelObj
+     * @param isObj if isObj==1: Obj, isObj=0: RelObj
+     * @throws Exception throws
+     */
+    private void validateForDelete(long owner, int isObj) throws Exception {
+
+        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        if (isObj == 0) {
+            sql = "select o.relcls as cls, v.name from RelObj o, RelObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        }
+        List<DbRec> stOwn = dbClient.loadSql(sql, Map.of("id", owner));
+        if (!stOwn.isEmpty()) {
+            List<String> lstService = new ArrayList<>();
+            String name = stOwn.getFirst().getString("name");
+            long cls = stOwn.getFirst().getLong("cls");
+            List<DbRec> stPV = metaService.getIdsPV(isObj, cls);
+            if (!stPV.isEmpty()) {
+                String whePV = UtDb.getWhereIds(stPV, "pv");
+                List<DbRec> st = getRefData(isObj, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("clientdata");
+                }
+                //...
+
+                if (!lstService.isEmpty()) {
+                    throw new XError("{0} используется в [{0}]", name, String.join(", ", lstService));
+                }
+            }
+
         }
     }
 
+    public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
+        return dbClient.loadSql("""
+                    select d.id from DataProp d, DataPropVal v
+                    where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
+        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
+    }
+
+
     public void deleteClientWithProps(long id) throws Exception {
         validateForDelete(id, 1);
-        db.execSql("""
+        dbClient.execSql("""
             delete from DataPropVal
             where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);
             delete from DataProp where id in (
@@ -90,13 +122,13 @@ public class ClientDao {
             );
         """, Map.of("id", id));
         //
-        UtEntityData ue = new UtEntityData(db, "Obj");
+        UtEntityData ue = new UtEntityData(dbClient, "Obj");
         ue.deleteEntity(id);
     }
 
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
         long own;
-        UtEntityData ue = new UtEntityData(db, "Obj");
+        UtEntityData ue = new UtEntityData(dbClient, "Obj");
 
         DbRec par = new DbRec(params);
         if (mode.equalsIgnoreCase("ins")) {
@@ -168,7 +200,7 @@ public class ClientDao {
         if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
         //
         long idDP;
-        UtEntityData ue = new UtEntityData(db, "DataProp");
+        UtEntityData ue = new UtEntityData(dbClient, "DataProp");
         DbRec recDP = ue.setDomain("DataProp", params);
         String whe = "and isObj="+ isObj+" ";
         if (stProp.getFirst().getLong("statusFactor") > 0) {
@@ -184,7 +216,7 @@ public class ClientDao {
         } else {
             whe += "and periodType is null ";
         }
-        List<DbRec> stDP = db.loadSql("""
+        List<DbRec> stDP = dbClient.loadSql("""
                     select id from DataProp
                     where objOrRelObj=:own and prop=:prop
                 """ + whe, Map.of("own", own, "prop", prop));
@@ -207,7 +239,7 @@ public class ClientDao {
             if (stProp.getFirst().getBoolean("dependPeriod")) {
                 recDP.put("periodType", FD_PeriodType_consts.year);
             }
-            idDP = db.insertRec("DataProp", recDP);
+            idDP = dbClient.insertRec("DataProp", recDP);
         }
         //
         DbRec recDPV = ue.setDomain("DataPropVal", params);
@@ -313,7 +345,7 @@ public class ClientDao {
         recDPV.put("id", idDPV);
         recDPV.put("ord", idDPV);
         recDPV.put("timeStamp", LocalDate.now());
-        db.insertRec("DataPropVal", recDPV);
+        dbClient.insertRec("DataPropVal", recDPV);
     }
 
     private void updateProperties(String cod, DbRec params) throws Exception {
@@ -482,7 +514,7 @@ public class ClientDao {
             }
         }
 
-        db.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
+        dbClient.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
                 "propVal", propVal, "objRef", objRef, "numberVal", numberVal));
     }
 

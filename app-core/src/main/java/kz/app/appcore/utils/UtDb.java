@@ -4,6 +4,7 @@ import kz.app.appcore.model.DbRec;
 import kz.app.appcore.model.MapNumber;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UtDb {
 
@@ -75,6 +76,22 @@ public class UtDb {
 
         return res;
     }
+
+    public static String getWhereIds(List<DbRec> lst, String fld) {
+        // Получение Set значений id
+        Set<Long> idSet = lst.stream()
+                .map(map -> (Long) map.get(fld))
+                .collect(Collectors.toSet());
+        // Преобразование Set в строку через запятую
+        if (idSet.isEmpty()) {
+            return "(0)";
+        } else {
+            return "(" + idSet.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(",")) + ")";
+        }
+    }
+
 
 
 }
