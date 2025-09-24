@@ -16,22 +16,22 @@ import java.util.Map;
 public class AdminDao {
 
 
-    private final Db db;
+    private final Db dbAdmin;
 
-    public AdminDao(Db db) {
-        this.db = db;
+    public AdminDao(Db dbAdmin) {
+        this.dbAdmin = dbAdmin;
     }
 
 
     public List<DbRec> loadGroup() throws Exception {
-        return db.loadSql("""
+        return dbAdmin.loadSql("""
             select * from AuthUserGr where 0=0
         """, null);
     }
 
     public List<DbRec> loadUsers(long idGroup) throws Exception {
 
-        return db.loadSql("""
+        return dbAdmin.loadSql("""
             select * from AuthUser where authUserGr=:id
         """, Map.of("id", idGroup));
     }

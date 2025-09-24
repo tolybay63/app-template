@@ -92,7 +92,19 @@ public class ClientDao {
                 if (!st.isEmpty()) {
                     lstService.add("clientdata");
                 }
-                //...
+                //todo
+                /*
+                ...
+                st = objectService.getRefData(isObj, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("objectdata");
+                }
+                st = getRefData(isObj, owner, whePV);
+                if (!st.isEmpty()) {
+                    planService.lstService.add("plandata");
+                }
+                ...
+                */
 
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{0}]", name, String.join(", ", lstService));
@@ -172,8 +184,6 @@ public class ClientDao {
                 if (!params.getString("Description").isEmpty())
                     fillProperties(1, "Prop_Description", params);
             }
-
-
         } else {
             throw new XError("Unknown mode: " + mode);
         }

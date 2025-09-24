@@ -1,7 +1,6 @@
 package kz.app.appadmin.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
@@ -12,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class UserDao {
+public class RoleDao {
 
     private final Db dbAdmin;
 
-    public UserDao(Db dbAdmin) {
+    public RoleDao(Db dbAdmin) {
         this.dbAdmin = dbAdmin;
     }
 
@@ -25,18 +24,18 @@ public class UserDao {
     //***                   Методы групп пользователей                      ***//
     //*************************************************************************//
 
-    public List<DbRec> loadGroup() throws Exception {
+    public List<DbRec> loadRoles() throws Exception {
         return dbAdmin.loadSql("""
-            select * from AuthUserGr where 0=0
+            select * from AuthRole where 0=0
         """, null);
     }
 
-    public DbRec insertGroup(DbRec rec) throws Exception {
-        UtEntityData ue = new UtEntityData(dbAdmin, "AuthUserGr");
-        long id = ue.getNextId("AuthUserGr");
+    public DbRec insertRole(DbRec rec) throws Exception {
+        UtEntityData ue = new UtEntityData(dbAdmin, "AuthRole");
+        long id = ue.getNextId("AuthRole");
         rec.put("id", id);
-        dbAdmin.insertRec("AuthUserGr", rec);
-        return dbAdmin.loadRec("AuthUserGr", id);
+        dbAdmin.insertRec("AuthRole", rec);
+        return dbAdmin.loadRec("AuthRole", id);
     }
 
     public DbRec updateGroup(DbRec rec) throws Exception {
@@ -53,9 +52,7 @@ public class UserDao {
     //*************************************************************************//
     public List<DbRec> loadUsers(long id) throws Exception {
         return dbAdmin.loadSql("""
-            select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
-                name, fullName as fullName, passwd, phone, locked, cmt
-            from AuthUser where authUserGr=:id
+            select * from AuthUser where authUserGr=:id
         """, Map.of("id", id));
     }
 
