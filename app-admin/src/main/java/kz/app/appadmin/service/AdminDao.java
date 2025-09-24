@@ -29,11 +29,11 @@ public class AdminDao {
         """, null);
     }
 
-    public List<DbRec> loadUsers(long id) throws Exception {
+    public List<DbRec> loadUsers(long idGroup) throws Exception {
 
         return db.loadSql("""
             select * from AuthUser where authUserGr=:id
-        """, Map.of("id", id));
+        """, Map.of("id", idGroup));
     }
 
 
