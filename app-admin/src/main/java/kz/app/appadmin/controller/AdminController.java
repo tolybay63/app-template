@@ -20,9 +20,10 @@ public class AdminController {
     private AdminDao adminDao;
 
 
-    @GetMapping(value = "/load")
-    public String loadA() throws Exception {
-        return adminDao.loadA();
+    @GetMapping(value = "/loadGroup")
+    public List<DbRec> find(
+    ) throws Exception {
+        return adminDao.loadGroup();
     }
 
     @GetMapping(value = "/loadUsers")

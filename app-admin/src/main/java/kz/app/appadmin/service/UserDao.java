@@ -13,12 +13,12 @@ import java.util.Map;
  *
  */
 @Component
-public class AdminDao {
+public class UserDao {
 
 
     private final Db db;
 
-    public AdminDao(Db db) {
+    public UserDao(Db db) {
         this.db = db;
     }
 
