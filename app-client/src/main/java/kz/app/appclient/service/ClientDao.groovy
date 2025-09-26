@@ -1,29 +1,27 @@
-package kz.app.appclient.service;
+package kz.app.appclient.service
 
+import kz.app.appcore.model.DbRec
+import kz.app.appcore.utils.UtCnv
+import kz.app.appcore.utils.UtDb
+import kz.app.appcore.utils.UtPeriod
+import kz.app.appcore.utils.XError
+import kz.app.appcore.utils.consts.FD_AttribValType_consts
+import kz.app.appcore.utils.consts.FD_InputType_consts
+import kz.app.appcore.utils.consts.FD_PeriodType_consts
+import kz.app.appcore.utils.consts.FD_PropType_consts
+import kz.app.appdata.service.UtEntityData
+import kz.app.appdbtools.repository.Db
+import kz.app.appmeta.service.MetaDao
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 
-import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.*;
-import kz.app.appcore.utils.consts.FD_AttribValType_consts;
-import kz.app.appcore.utils.consts.FD_InputType_consts;
-import kz.app.appcore.utils.consts.FD_PeriodType_consts;
-import kz.app.appcore.utils.consts.FD_PropType_consts;
-import kz.app.appdata.service.UtEntityData;
-import kz.app.appdbtools.repository.Db;
-import kz.app.appmeta.service.MetaDao;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
+import java.text.DecimalFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
-public class ClientDao {
+class ClientDao {
 
     private final Db dbClient;
 
@@ -33,7 +31,6 @@ public class ClientDao {
         this.dbClient = dbClient;
         this.metaService = metaService;
     }
-
 
     public List<DbRec> loadClient(long id) throws Exception {
 
@@ -258,7 +255,7 @@ public class ClientDao {
         if (FD_AttribValType_consts.str == attribValType) {
             if (cod.equalsIgnoreCase("Prop_BIN") ||
                     cod.equalsIgnoreCase("Prop_ContactPerson") ||
-                        cod.equalsIgnoreCase("Prop_ContactDetails")) {
+                    cod.equalsIgnoreCase("Prop_ContactDetails")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("strVal", params.getString(keyValue));
                 }
@@ -535,6 +532,5 @@ public class ClientDao {
         //    au = 1//throw new XError("notLogined")
         return au;
     }
-
 
 }
