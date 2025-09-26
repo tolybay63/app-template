@@ -121,7 +121,6 @@ public class ClientDao {
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
 
-
     public void deleteClientWithProps(long id) throws Exception {
         validateForDelete(id, 1);
         dbClient.execSql("""
