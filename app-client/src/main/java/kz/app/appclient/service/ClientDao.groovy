@@ -23,26 +23,26 @@ import java.time.format.DateTimeFormatter
 @Component
 class ClientDao {
 
-    private final Db dbClient;
+    private final Db dbClient
 
-    private final MetaDao metaService;
+    private final MetaDao metaService
 
     public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService) {
-        this.dbClient = dbClient;
-        this.metaService = metaService;
+        this.dbClient = dbClient
+        this.metaService = metaService
     }
 
     public List<DbRec> loadClient(long id) throws Exception {
 
-        DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
-        long cls = UtCnv.toLong(map.get("Cls_Client"));
-        map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
-        String whe = "o.id=:id";
+        DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "")
+        long cls = UtCnv.toLong(map.get("Cls_Client"))
+        map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%")
+        String whe = "o.id=:id"
         if (id == 0) {
-            whe = "o.cls=:Cls_Client";
-            map.put("Cls_Client", cls);
+            whe = "o.cls=:Cls_Client"
+            map.put("Cls_Client", cls)
         } else {
-            map.put("id", id);
+            map.put("id", id)
         }
         //
         return dbClient.loadSql("""
@@ -62,7 +62,7 @@ class ClientDao {
                         left join DataProp d4 on d4.objorrelobj=o.id and d4.prop=:Prop_Description  --1137
                         left join DataPropVal v4 on d4.id=v4.dataprop
                     where
-                """ + whe, map);
+                """ + whe, map)
     }
 
     /**
@@ -73,38 +73,38 @@ class ClientDao {
      */
     private void validateForDelete(long owner, int isObj) throws Exception {
 
-        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id"
         if (isObj == 0) {
-            sql = "select o.relcls as cls, v.name from RelObj o, RelObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+            sql = "select o.relcls as cls, v.name from RelObj o, RelObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id"
         }
-        List<DbRec> stOwn = dbClient.loadSql(sql, Map.of("id", owner));
+        List<DbRec> stOwn = dbClient.loadSql(sql, Map.of("id", owner))
         if (!stOwn.isEmpty()) {
-            List<String> lstService = new ArrayList<>();
-            String name = stOwn.getFirst().getString("name");
-            long cls = stOwn.getFirst().getLong("cls");
-            List<DbRec> stPV = metaService.getIdsPV(isObj, cls);
+            List<String> lstService = new ArrayList<>()
+            String name = stOwn.getFirst().getString("name")
+            long cls = stOwn.getFirst().getLong("cls")
+            List<DbRec> stPV = metaService.getIdsPV(isObj, cls)
             if (!stPV.isEmpty()) {
-                String whePV = UtDb.getWhereIds(stPV, "pv");
-                List<DbRec> st = getRefData(isObj, owner, whePV);
+                String whePV = UtDb.getWhereIds(stPV, "pv")
+                List<DbRec> st = getRefData(isObj, owner, whePV)
                 if (!st.isEmpty()) {
-                    lstService.add("clientdata");
+                    lstService.add("clientdata")
                 }
                 //todo
                 /*
                 ...
-                st = objectService.getRefData(isObj, owner, whePV);
+                st = objectService.getRefData(isObj, owner, whePV)
                 if (!st.isEmpty()) {
-                    lstService.add("objectdata");
+                    lstService.add("objectdata")
                 }
-                st = getRefData(isObj, owner, whePV);
+                st = getRefData(isObj, owner, whePV)
                 if (!st.isEmpty()) {
-                    planService.lstService.add("plandata");
+                    planService.lstService.add("plandata")
                 }
                 ...
                 */
 
                 if (!lstService.isEmpty()) {
-                    throw new XError("{0} используется в [{0}]", name, String.join(", ", lstService));
+                    throw new XError("{0} используется в [{0}]", name, String.join(", ", lstService))
                 }
             }
 
@@ -115,11 +115,11 @@ class ClientDao {
         return dbClient.loadSql("""
                     select d.id from DataProp d, DataPropVal v
                     where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
-        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
+        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner))
     }
 
     public void deleteClientWithProps(long id) throws Exception {
-        validateForDelete(id, 1);
+        validateForDelete(id, 1)
         dbClient.execSql("""
             delete from DataPropVal
             where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);
@@ -128,114 +128,114 @@ class ClientDao {
                 except
                 select dataProp as id from DataPropVal
             );
-        """, Map.of("id", id));
+        """, Map.of("id", id))
         //
-        UtEntityData ue = new UtEntityData(dbClient, "Obj");
-        ue.deleteEntity(id);
+        UtEntityData ue = new UtEntityData(dbClient, "Obj")
+        ue.deleteEntity(id)
     }
 
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
-        long own;
-        UtEntityData ue = new UtEntityData(dbClient, "Obj");
+        long own
+        UtEntityData ue = new UtEntityData(dbClient, "Obj")
 
-        DbRec par = new DbRec(params);
+        DbRec par = new DbRec(params)
         if (mode.equalsIgnoreCase("ins")) {
-            if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан");
-            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
-            par.put("cls", map.getLong("Cls_Client"));
-            par.putIfAbsent("fullname", par.get("name"));
-            own = ue.insertEntity(par);
+            if (UtCnv.toString(params.get("name")).trim().isEmpty()) throw new XError("[name] не указан")
+            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "")
+            par.put("cls", map.getLong("Cls_Client"))
+            par.putIfAbsent("fullname", par.get("name"))
+            own = ue.insertEntity(par)
             //...
-            params.put("own", own);
+            params.put("own", own)
             //1 Prop_BIN
-            if (params.getString("BIN").isEmpty()) throw new XError("[BIN] не указан");
-            else fillProperties(1, "Prop_BIN", params);
+            if (params.getString("BIN").isEmpty()) throw new XError("[BIN] не указан")
+            else fillProperties(1, "Prop_BIN", params)
             //2 Prop_ContactPerson
-            if (params.getString("ContactPerson").isEmpty()) throw new XError("[ContactPerson] не указан");
-            else fillProperties(1, "Prop_ContactPerson", params);
+            if (params.getString("ContactPerson").isEmpty()) throw new XError("[ContactPerson] не указан")
+            else fillProperties(1, "Prop_ContactPerson", params)
             //3 Prop_ContactDetails
-            if (params.getString("ContactDetails").isEmpty()) throw new XError("[ContactDetails] не указан");
-            else fillProperties(1, "Prop_ContactDetails", params);
+            if (params.getString("ContactDetails").isEmpty()) throw new XError("[ContactDetails] не указан")
+            else fillProperties(1, "Prop_ContactDetails", params)
             //4 Prop_Description
-            if (!params.getString("Description").isEmpty()) fillProperties(1, "Prop_Description", params);
+            if (!params.getString("Description").isEmpty()) fillProperties(1, "Prop_Description", params)
         } else if (mode.equalsIgnoreCase("upd")) {
-            own = params.getLong("id");
-            ue.updateEntity(par);
+            own = params.getLong("id")
+            ue.updateEntity(par)
             //...
             //
-            params.put("own", own);
+            params.put("own", own)
             //1 Prop_BIN
             if (params.containsKey("idBIN"))
-                updateProperties("Prop_BIN", params);
+                updateProperties("Prop_BIN", params)
             //2 Prop_ContactPerson
             if (params.containsKey("idContactPerson"))
-                updateProperties("Prop_ContactPerson", params);
+                updateProperties("Prop_ContactPerson", params)
             //3 Prop_ContactDetails
             if (params.containsKey("idContactDetails"))
-                updateProperties("Prop_ContactDetails", params);
+                updateProperties("Prop_ContactDetails", params)
             //4 Prop_Description
             if (params.containsKey("idDescription"))
-                updateProperties("Prop_Description", params);
+                updateProperties("Prop_Description", params)
             else {
                 if (!params.getString("Description").isEmpty())
-                    fillProperties(1, "Prop_Description", params);
+                    fillProperties(1, "Prop_Description", params)
             }
         } else {
-            throw new XError("Unknown mode: " + mode);
+            throw new XError("Unknown mode: " + mode)
         }
         //
-        return loadClient(own);
+        return loadClient(own)
 
     }
 
     private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
 
-        long own = params.getLong("own");
-        String keyValue = cod.split("_")[1];
-        long objRef = params.getLong("obj" + keyValue);
-        long propVal = params.getLong("pv" + keyValue);
+        long own = params.getLong("own")
+        String keyValue = cod.split("_")[1]
+        long objRef = params.getLong("obj" + keyValue)
+        long propVal = params.getLong("pv" + keyValue)
         //
-        List<DbRec> stProp = metaService.getPropInfo(cod);
+        List<DbRec> stProp = metaService.getPropInfo(cod)
         //
-        long prop = stProp.getFirst().getLong("id");
-        long propType = stProp.getFirst().getLong("propType");
-        long attribValType = stProp.getFirst().getLong("attribValType");
-        Integer digit = null;
-        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
-        if (koef == 0) koef = 1;
-        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
+        long prop = stProp.getFirst().getLong("id")
+        long propType = stProp.getFirst().getLong("propType")
+        long attribValType = stProp.getFirst().getLong("attribValType")
+        Integer digit = null
+        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"))
+        if (koef == 0) koef = 1
+        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit")
         //
-        long idDP;
-        UtEntityData ue = new UtEntityData(dbClient, "DataProp");
-        DbRec recDP = ue.setDomain("DataProp", params);
-        String whe = "and isObj="+ isObj+" ";
+        long idDP
+        UtEntityData ue = new UtEntityData(dbClient, "DataProp")
+        DbRec recDP = ue.setDomain("DataProp", params)
+        String whe = "and isObj="+ isObj+" "
         if (stProp.getFirst().getLong("statusFactor") > 0) {
-            long fv = metaService.getDefaultStatus(prop);
-            whe += "and status = " + fv;
+            long fv = metaService.getDefaultStatus(prop)
+            whe += "and status = " + fv
         } else {
-            whe += "and status is null ";
+            whe += "and status is null "
         }
-        whe += " and provider is null ";
+        whe += " and provider is null "
 
         if (stProp.getFirst().getLong("providerTyp") > 0) {
-            whe += "and periodType is not null ";
+            whe += "and periodType is not null "
         } else {
-            whe += "and periodType is null ";
+            whe += "and periodType is null "
         }
         List<DbRec> stDP = dbClient.loadSql("""
                     select id from DataProp
                     where objOrRelObj=:own and prop=:prop
-                """ + whe, Map.of("own", own, "prop", prop));
+                """ + whe, Map.of("own", own, "prop", prop))
         if (!stDP.isEmpty()) {
-            idDP = stDP.getFirst().getLong("id");
+            idDP = stDP.getFirst().getLong("id")
         } else {
-            recDP.put("id", ue.getNextId("DataProp"));
-            recDP.put("isObj", isObj);
-            recDP.put("objOrRelObj", own);
-            recDP.put("prop", prop);
+            recDP.put("id", ue.getNextId("DataProp"))
+            recDP.put("isObj", isObj)
+            recDP.put("objOrRelObj", own)
+            recDP.put("prop", prop)
             if (stProp.getFirst().getLong("statusFactor") > 0) {
-                long fv = metaService.getDefaultStatus(prop);
-                recDP.put("status", fv);
+                long fv = metaService.getDefaultStatus(prop)
+                recDP.put("status", fv)
             }
             if (stProp.getFirst().getLong("providerTyp") > 0) {
                 //todo
@@ -243,138 +243,138 @@ class ClientDao {
                 //
             }
             if (stProp.getFirst().getBoolean("dependPeriod")) {
-                recDP.put("periodType", FD_PeriodType_consts.year);
+                recDP.put("periodType", FD_PeriodType_consts.year)
             }
-            idDP = dbClient.insertRec("DataProp", recDP);
+            idDP = dbClient.insertRec("DataProp", recDP)
         }
         //
-        DbRec recDPV = ue.setDomain("DataPropVal", params);
-        recDP.put("id", ue.getNextId("DataPropVal"));
-        recDPV.put("dataProp", idDP);
+        DbRec recDPV = ue.setDomain("DataPropVal", params)
+        recDP.put("id", ue.getNextId("DataPropVal"))
+        recDPV.put("dataProp", idDP)
         // Attrib str
         if (FD_AttribValType_consts.str == attribValType) {
             if (cod.equalsIgnoreCase("Prop_BIN") ||
                     cod.equalsIgnoreCase("Prop_ContactPerson") ||
                     cod.equalsIgnoreCase("Prop_ContactDetails")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
-                    recDPV.put("strVal", params.getString(keyValue));
+                    recDPV.put("strVal", params.getString(keyValue))
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // Attrib multiStr
         if (FD_AttribValType_consts.multistr == attribValType) {
             if (cod.equalsIgnoreCase("Prop_Description")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
-                    recDPV.put("multiStrVal", params.getString(keyValue));
+                    recDPV.put("multiStrVal", params.getString(keyValue))
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // Attrib dt
         if (FD_AttribValType_consts.dt == attribValType) {
             if (cod.equalsIgnoreCase("Prop_CreatedAt")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
-                    recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
+                    recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE))
                 }
-            } else throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            } else throw new XError("for dev: [{0}] отсутствует в реализации", cod)
         }
         // FV
         if (FD_PropType_consts.factor == propType) {
             if (cod.equalsIgnoreCase("Prop_UserSex")) {    //template
                 if (propVal > 0) {
-                    recDPV.put("propVal", propVal);
+                    recDPV.put("propVal", propVal)
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // Measure
         if (FD_PropType_consts.measure == propType) {
             if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
                 if (propVal > 0) {
-                    recDPV.put("propVal", propVal);
+                    recDPV.put("propVal", propVal)
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // Meter
         if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
             if (cod.equalsIgnoreCase("Prop_StartKm")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
-                    var v = UtCnv.toDouble(params.get(keyValue));
-                    v = v / koef;
+                    var v = UtCnv.toDouble(params.get(keyValue))
+                    v = v / koef
                     if (digit != null) {
-                        String vf = new DecimalFormat("#0.00").format(v);
-                        v = Double.parseDouble(vf);
+                        String vf = new DecimalFormat("#0.00").format(v)
+                        v = Double.parseDouble(vf)
                     }
-                    recDPV.put("numberVal", v);
+                    recDPV.put("numberVal", v)
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // Typ
         if (FD_PropType_consts.typ == propType) {
             if (cod.equalsIgnoreCase("Prop_LocationClsSection")) {
                 if (objRef > 0) {
-                    recDPV.put("propVal", propVal);
-                    recDPV.put("obj", objRef);
+                    recDPV.put("propVal", propVal)
+                    recDPV.put("obj", objRef)
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         //
         if (recDP.getLong("periodType") > 0) {
             if (!params.containsKey("dte"))
-                params.put("dte", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
+                params.put("dte", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE))
 
-            UtPeriod utPeriod = new UtPeriod();
-            LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
-            LocalDate d2 = utPeriod.calcDend(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
-            recDPV.put("dbeg", d1);
-            recDPV.put("dend", d2);
+            UtPeriod utPeriod = new UtPeriod()
+            LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0)
+            LocalDate d2 = utPeriod.calcDend(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0)
+            recDPV.put("dbeg", d1)
+            recDPV.put("dend", d2)
 
         } else {
-            recDPV.put("dbeg", LocalDate.parse("1800-01-01", DateTimeFormatter.ISO_DATE));
-            recDPV.put("dend", LocalDate.parse("3333-12-31", DateTimeFormatter.ISO_DATE));
+            recDPV.put("dbeg", LocalDate.parse("1800-01-01", DateTimeFormatter.ISO_DATE))
+            recDPV.put("dend", LocalDate.parse("3333-12-31", DateTimeFormatter.ISO_DATE))
         }
         //
-        long au = getUser();
-        recDPV.put("authUser", au);
-        recDPV.put("inputType", FD_InputType_consts.app);
-        long idDPV = ue.getNextId("DataPropVal");
-        recDPV.put("id", idDPV);
-        recDPV.put("ord", idDPV);
-        recDPV.put("timeStamp", LocalDate.now());
-        dbClient.insertRec("DataPropVal", recDPV);
+        long au = getUser()
+        recDPV.put("authUser", au)
+        recDPV.put("inputType", FD_InputType_consts.app)
+        long idDPV = ue.getNextId("DataPropVal")
+        recDPV.put("id", idDPV)
+        recDPV.put("ord", idDPV)
+        recDPV.put("timeStamp", LocalDate.now())
+        dbClient.insertRec("DataPropVal", recDPV)
     }
 
     private void updateProperties(String cod, DbRec params) throws Exception {
         //VariantMap mapProp = new VariantMap(params)
-        String keyValue = cod.split("_")[1];
-        long idVal = params.getLong("id" + keyValue);
-        long propVal = params.getLong("pv" + keyValue);
-        long objRef = params.getLong("obj" + keyValue);
+        String keyValue = cod.split("_")[1]
+        long idVal = params.getLong("id" + keyValue)
+        long propVal = params.getLong("pv" + keyValue)
+        long objRef = params.getLong("obj" + keyValue)
 
         //Store stProp = apiMeta().get(ApiMeta).getPropInfo(cod)
-        List<DbRec> stProp = metaService.getPropInfo(cod);
+        List<DbRec> stProp = metaService.getPropInfo(cod)
 
         //
-        long propType = stProp.getFirst().getLong("propType");
-        long attribValType = stProp.getFirst().getLong("attribValType");
-        Integer digit = null;
-        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
-        if (koef == 0) koef = 1;
-        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
-        String sql = "";
+        long propType = stProp.getFirst().getLong("propType")
+        long attribValType = stProp.getFirst().getLong("attribValType")
+        Integer digit = null
+        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"))
+        if (koef == 0) koef = 1
+        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit")
+        String sql = ""
         //def tmst = XDateTime.create(new Date()).toString(XDateTimeFormatter.ISO_DATE_TIME)
-        LocalDateTime tmst = LocalDateTime.now();
-        String strValue = params.getString(keyValue);
+        LocalDateTime tmst = LocalDateTime.now()
+        String strValue = params.getString(keyValue)
         // For Attrib
         if (FD_AttribValType_consts.str == attribValType) {
             if (cod.equalsIgnoreCase("Prop_BIN") ||
@@ -382,18 +382,18 @@ class ClientDao {
                     cod.equalsIgnoreCase("Prop_ContactDetails")) {   //For Template
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
                     sql = """
-                        delete from DataPropVal where id=:idVal;
+                        delete from DataPropVal where id=:idVal
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
-                        );
-                    """;
+                        )
+                    """
                 } else {
-                    sql = "update DataPropVal set strVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set strVal=:strValue, timeStamp=:tmst where id=:idVal"
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
 
@@ -407,12 +407,12 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 } else {
-                    sql = "update DataPropVal set multiStrVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set multiStrVal=:strValue, timeStamp=:tmst where id=:idVal"
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
 
@@ -426,19 +426,19 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 } else {
-                    sql = "update DataPropVal set dateTimeVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set dateTimeVal=:strValue, timeStamp=:tmst where id=:idVal"
                 }
             } else
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
         }
 
         // For FV
         if (FD_PropType_consts.factor == propType) {
             if (cod.equalsIgnoreCase("Prop_UserSex")) {    //template
                 if (propVal > 0)
-                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal"
                 else {
                     sql = """
                         delete from DataPropVal where id=:idVal;
@@ -447,10 +447,10 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
 
@@ -458,7 +458,7 @@ class ClientDao {
         if (FD_PropType_consts.measure == propType) {
             if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
                 if (propVal > 0)
-                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal"
                 else {
                     sql = """
                         delete from DataPropVal where id=:idVal;
@@ -467,25 +467,25 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
 
-        double numberVal = 0;
+        double numberVal = 0
         if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
             if (cod.equalsIgnoreCase("Prop_StartKm")) {
                 if (!params.getString(keyValue).isEmpty()) {
-                    double v = UtCnv.toDouble(params.get(keyValue));
-                    numberVal = v / koef;
+                    double v = UtCnv.toDouble(params.get(keyValue))
+                    numberVal = v / koef
                     if (digit != null) {
-                        BigDecimal bd = new BigDecimal(numberVal);
-                        bd = bd.setScale(digit, RoundingMode.HALF_UP);
-                        numberVal = bd.doubleValue();
+                        BigDecimal bd = new BigDecimal(numberVal)
+                        bd = bd.setScale(digit, RoundingMode.HALF_UP)
+                        numberVal = bd.doubleValue()
                     }
-                    sql = "update DataPropVal set numberVal=:numberVal, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set numberVal=:numberVal, timeStamp=:tmst where id=:idVal"
                 } else {
                     sql = """
                         delete from DataPropVal where id=:idVal;
@@ -494,17 +494,17 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
         // For Typ
         if (FD_PropType_consts.typ == propType) {
             if (cod.equalsIgnoreCase("Prop_User")) {
                 if (objRef > 0)
-                    sql = "update DataPropVal set propVal=:propVal, obj=:objRef, timeStamp=:tmst where id=:idVal";
+                    sql = "update DataPropVal set propVal=:propVal, obj=:objRef, timeStamp=:tmst where id=:idVal"
                 else {
                     sql = """
                         delete from DataPropVal where id=:idVal;
@@ -513,24 +513,24 @@ class ClientDao {
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """
                 }
             } else {
-                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod)
             }
         }
 
         dbClient.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
-                "propVal", propVal, "objRef", objRef, "numberVal", numberVal));
+                "propVal", propVal, "objRef", objRef, "numberVal", numberVal))
     }
 
 
     private long getUser() throws Exception {
-        //AuthService authSvc = mdb.getApp().bean(AuthService.class);
-        long au = 1; //todo authSvc.getCurrentUser().getAttrs().getLong("id");
+        //AuthService authSvc = mdb.getApp().bean(AuthService.class)
+        long au = 1 //todo authSvc.getCurrentUser().getAttrs().getLong("id")
         //if (au == 0)
         //    au = 1//throw new XError("notLogined")
-        return au;
+        return au
     }
 
 }
