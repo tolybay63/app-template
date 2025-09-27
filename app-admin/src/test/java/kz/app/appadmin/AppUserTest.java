@@ -63,11 +63,11 @@ public class AppUserTest {
     void test_insertUser() throws Exception {
         DbRec rec = new DbRec();
 
-        rec.put("login", "user");
+        //rec.put("login", "user");
         rec.put("passwd", "123");
         rec.put("name", "User Test");
         rec.put("email", "user@test.com");
-        rec.put("authUserGr", 1000);
+        rec.put("authUserGr", 2);
 
         DbRec res = userDao.insertUser(rec);
         UtDb.outRecord(Map.of(res.getLong("id"), res));

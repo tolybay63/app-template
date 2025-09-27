@@ -1,7 +1,6 @@
 package kz.app.appadmin.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
@@ -27,8 +26,8 @@ public class UserDao {
 
     public List<DbRec> loadGroup() throws Exception {
         return dbAdmin.loadSql("""
-            select * from AuthUserGr where 0=0
-        """, null);
+                    select * from AuthUserGr where 0=0
+                """, null);
     }
 
     public DbRec insertGroup(DbRec rec) throws Exception {
@@ -53,28 +52,29 @@ public class UserDao {
     //*************************************************************************//
     public List<DbRec> loadUsers(long id) throws Exception {
         return dbAdmin.loadSql("""
-            select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
-                name, fullName as fullName, passwd, phone, locked, cmt
-            from AuthUser where authUserGr=:id
-        """, Map.of("id", id));
+                    select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
+                        name, fullName as fullName, passwd, phone, locked, cmt
+                    from AuthUser where authUserGr=:id
+                """, Map.of("id", id));
     }
 
     public DbRec insertUser(DbRec rec) throws Exception {
         UtEntityData ue = new UtEntityData(dbAdmin, "AuthUser");
-        if (rec.getString("login").isEmpty()
-                && rec.getString("passwd").isEmpty()
-                    && rec.getString("email").isEmpty()
-                        && rec.getString("name").isEmpty()) {
+        if (!rec.getString("login").isEmpty()
+                && !rec.getString("passwd").isEmpty()
+                && !rec.getString("email").isEmpty()
+                && !rec.getString("name").isEmpty()) {
+            rec.putIfAbsent("accessLevel", 1L);
+            rec.putIfAbsent("fullName", rec.getString("name"));
+            rec.put("locked", 0);
+            long id = ue.getNextId("AuthUser");
+            rec.put("id", id);
+            rec.put("passwd", UtString.md5Str(rec.getString("passwd")));
+            dbAdmin.insertRec("AuthUser", rec);
+            return dbAdmin.loadRec("AuthUser", id);
+        } else {
             throw new XError("Заполните обязательные поля");
         }
-        rec.putIfAbsent("accessLevel", 1L);
-        rec.putIfAbsent("fullName", rec.getString("name"));
-        rec.put("locked", 0);
-        long id = ue.getNextId("AuthUser");
-        rec.put("id", id);
-        rec.put("passwd", UtString.md5Str(rec.getString("passwd")));
-        dbAdmin.insertRec("AuthUser", rec);
-        return dbAdmin.loadRec("AuthUser", id);
     }
 
     public DbRec updateUser(DbRec rec) throws Exception {

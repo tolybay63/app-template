@@ -19,23 +19,9 @@ public class AppAdminTest {
     @Autowired
     UserDao userDao;
 
-
-    @Test
-    void test1() throws Exception {
-        List<DbRec> res = adminDao.loadGroup();
-        UtDb.outTable(res);
-    }
-
-
     @Test
     void test2() throws Exception {
-        List<DbRec> res = adminDao.loadUsers(2);
-        UtDb.outTable(res);
-    }
-
-    @Test
-    void test3() throws Exception {
-        List<DbRec> res = userDao.loadGroup();
+        List<DbRec> res = adminDao.loadUsers();
         UtDb.outTable(res);
     }
 

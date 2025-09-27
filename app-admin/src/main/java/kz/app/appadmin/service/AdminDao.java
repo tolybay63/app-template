@@ -23,17 +23,15 @@ public class AdminDao {
     }
 
 
-    public List<DbRec> loadGroup() throws Exception {
+
+    public List<DbRec> loadUsers() throws Exception {
+
         return dbAdmin.loadSql("""
-            select * from AuthUserGr where 0=0
+            select u.id, u.login, u.name, u.fullName, u.email, u.phone, u.authUserGr, g.name as nameGroup
+            from AuthUserGr g
+            left join AuthUser u on g.id=u.authUserGr
+            where 0=0
         """, null);
-    }
-
-    public List<DbRec> loadUsers(long idGroup) throws Exception {
-
-        return dbAdmin.loadSql("""
-            select * from AuthUser where authUserGr=:id
-        """, Map.of("id", idGroup));
     }
 
 
