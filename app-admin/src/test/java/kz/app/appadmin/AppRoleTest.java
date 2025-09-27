@@ -50,5 +50,15 @@ public class AppRoleTest {
         UtDb.outTable(roleDao.loadRoles());
     }
 
+    //
+
+    @Test
+    void test_loadRolePermission() throws Exception {
+        String perm = roleDao.getPermissions(1002);
+        System.out.println(perm);
+    }
+
+
+
 
 }
