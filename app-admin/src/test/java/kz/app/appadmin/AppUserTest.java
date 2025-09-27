@@ -1,6 +1,5 @@
 package kz.app.appadmin;
 
-import kz.app.appadmin.service.AdminDao;
 import kz.app.appadmin.service.UserDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class AppUserTest {
 
     @Autowired
-    Db db;
+    Db dbAdmin;
 
     @Autowired
     UserDao userDao;
@@ -34,16 +33,16 @@ public class AppUserTest {
         rec.put("fullName", "Group Test Test");
         rec.put("cmt", "Group For Sprint");
         DbRec res = userDao.insertGroup(rec);
-        UtDb.outRecord(Map.of(res.getLong("id"), res));
+        UtDb.outRecord(res);
     }
 
     @Test
     void test_updateGroup() throws Exception {
-        DbRec rec = db.loadRec("AuthUserGr", 1000);
+        DbRec rec = dbAdmin.loadRec("AuthUserGr", 2, true);
         rec.put("name", "Group Test Update");
         rec.put("cmt", "Group For Sprint Update");
         DbRec res = userDao.updateGroup(rec);
-        UtDb.outRecord(Map.of(res.getLong("id"), res));
+        UtDb.outRecord(res);
     }
 
     @Test
@@ -70,7 +69,7 @@ public class AppUserTest {
         rec.put("authUserGr", 2);
 
         DbRec res = userDao.insertUser(rec);
-        UtDb.outRecord(Map.of(res.getLong("id"), res));
+        UtDb.outRecord(res);
     }
 
 }

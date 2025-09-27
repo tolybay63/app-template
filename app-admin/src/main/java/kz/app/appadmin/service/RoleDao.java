@@ -26,7 +26,7 @@ public class RoleDao {
 
     public List<DbRec> loadRoles() throws Exception {
         return dbAdmin.loadSql("""
-            select * from AuthRole where 0=0
+            select id, name, fullName as fullName, cmt from AuthRole where 0=0
         """, null);
     }
 
@@ -34,62 +34,19 @@ public class RoleDao {
         UtEntityData ue = new UtEntityData(dbAdmin, "AuthRole");
         long id = ue.getNextId("AuthRole");
         rec.put("id", id);
+        rec.putIfAbsent("fullName", rec.getString("name"));
         dbAdmin.insertRec("AuthRole", rec);
         return dbAdmin.loadRec("AuthRole", id);
     }
 
-    public DbRec updateGroup(DbRec rec) throws Exception {
-        dbAdmin.updateRec("AuthUserGr", rec);
+    public DbRec updateRole(DbRec rec) throws Exception {
+        dbAdmin.updateRec("AuthRole", rec);
         return rec;
     }
 
-    public void deleteGroup(long id) throws Exception {
-        dbAdmin.deleteRec("AuthUserGr", id);
+    public void deleteRole(long id) throws Exception {
+        dbAdmin.deleteRec("AuthRole", id);
     }
 
-    //*************************************************************************//
-    //***                          Методы пользователей                     ***//
-    //*************************************************************************//
-    public List<DbRec> loadUsers(long id) throws Exception {
-        return dbAdmin.loadSql("""
-            select * from AuthUser where authUserGr=:id
-        """, Map.of("id", id));
-    }
-
-    public DbRec insertUser(DbRec rec) throws Exception {
-        UtEntityData ue = new UtEntityData(dbAdmin, "AuthUser");
-        if (rec.getString("login").isEmpty()
-                && rec.getString("passwd").isEmpty()
-                    && rec.getString("email").isEmpty()
-                        && rec.getString("name").isEmpty()) {
-            throw new XError("Заполните обязательные поля");
-        }
-        rec.putIfAbsent("accessLevel", 1L);
-        rec.putIfAbsent("fullName", rec.getString("name"));
-        rec.put("locked", 0);
-        long id = ue.getNextId("AuthUser");
-        rec.put("id", id);
-        rec.put("passwd", UtString.md5Str(rec.getString("passwd")));
-        dbAdmin.insertRec("AuthUser", rec);
-        return dbAdmin.loadRec("AuthUser", id);
-    }
-
-    public DbRec updateUser(DbRec rec) throws Exception {
-        dbAdmin.updateRec("AuthUser", rec);
-        return rec;
-    }
-
-    public void deleteUser(long idUser) throws Exception {
-        String str = checkAccount(idUser);
-        if (!str.isEmpty()) {
-            throw new XError("Существует аккаунт пользователя [{0}]", str);
-        }
-        dbAdmin.deleteRec("AuthUser", idUser);
-    }
-
-    private String checkAccount(long idUser) throws Exception {
-        //...
-        return "";
-    }
 
 }

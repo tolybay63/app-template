@@ -44,7 +44,7 @@ public class UtDb {
         System.out.println(sb);
     }
 
-    public static void outRecord(Map<Long, DbRec> rec) {
+    public static void outRecord(DbRec rec) {
         System.out.println(rec.toString());
     }
 
