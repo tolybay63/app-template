@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 public class AppObjectTest {
@@ -25,9 +26,15 @@ public class AppObjectTest {
     void Test2() throws Exception {
         List<DbRec> res = objectDao.getObjInfo("(1068,1069,1070)", "");
         UtDb.outTable(res);
-
     }
 
-
+    @Test
+    void Test3() throws Exception {
+        DbRec params = new DbRec();
+        params.put("ids", "(1428,1160)");
+        params.put("codProp", 1142);
+        List<DbRec> res = objectDao.getObjInfoFromData(params);
+        UtDb.outTable(res);
+    }
 
 }

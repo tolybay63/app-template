@@ -34,6 +34,13 @@ public class ObjectDao {
         return res;
     }
 
+    /**
+     *
+     * @param idsObj (id1, id2,...)
+     * @param idsCls (id1, id2,...)
+     * @return [{id:1, cls:1, name: 'n1', fullName: 'fn1'}, {id:2, cls:1, name: 'n2', fullName: 'fn2'}]
+     * @throws Exception Exception
+     */
     public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
         String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
         return dbObject.loadSql("""
@@ -41,11 +48,19 @@ public class ObjectDao {
         """ + whe, null);
     }
 
+    /**
+     *
+     * @param params Map, keys:
+     *               1. ids - ids Owner,
+     *               2. codProp - prop of ObjRef
+     * @return [{id:1, cls:1, name: 'n1', fullName: 'fn1'}, {id:2, cls:1, name: 'n2', fullName: 'fn2'}]
+     * @throws Exception Exception
+     */
     public List<DbRec> getObjInfoFromData(DbRec params) throws Exception {
         return dbObject.loadSql("""
-            select o.id, v.obj, ov.name
+            select o.id, v.obj, ov.name, ov.fullName
             from Obj o
-                left join DataProp d on d.objorrelobj=o.id and prop=:Prop_Section
+                left join DataProp d on d.objorrelobj=o.id and prop=:codProp
                 left join DataPropVal v on d.id=v.dataProp
                 left join ObjVer ov on v.obj=ov.ownerVer and ov.lastVer=1
             where o.id in

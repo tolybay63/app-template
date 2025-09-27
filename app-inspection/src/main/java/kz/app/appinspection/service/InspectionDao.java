@@ -203,6 +203,7 @@ public class InspectionDao {
         //
         map = metaService.getIdFromCodOfEntity("Prop", "Prop_Section", "");
         map.put("ids", idsObject);
+        map.put("codProp", map.get("Prop_Section"));
         stObject = objectService.getObjInfoFromData(map);
         mapObject = UtDb.getMapping(stObject);
         //
