@@ -1,14 +1,18 @@
 package kz.app.appadmin.service;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtCnv;
+import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class UserDao {
@@ -90,6 +94,128 @@ public class UserDao {
         dbAdmin.deleteRec("AuthUser", idUser);
     }
 
+    //Permissions
+
+    public List<DbRec> loadUserPermissions(long user) throws Exception {
+        return dbAdmin.loadSql("""
+            with a as (
+                select permis from AuthUserPermis where authUser=:user
+            )
+            select p.* from Permis p, a where p.id=a.permis order by p.ord
+        """, Map.of("user", user));
+    }
+
+    public List<DbRec> loadUserPermissionsForUpd(long user) throws Exception {
+        return dbAdmin.loadSql("""
+            select p.*, a.id as idInTable, case when a.id is null then false else true end as checked
+            from permis p
+            left join AuthUserPermis a on p.id=a.permis and a.authUser=:user
+            order by p.ord
+        """, Map.of("user", user));
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public void saveUserPermis(Map<String, Object> params) throws Exception {
+        long user = UtCnv.toLong(params.get("user"));
+        List<Map<String, Object>> lstData = (List<Map<String, Object>>) params.get("data");
+
+        //Old ids
+        List<DbRec> oldSt = dbAdmin.loadSql("select id from AuthUserPermis where authUser=:u", Map.of("u", user));
+        Set<Object> oldIds = UtDb.uniqueValues(oldSt, "id");
+
+        //New ids
+        Set<Object> newIds = new HashSet<>();
+        for (Map<String, Object> map : lstData) {
+            newIds.add(UtCnv.toLong(map.get("idInTable")));
+        }
+        //Deleting
+        for (DbRec r : oldSt) {
+            if (!newIds.contains(r.getLong("id"))) {
+                try {
+                    dbAdmin.deleteRec("AuthUserPermis", r.getLong("id"));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        // Saving
+        UtEntityData ue = new UtEntityData(dbAdmin, "AuthUserPermis");
+        for (Map<String, Object> map : lstData) {
+            DbRec r = new DbRec();
+            if (!oldIds.contains(UtCnv.toLong(map.get("idInTable")))) {
+                long id = ue.getNextId("AuthUserPermis");
+                r.put("id", id);
+                r.put("authUser", user);
+                r.put("permis", UtCnv.toString(map.get("id")));
+                dbAdmin.insertRec("AuthUserPermis", r);
+            } else {
+                r.put("id", UtCnv.toLong(map.get("idInTable")));
+                r.put("authUser", user);
+                r.put("permis", UtCnv.toString(map.get("id")));
+                dbAdmin.updateRec("AuthUserPermis", r);
+            }
+        }
+
+    }
+
+
+    public List<DbRec> loadUserRoles(long user) throws Exception {
+        return dbAdmin.loadSql("""
+            select r.id, r.name, r.fullname as fullName, r.cmt
+            from AuthRoleUser u
+                left join AuthRole r on u.authRole=r.id
+            where u.authUser=:user
+        """, Map.of("user", user));
+    }
+
+    public List<DbRec> loadUserRolesForUpd(long user) throws Exception {
+        return dbAdmin.loadSql("""
+            select r.id, r.name, r.fullname as fullName, r.cmt,
+                case when u.id is null then false else true end as checked
+            from AuthRole r
+                left join AuthRoleUser u on r.id=u.authRole and u.authUser=:user
+        """, Map.of("user", user));
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public void saveUserRole(long user, List<Map<String, Long>> data) throws Exception {
+        //Old ids : id(AuthRoleUser)
+        List<DbRec> oldSt = dbAdmin.loadSql("select id, authRole from AuthRoleUser where authUser=:u", Map.of("u", user));
+        Set<Object> oldIds = UtDb.uniqueValues(oldSt, "authRole");
+
+        //New ids
+        Set<Object> newIds = new HashSet<>();
+        for (Map<String, Long> map : data) {
+            newIds.add(UtCnv.toLong(map.get("id")));
+        }
+
+        //Deleting
+        for (DbRec r : oldSt) {
+            if (!newIds.contains(r.getLong("authRole"))) {
+                try {
+                    dbAdmin.deleteRec("AuthRoleUser", r.getLong("id"));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        // Saving
+        UtEntityData ue = new UtEntityData(dbAdmin, "AuthRoleUser");
+        for (Map<String, Long> map : data) {
+            DbRec r = new DbRec();
+            if (!oldIds.contains(UtCnv.toLong(map.get("id")))) {
+                long id = ue.getNextId("AuthRoleUser");
+                r.put("id", id);
+                r.put("authUser", user);
+                r.put("authRole", UtCnv.toLong(map.get("id")));
+                r.put("ord", id);
+                dbAdmin.insertRec("AuthRoleUser", r);
+            }
+        }
+    }
+
+    //************* todo
     private String checkAccount(long idUser) throws Exception {
         //...
         return "";

@@ -64,7 +64,7 @@ public class RoleDao {
         return UtString.join(set, "; ");
     }
 
-    public List<DbRec> loadRolePermis(long role) throws Exception {
+    public List<DbRec> loadRolePermissions(long role) throws Exception {
         return dbAdmin.loadSql("""
             with a as (
                 select permis from AuthRolePermis where authRole=:role
@@ -73,7 +73,7 @@ public class RoleDao {
         """, Map.of("role", role));
     }
 
-    public List<DbRec> loadRolePermisForUpd(long role) throws Exception {
+    public List<DbRec> loadRolePermissionsForUpd(long role) throws Exception {
         return dbAdmin.loadSql("""
             select p.*, a.id as idInTable, case when a.id is null then false else true end as checked
             from permis p
