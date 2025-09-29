@@ -22,7 +22,7 @@ public class PermissionDao {
 
     public List<DbRec> loadPermissions() throws Exception {
         return dbAdmin.loadSql("""
-            select * from AuthUserGr where 0=0 order by ord
+            select * from Permis where 0=0 order by ord
         """, null);
     }
 

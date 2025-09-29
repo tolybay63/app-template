@@ -19,8 +19,16 @@ public class AppPermissionTest {
     @Autowired
     PermissionDao permissionDao ;
 
+
     @Test
     void test1() throws Exception {
+        List<DbRec> res = permissionDao.loadPermissions();
+        UtDb.outTable(res);
+    }
+
+
+    @Test
+    void test2() throws Exception {
         Set<String> res = permissionDao.getLeaf("nsi:collection:ins");
         System.out.println(UtString.join(res, "; "));
     }

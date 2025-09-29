@@ -4,7 +4,6 @@ import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
-import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
