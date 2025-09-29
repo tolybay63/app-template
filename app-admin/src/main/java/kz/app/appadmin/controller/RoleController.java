@@ -3,10 +3,7 @@ package kz.app.appadmin.controller;
 import kz.app.appadmin.service.RoleDao;
 import kz.app.appcore.model.DbRec;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +14,10 @@ public class RoleController {
     @Autowired
     private RoleDao roleDao;
 
+/*    @GetMapping(value = "/loadRoles")
+    public List<DbRec> loadRoles() throws Exception {
+        return roleDao.loadRoles();
+    }*/
 
     @GetMapping(value = "/loadRoles")
     public List<DbRec> find(
@@ -24,7 +25,7 @@ public class RoleController {
         return roleDao.loadRoles();
     }
 
-    @GetMapping(value = "/insertRole")
+    @PostMapping(value = "/insertRole")
     public DbRec insertRole(@RequestParam DbRec rec) throws Exception {
         return roleDao.insertRole(rec);
     }
