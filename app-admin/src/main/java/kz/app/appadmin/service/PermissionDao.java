@@ -8,8 +8,7 @@ import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
@@ -78,4 +77,29 @@ public class PermissionDao {
         return dbAdmin.loadRec("Permis", rec.getLong("id"));
     }
 
+    public Set<String> getLeaf(String id) throws Exception {
+        List<DbRec> st = dbAdmin.loadSql("select * from Permis", null);
+        Map<String, DbRec> map = getMapping(st);
+        Set<String> leaf = new HashSet<String>();
+
+        DbRec record = map.get(id);
+
+        while (true) {
+            if (record != null) {
+                leaf.add(record.getString("id"));
+                record = map.get(record.getString("parent"));
+            } else {
+                break;
+            }
+        }
+        return leaf;
+    }
+
+    private Map<String, DbRec> getMapping(List<DbRec> lst) {
+        Map<String, DbRec> res = new HashMap<>();
+        for (DbRec map : lst) {
+            res.put(map.getString("id"), map);
+        }
+        return res;
+    }
 }

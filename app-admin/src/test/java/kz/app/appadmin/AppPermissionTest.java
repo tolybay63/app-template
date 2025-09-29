@@ -1,28 +1,28 @@
 package kz.app.appadmin;
 
 import kz.app.appadmin.service.AdminDao;
+import kz.app.appadmin.service.PermissionDao;
 import kz.app.appadmin.service.UserDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
+import kz.app.appcore.utils.UtString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
-public class AppAdminTest {
+public class AppPermissionTest {
 
     @Autowired
-    AdminDao adminDao;
-
-    @Autowired
-    UserDao userDao;
+    PermissionDao permissionDao ;
 
     @Test
     void test1() throws Exception {
-        List<DbRec> res = adminDao.loadUsers();
-        UtDb.outTable(res);
+        Set<String> res = permissionDao.getLeaf("nsi:collection:ins");
+        System.out.println(UtString.join(res, "; "));
     }
 
 
