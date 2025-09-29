@@ -44,4 +44,10 @@ public class RoleController {
     }
 
 
+
+    @GetMapping(value = "/getPermissions")
+    public String getPermissions_test(@RequestParam long role) throws Exception {
+        return roleDao.getPermissions(role);
+    }
+
 }

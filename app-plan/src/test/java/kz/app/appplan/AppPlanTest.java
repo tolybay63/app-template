@@ -16,7 +16,7 @@ public class AppPlanTest {
     PlanDao planDao;
 
     @Test
-    void test1() throws Exception {
+    void loadPlan_test() throws Exception {
         DbRec params = new DbRec();
         params.put("date", "2025-07-29");
         params.put("periodType", 11);

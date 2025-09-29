@@ -51,7 +51,7 @@ public class AppRoleTest {
     //
 
     @Test
-    void loadRolePermission_test() throws Exception {
+    void getPermissions_test() throws Exception {
         String perm = roleDao.getPermissions(1002);
         System.out.println(perm);
     }

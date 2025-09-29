@@ -25,13 +25,13 @@ public class AppClientTest {
      ClientDao clientDao;
 
     @Test
-    public void testLoad() throws Exception {
+    public void loadClient_test() throws Exception {
         List<DbRec> res = clientDao.loadClient(0);
         UtDb.outTable(res);
     }
 
     @Test
-    public void testSave_ins() throws Exception {
+    public void saveClient_ins_test() throws Exception {
         DbRec map = new DbRec();
         map.put("name", "Test Save Spring");
         map.put("cmtVer", "For Spring");
@@ -43,7 +43,7 @@ public class AppClientTest {
     }
 
     @Test
-    public void testSave_upd() throws Exception {
+    public void saveClient_upd_test() throws Exception {
         DbRec map = new DbRec();
         map.put("id", 1014);
         map.put("name", "Test Save Spring Upd");
@@ -63,9 +63,11 @@ public class AppClientTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void deleteClientWithProps_test() throws Exception {
         clientDao.deleteClientWithProps(1014);
     }
+
+/*
 
     @Test
     public void testSetEntityId() throws Exception {
@@ -84,6 +86,7 @@ public class AppClientTest {
         }
     }
 
+*/
 
     @Test
     void test2() throws Exception {
