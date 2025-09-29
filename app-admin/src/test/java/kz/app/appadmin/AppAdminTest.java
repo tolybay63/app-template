@@ -16,11 +16,8 @@ public class AppAdminTest {
     @Autowired
     AdminDao adminDao;
 
-    @Autowired
-    UserDao userDao;
-
     @Test
-    void test1() throws Exception {
+    void loadUsers_test() throws Exception {
         List<DbRec> res = adminDao.loadUsers();
         UtDb.outTable(res);
     }

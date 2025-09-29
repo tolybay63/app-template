@@ -20,13 +20,13 @@ public class AppRoleTest {
     RoleDao roleDao;
 
     @Test
-    void test_loadRole() throws Exception {
+    void loadRoles_test() throws Exception {
         List<DbRec> res = roleDao.loadRoles();
         UtDb.outTable(res);
     }
 
     @Test
-    void test_insertRole() throws Exception {
+    void insertRole_test() throws Exception {
         DbRec rec = new DbRec();
         rec.put("name", "Тестировщик");
         rec.put("cmt", "Group For Sprint");
@@ -35,7 +35,7 @@ public class AppRoleTest {
     }
 
     @Test
-    void test_updateRole() throws Exception {
+    void updateRole_test() throws Exception {
         DbRec rec = dbAdmin.loadRec("AuthRole", 1003, true);
         rec.put("fullname", "Тестировщик Update");
         DbRec res = roleDao.updateRole(rec);
@@ -43,7 +43,7 @@ public class AppRoleTest {
     }
 
     @Test
-    void test_deleteRole() throws Exception {
+    void deleteRole_test() throws Exception {
         roleDao.deleteRole(2000);
         UtDb.outTable(roleDao.loadRoles());
     }
@@ -51,7 +51,7 @@ public class AppRoleTest {
     //
 
     @Test
-    void test_loadRolePermission() throws Exception {
+    void loadRolePermission_test() throws Exception {
         String perm = roleDao.getPermissions(1002);
         System.out.println(perm);
     }

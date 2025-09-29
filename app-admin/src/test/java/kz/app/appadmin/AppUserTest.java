@@ -21,13 +21,13 @@ public class AppUserTest {
     UserDao userDao;
 
     @Test
-    void test_loadGroup() throws Exception {
+    void loadGroup_test() throws Exception {
         List<DbRec> res = userDao.loadGroup();
         UtDb.outTable(res);
     }
 
     @Test
-    void test_insertGroup() throws Exception {
+    void insertGroup_test() throws Exception {
         DbRec rec = new DbRec();
         rec.put("name", "Group Test");
         rec.put("fullName", "Group Test Test");
@@ -37,7 +37,7 @@ public class AppUserTest {
     }
 
     @Test
-    void test_updateGroup() throws Exception {
+    void updateGroup_test() throws Exception {
         DbRec rec = dbAdmin.loadRec("AuthUserGr", 2, true);
         rec.put("name", "Group Test Update");
         rec.put("cmt", "Group For Sprint Update");
@@ -46,20 +46,20 @@ public class AppUserTest {
     }
 
     @Test
-    void test_deleteGroup() throws Exception {
+    void deleteGroup_test() throws Exception {
         userDao.deleteGroup(1001);
     }
 
     //**********************
 
     @Test
-    void test_loadUsers() throws Exception {
+    void loadUsers_test() throws Exception {
         List<DbRec> res = userDao.loadUsers(2);
         UtDb.outTable(res);
     }
 
     @Test
-    void test_insertUser() throws Exception {
+    void insertUser_test() throws Exception {
         DbRec rec = new DbRec();
 
         //rec.put("login", "user");

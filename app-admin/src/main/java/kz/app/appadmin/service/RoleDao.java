@@ -23,9 +23,7 @@ public class RoleDao {
     }
 
 
-    //*************************************************************************//
-    //***                   Методы групп пользователей                      ***//
-    //*************************************************************************//
+    //***                   Roles                      ***//
 
     public List<DbRec> loadRoles() throws Exception {
         return dbAdmin.loadSql("""
@@ -51,7 +49,7 @@ public class RoleDao {
         dbAdmin.deleteRec("AuthRole", id);
     }
 
-    //**** Permissions
+    //***                   Permissions                  ***//
 
     public String getPermissions(long role) throws Exception {
         List<DbRec> st = dbAdmin.loadSql("""

@@ -21,14 +21,14 @@ public class AppPermissionTest {
 
 
     @Test
-    void test1() throws Exception {
+    void loadPermissions_test() throws Exception {
         List<DbRec> res = permissionDao.loadPermissions();
         UtDb.outTable(res);
     }
 
 
     @Test
-    void test2() throws Exception {
+    void getLeaf_test() throws Exception {
         Set<String> res = permissionDao.getLeaf("nsi:collection:ins");
         System.out.println(UtString.join(res, "; "));
     }

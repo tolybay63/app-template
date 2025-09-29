@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-// dao utils
 
 /**
  *
@@ -21,8 +20,6 @@ public class AdminDao {
     public AdminDao(Db dbAdmin) {
         this.dbAdmin = dbAdmin;
     }
-
-
 
     public List<DbRec> loadUsers() throws Exception {
 
