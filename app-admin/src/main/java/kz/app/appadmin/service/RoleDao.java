@@ -51,7 +51,7 @@ public class RoleDao {
 
     //***                   Permissions                  ***//
 
-    public String getPermissions(long role) throws Exception {
+    public String getRolePermissions(long role) throws Exception {
         List<DbRec> st = dbAdmin.loadSql("""
             select p.text from AuthRolePermis r, Permis p where r.authRole=:id and r.permis=p.id
             order by p.ord
@@ -80,7 +80,7 @@ public class RoleDao {
     }
 
     @SuppressWarnings("CallToPrintStackTrace")
-    public void saveRolePermis(Map<String, Object> params) throws Exception {
+    public void saveRolePermission(Map<String, Object> params) throws Exception {
         long role = UtCnv.toLong(params.get("role"));
         List<Map<String, Object>> lstData = (List<Map<String, Object>>) params.get("data");
 
