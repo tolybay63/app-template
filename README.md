@@ -277,3 +277,13 @@ cd app-filestorage
 Каждый модуль соберется в свою папку, см. папки `*/build/libs/*.jar`
 
 Подробная инструкция по разворачиванию на тестовом сервере [README.test-srv.md](README.test-srv.md).
+app-admin	19090
+app-meta	19091
+app-nsi		19092
+app-object	19093
+app-plan	19094
+app-personnal	19095
+app-structure	19096
+app-inspect	19097
+app-client	19098
+app-incident	19099
