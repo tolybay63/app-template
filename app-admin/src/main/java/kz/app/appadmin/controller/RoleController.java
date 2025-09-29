@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-// DAO
-
 @RestController
 @RequestMapping("/role")
 public class RoleController {
@@ -27,20 +25,15 @@ public class RoleController {
     }
 
     @GetMapping(value = "/insertRole")
-    public DbRec find(
-            @RequestParam("rec") DbRec rec
-    ) throws Exception {
+    public DbRec insertRole(@RequestParam DbRec rec) throws Exception {
         return roleDao.insertRole(rec);
     }
 
-/*
+
     @GetMapping(value = "/updateRole")
-    public DbRec find(
-            @RequestParam("rec") DbRec rec
-    ) throws Exception {
+    public DbRec updateRole(@RequestParam DbRec rec) throws Exception {
         return roleDao.updateRole(rec);
     }
-*/
 
 
     @GetMapping(value = "/deleteRole")
