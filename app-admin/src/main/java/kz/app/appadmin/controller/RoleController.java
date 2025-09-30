@@ -26,8 +26,8 @@ public class RoleController {
     }
 
     @GetMapping(value = "/loadRole")
-    public DbRec loadRole(@RequestParam("role") long id) throws Exception {
-        return roleDao.loadRole(id);
+    public DbRec loadRole(@RequestParam("role") long role) throws Exception {
+        return roleDao.loadRole(role);
     }
     
 
