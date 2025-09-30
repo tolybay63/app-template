@@ -8,10 +8,7 @@ import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class RoleDao {
@@ -21,6 +18,13 @@ public class RoleDao {
     public RoleDao(Db dbAdmin) {
         this.dbAdmin = dbAdmin;
     }
+
+    public List<DbRec> loadTest(DbRec rec) throws Exception {
+        List<DbRec> result = new ArrayList<>();
+        result.add((DbRec) rec);
+        return result;
+    }
+
 
 
     //***                   Roles                      ***//
