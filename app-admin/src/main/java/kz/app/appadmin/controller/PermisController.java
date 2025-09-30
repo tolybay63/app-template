@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 // DAO
 
@@ -20,12 +21,16 @@ public class PermisController {
     private PermissionDao permissionDao;
 
 
+    @GetMapping(value = "/getLeaf")
+    public Set<String> getLeaf(@RequestParam String id) throws Exception {
+        return permissionDao.getLeaf(id);
+    }
+
     @GetMapping(value = "/loadPermissions")
     public List<DbRec> find(
     ) throws Exception {
         return permissionDao.loadPermissions();
     }
-
 
 
 }

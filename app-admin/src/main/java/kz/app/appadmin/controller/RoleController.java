@@ -58,4 +58,14 @@ public class RoleController {
         return roleDao.getRolePermissions(role);
     }
 
+    @GetMapping(value = "/loadRolePermissions")
+    public List<DbRec> loadRolePermissions(@RequestParam long role) throws Exception {
+        return roleDao.loadRolePermissions(role);
+    }
+
+    @GetMapping(value = "/loadRolePermissionsForUpd")
+    public List<DbRec> loadRolePermissionsForUpd(@RequestParam long role) throws Exception {
+        return roleDao.loadRolePermissionsForUpd(role);
+    }
+
 }

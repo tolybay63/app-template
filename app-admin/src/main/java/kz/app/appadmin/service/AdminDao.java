@@ -2,6 +2,7 @@ package kz.app.appadmin.service;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appdbtools.repository.Db;
+import kz.app.appmeta.service.MetaDao;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,9 +17,11 @@ public class AdminDao {
 
 
     private final Db dbAdmin;
+    private final MetaDao metaService;
 
-    public AdminDao(Db dbAdmin) {
+    public AdminDao(Db dbAdmin, MetaDao metaService) {
         this.dbAdmin = dbAdmin;
+        this.metaService = metaService;
     }
 
     public List<DbRec> loadUsers() throws Exception {
