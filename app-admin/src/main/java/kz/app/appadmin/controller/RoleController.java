@@ -25,13 +25,20 @@ public class RoleController {
         return roleDao.loadRoles();
     }
 
+    @GetMapping(value = "/loadRole")
+    public DbRec loadRole(@RequestParam("role") long id) throws Exception {
+        return roleDao.loadRole(id);
+    }
+    
+
+
     @PostMapping(value = "/insertRole")
     public DbRec insertRole(@RequestParam DbRec rec) throws Exception {
         return roleDao.insertRole(rec);
     }
 
 
-    @GetMapping(value = "/updateRole")
+    @PostMapping(value = "/updateRole")
     public DbRec updateRole(@RequestParam DbRec rec) throws Exception {
         return roleDao.updateRole(rec);
     }

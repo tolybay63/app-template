@@ -26,6 +26,13 @@ public class AppRoleTest {
     }
 
     @Test
+    void loadRole_test() throws Exception {
+        DbRec res = roleDao.loadRole(1000);
+        UtDb.outRecord(res);
+    }
+
+
+    @Test
     void insertRole_test() throws Exception {
         DbRec rec = new DbRec();
         rec.put("name", "Тестировщик");

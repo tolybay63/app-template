@@ -31,6 +31,11 @@ public class RoleDao {
         """, null);
     }
 
+    public DbRec loadRole(long role) throws Exception {
+        return dbAdmin.loadRec("AuthRole", role);
+    }
+
+
     public DbRec insertRole(DbRec rec) throws Exception {
         UtEntityData ue = new UtEntityData(dbAdmin, "AuthRole");
         long id = ue.getNextId("AuthRole");
