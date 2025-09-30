@@ -19,4 +19,4 @@ COPY ./data/html /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
 
 # Открываем порты
-EXPOSE 80 8080 8090 19090
+EXPOSE 80 8080 8090 8081 8082 19090
