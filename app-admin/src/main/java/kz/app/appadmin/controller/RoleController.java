@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/role")
@@ -100,6 +101,13 @@ public class RoleController {
     public List<DbRec> loadRolePermissionsForUpd(@RequestParam long role) throws Exception {
         return roleDao.loadRolePermissionsForUpd(role);
     }
+
+    @PostMapping(value = "/saveRolePermissions")
+    public void saveRolePermissions(@RequestBody Map<String, Object> params) throws Exception {
+        roleDao.saveRolePermission(params);
+    }
+
+
 
 
 }
