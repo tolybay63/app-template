@@ -10,18 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- *
- */
 @Component
 public class DictDao {
 
-
-    //private final Db dbAdmin;
     private final MetaDao metaService;
 
-    public DictDao(/*Db dbAdmin,*/ MetaDao metaService) {
-        //this.dbAdmin = dbAdmin;
+    public DictDao(MetaDao metaService) {
         this.metaService = metaService;
     }
 
@@ -36,6 +30,7 @@ public class DictDao {
 
     }
 
+    //todo
     private long getAccessLevel() throws Exception {
         long al = 1;
 

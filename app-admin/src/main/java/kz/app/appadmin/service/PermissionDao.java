@@ -1,13 +1,10 @@
 package kz.app.appadmin.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
 
-import java.sql.SQLException;
 import java.util.*;
 
 

@@ -19,13 +19,6 @@ public class RoleDao {
         this.dbAdmin = dbAdmin;
     }
 
-    public List<DbRec> loadTest(DbRec rec) throws Exception {
-        List<DbRec> result = new ArrayList<>();
-        result.add((DbRec) rec);
-        return result;
-    }
-
-
 
     //***                   Roles                      ***//
 

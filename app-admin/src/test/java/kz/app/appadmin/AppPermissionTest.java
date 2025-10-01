@@ -1,8 +1,6 @@
 package kz.app.appadmin;
 
-import kz.app.appadmin.service.AdminDao;
 import kz.app.appadmin.service.PermissionDao;
-import kz.app.appadmin.service.UserDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
