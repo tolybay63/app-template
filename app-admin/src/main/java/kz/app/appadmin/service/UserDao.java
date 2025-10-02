@@ -5,6 +5,7 @@ import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
+import kz.app.appcore.utils.consts.FD_AccessLevel_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,32 @@ public class UserDao {
                 """, null);
     }
 
+    public List<DbRec> loadGroupForSelect(long group) throws Exception {
+
+        //todo AuthUser au = authSvc.getCurrentUser();
+        //long al = au.getAttrs().getLong("accessLevel");
+
+        long al = 10;
+        List<DbRec> st = dbAdmin.loadSql("""
+                    select * from authUserGr
+                    where (id in (
+                        select authUserGr from authUser
+                        where accessLevel <= :al
+                        ) or id not in (
+                        select authUserGr from authUser
+                        where accessLevel <= :al
+                        )) and id <> :id
+                """, Map.of("al", al, "id", group));
+
+        Set<Object> ids = UtDb.uniqueValues(st, "id");
+        st.forEach(r -> {
+            if (!ids.contains(r.getLong("parent")))
+                r.put("parent", null);
+        });
+        return st;
+    }
+
+
     public DbRec insertGroup(DbRec rec) throws Exception {
         UtEntityData ue = new UtEntityData(dbAdmin, "AuthUserGr");
         long id = ue.getNextId("AuthUserGr");
@@ -47,13 +74,22 @@ public class UserDao {
         return rec;
     }
 
-    public void deleteGroup(long id) throws Exception {
-        dbAdmin.deleteRec("AuthUserGr", id);
+    public void deleteGroup(long group) throws Exception {
+        dbAdmin.deleteRec("AuthUserGr", group);
     }
 
     //*************************************************************************//
     //***                          Методы пользователей                     ***//
     //*************************************************************************//
+
+    public DbRec newRec(long gr) throws Exception {
+        DbRec rec = new DbRec();
+        rec.put("authUserGr", gr);
+        rec.put("locked", false);
+        rec.put("accessLevel", FD_AccessLevel_consts.common);
+        return rec;
+    }
+
     public List<DbRec> loadUsers(long id) throws Exception {
         return dbAdmin.loadSql("""
                     select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
@@ -70,7 +106,11 @@ public class UserDao {
                 && !rec.getString("name").isEmpty()) {
             rec.putIfAbsent("accessLevel", 1L);
             rec.putIfAbsent("fullName", rec.getString("name"));
-            rec.put("locked", 0);
+            rec.remove("psw2");
+            if (rec.getBoolean("locked"))
+                rec.put("locked", 1);
+            else
+                rec.put("locked", 0);
             long id = ue.getNextId("AuthUser");
             rec.put("id", id);
             rec.put("passwd", UtString.md5Str(rec.getString("passwd")));

@@ -22,6 +22,8 @@ public class MetaDao {
         return dbMeta.loadSql("select id, text from "+dictName + " where id <= "+accessLevel, null);
     }
 
+
+
     public DbRec getIdFromCodOfEntity(String entity, String cod, String prefixcod) throws Exception {
         String sql = "select id, cod from " + entity + " where cod like :cod";
         if (!prefixcod.isEmpty()) {

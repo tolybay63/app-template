@@ -37,7 +37,6 @@ public class RoleDao {
         UtEntityData ue = new UtEntityData(dbAdmin, "AuthRole");
         long id = ue.getNextId("AuthRole");
         rec.put("id", id);
-        rec.putIfAbsent("fullName", rec.getString("name"));
         dbAdmin.insertRec("AuthRole", rec);
         return dbAdmin.loadRec("AuthRole", id);
     }
@@ -66,9 +65,9 @@ public class RoleDao {
     public List<DbRec> loadRolePermissions(long role) throws Exception {
         return dbAdmin.loadSql("""
             with a as (
-                select permis from AuthRolePermis where authRole=:role
+                select permis, accessLevel from AuthRolePermis where authRole=:role
             )
-            select p.* from Permis p, a where p.id=a.permis order by p.ord
+            select p.*, a.accessLevel from Permis p, a where p.id=a.permis order by p.ord
         """, Map.of("role", role));
     }
 
@@ -114,11 +113,13 @@ public class RoleDao {
                 r.put("id", id);
                 r.put("authRole", role);
                 r.put("permis", UtCnv.toString(map.get("id")));
+                r.put("accessLevel", UtCnv.toLong(map.get("accessLevel")));
                 dbAdmin.insertRec("AuthRolePermis", r);
             } else {
                 r.put("id", UtCnv.toLong(map.get("idInTable")));
                 r.put("authRole", role);
                 r.put("permis", UtCnv.toString(map.get("id")));
+                r.put("accessLevel", UtCnv.toLong(map.get("accessLevel")));
                 dbAdmin.updateRec("AuthRolePermis", r);
             }
         }

@@ -27,12 +27,17 @@ public class DictDao {
             map.put(r.getLong("id"), r.getString("text"));
         }
         return map;
-
     }
+
+    public List<DbRec> loadDictAsStore(String dictName) throws Exception {
+        long al = getAccessLevel();
+        return metaService.loadDict(dictName, al);
+    }
+
 
     //todo
     private long getAccessLevel() throws Exception {
-        long al = 1;
+        long al = 10;
 
 /*
         long al = mdb.getApp().bean(AuthService.class)
