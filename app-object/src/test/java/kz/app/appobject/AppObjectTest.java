@@ -55,7 +55,7 @@ public class AppObjectTest {
     @Test
     public void saveObjectServed_upd_test() throws Exception {
 
-        List<DbRec> res = objectDao.loadObjectServed(1899);
+        List<DbRec> res = objectDao.loadObjectServed(2165);
         DbRec map = res.getFirst();
 //        map.put("id", 1899);
 //        map.put("cls", 1042);

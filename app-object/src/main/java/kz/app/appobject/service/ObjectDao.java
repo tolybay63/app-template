@@ -489,9 +489,7 @@ public class ObjectDao {
         long propVal = params.getLong("pv" + keyValue);
         long objRef = params.getLong("obj" + keyValue);
 
-        //Store stProp = apiMeta().get(ApiMeta).getPropInfo(cod)
         List<DbRec> stProp = metaService.getPropInfo(cod);
-
         //
         long propType = stProp.getFirst().getLong("propType");
         long attribValType = stProp.getFirst().getLong("attribValType");
@@ -499,9 +497,8 @@ public class ObjectDao {
         double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
         if (koef == 0) koef = 1;
         if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
-        String sql = "";
-        //def tmst = XDateTime.create(new Date()).toString(XDateTimeFormatter.ISO_DATE_TIME)
-        LocalDateTime tmst = LocalDateTime.now();
+        //
+        DbRec recDPV = dbObject.loadRec("DataPropVal", idVal);
         String strValue = params.getString(keyValue);
         // Attrib str
         if (FD_AttribValType_consts.str == attribValType) {
@@ -509,16 +506,16 @@ public class ObjectDao {
                     cod.equalsIgnoreCase("Prop_LocationDetails") ||
                     cod.equalsIgnoreCase("Prop_Number")) {   //For Template
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
-                    sql = """
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 } else {
-                    sql = "update DataPropVal set strVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    recDPV.put("strval", params.getString(keyValue));
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -528,16 +525,16 @@ public class ObjectDao {
         if (FD_AttribValType_consts.multistr == attribValType) {
             if (cod.equalsIgnoreCase("Prop_Description")) {
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
-                    sql = """
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 } else {
-                    sql = "update DataPropVal set multiStrVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    recDPV.put("multistrval", params.getString(keyValue));
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -549,16 +546,16 @@ public class ObjectDao {
                     cod.equalsIgnoreCase("Prop_CreatedAt") ||
                     cod.equalsIgnoreCase("Prop_UpdatedAt")) {
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
-                    sql = """
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 } else {
-                    sql = "update DataPropVal set dateTimeVal=:strValue, timeStamp=:tmst where id=:idVal";
+                    recDPV.put("datetimeval", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
                 }
             } else
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -567,17 +564,17 @@ public class ObjectDao {
         // FV
         if (FD_PropType_consts.factor == propType) {
             if (cod.equalsIgnoreCase("Prop_Side")) {    //template
-                if (propVal > 0)
-                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
-                else {
-                    sql = """
+                if (propVal > 0) {
+                    recDPV.put("propval", propVal);
+                } else {
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -588,16 +585,16 @@ public class ObjectDao {
         if (FD_PropType_consts.measure == propType) {
             if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
                 if (propVal > 0)
-                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
+                    recDPV.put("propval", propVal);
                 else {
-                    sql = """
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -619,16 +616,16 @@ public class ObjectDao {
                         bd = bd.setScale(digit, RoundingMode.HALF_UP);
                         numberVal = bd.doubleValue();
                     }
-                    sql = "update DataPropVal set numberVal=:numberVal, timeStamp=:tmst where id=:idVal";
+                    recDPV.put("numberval", numberVal);
                 } else {
-                    sql = """
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
@@ -639,25 +636,28 @@ public class ObjectDao {
             if (cod.equalsIgnoreCase("Prop_ObjectType") ||
                     cod.equalsIgnoreCase("Prop_Section") ||
                     cod.equalsIgnoreCase("Prop_User")) {
-                if (objRef > 0)
-                    sql = "update DataPropVal set propVal=:propVal, obj=:objRef, timeStamp=:tmst where id=:idVal";
-                else {
-                    sql = """
+                if (objRef > 0) {
+                    recDPV.put("propval", propVal);
+                    recDPV.put("obj", objRef);
+                } else {
+                    dbObject.execSql("""
                         delete from DataPropVal where id=:idVal;
                         delete from DataProp where id in (
                             select id from DataProp
                             except
                             select dataProp as id from DataPropVal
                         );
-                    """;
+                    """, null);
                 }
             } else {
                 throw new XError("for dev: [{0}] отсутствует в реализации", cod);
             }
         }
-
-        dbObject.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
-                "propVal", propVal, "objRef", objRef, "numberVal", numberVal));
+        long au = getUser();
+        recDPV.put("authuser", au);
+        recDPV.put("inputtype", FD_InputType_consts.app);
+        recDPV.put("timestamp", LocalDate.now());
+        dbObject.updateRec("DataPropVal", recDPV);
     }
 
     private long getUser() throws Exception {
