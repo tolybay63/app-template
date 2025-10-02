@@ -3,10 +3,7 @@ package kz.app.appadmin.controller;
 import kz.app.appadmin.service.PermissionDao;
 import kz.app.appcore.model.DbRec;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -27,9 +24,23 @@ public class PermisController {
     }
 
     @GetMapping(value = "/loadPermissions")
-    public List<DbRec> find(
-    ) throws Exception {
+    public List<DbRec> loadPermissions() throws Exception {
         return permissionDao.loadPermissions();
+    }
+
+    @GetMapping(value = "/delete")
+    public void delete(@RequestParam String id) throws Exception {
+        permissionDao.delete(id);
+    }
+
+    @PostMapping(value = "/insert")
+    public DbRec insert(@RequestBody DbRec rec) throws Exception {
+        return permissionDao.insert(rec);
+    }
+
+    @PostMapping(value = "/update")
+    public DbRec update(@RequestBody DbRec rec) throws Exception {
+        return permissionDao.update(rec);
     }
 
 

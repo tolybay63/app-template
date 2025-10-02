@@ -45,13 +45,13 @@ public class PermissionDao {
         }
     }
 
-    public void delete(DbRec rec) throws Exception {
-        validateRec(rec.getString("id"));
+    public void delete(String id) throws Exception {
+        validateRec(id);
 
         String sql = """
             delete from Permis where id=:id;
         """;
-        dbAdmin.execSql(sql, Map.of("id", rec.getString("id")));
+        dbAdmin.execSql(sql, Map.of("id", id));
     }
 
     public DbRec update(DbRec rec) throws Exception {
@@ -71,7 +71,7 @@ public class PermissionDao {
         rec.put("ord", ord+1);
         dbAdmin.execSql(sql, rec);
         //
-        return dbAdmin.loadRec("Permis", rec.getLong("id"));
+        return dbAdmin.loadSqlRec("select * from Permis where id=:id", Map.of("id", rec.getString("id")));
     }
 
     public Set<String> getLeaf(String id) throws Exception {
