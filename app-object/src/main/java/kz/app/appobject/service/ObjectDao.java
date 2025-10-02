@@ -3,13 +3,25 @@ package kz.app.appobject.service;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtDb;
+import kz.app.appcore.utils.UtPeriod;
 import kz.app.appcore.utils.XError;
+import kz.app.appcore.utils.consts.FD_AttribValType_consts;
+import kz.app.appcore.utils.consts.FD_InputType_consts;
+import kz.app.appcore.utils.consts.FD_PeriodType_consts;
+import kz.app.appcore.utils.consts.FD_PropType_consts;
+import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.appnsi.service.NsiDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +40,13 @@ public class ObjectDao {
         this.nsiService = nsiService;
     }
 
-
     public List<DbRec> loadObjectServed(long id) throws Exception {
         String idsCls = metaService.getIdsCls("Typ_Object");
 
         DbRec map = metaService.getIdFromCodOfEntity("Prop", "", "Prop_%");
-        String whe = "o.id=" + id;
+        String whe = " o.id=" + id;
         if (id == 0)
-            whe = "o.cls in " + idsCls;
+            whe = " o.cls in " + idsCls;
 
         List<DbRec> st = dbObject.loadSql("""
             select o.id, o.cls, v.name, v.fullName,
@@ -113,6 +124,550 @@ public class ObjectDao {
         return st;
     }
 
+    public List<DbRec> saveObjectServed(String mode, DbRec params) throws Exception {
+        long own;
+        UtEntityData ue = new UtEntityData(dbObject, "Obj");
+
+        DbRec par = new DbRec(params);
+        if (mode.equalsIgnoreCase("ins")) {
+            // find cls(linkCls)
+            long linkCls = params.getLong("linkCls");
+            DbRec map = metaService.getIdFromCodOfEntity("Typ", "Typ_Object", "");
+            if (map.isEmpty())
+                throw new XError("NotFoundCod@Typ_Object");
+            long cls = metaService.getLinkCls(linkCls, map.getLong("Typ_Object"));
+            par.put("cls", cls);
+            own = ue.insertEntity(par);
+            //...
+            params.put("own", own);
+            //1 Prop_ObjectType
+            if (params.getLong("objObjectType") > 0)
+                fillProperties(1, "Prop_ObjectType", params);
+            else
+                throw new XError("[Вид объекта] не указан");
+            //2 Prop_Section
+            if (params.getLong("objSection") > 0)
+                fillProperties(1, "Prop_Section", params);
+            else
+                throw new XError("[Место] не указан");
+            //3 Prop_StartKm
+            if (params.getLong("StartKm") > 0)
+                fillProperties(1, "Prop_StartKm", params);
+            else
+                throw new XError("[Начало (км)] не указан");
+            //4 Prop_FinishKm
+            if (params.getLong("FinishKm") > 0)
+                fillProperties(1, "Prop_FinishKm", params);
+            else
+                throw new XError("[Конец (км)] не указан");
+            //5 Prop_StartPicket
+            if (params.getLong("StartPicket") > 0)
+                fillProperties(1, "Prop_StartPicket", params);
+            //6 Prop_FinishPicket
+            if (params.getLong("FinishPicket") > 0)
+                fillProperties(1, "Prop_FinishPicket", params);
+            //7 Prop_PeriodicityReplacement
+            if (params.getLong("PeriodicityReplacement") > 0)
+                fillProperties(1, "Prop_PeriodicityReplacement", params);
+            //8 Prop_Side
+            if (params.getLong("fvSide") > 0)
+                fillProperties(1, "Prop_Side", params);
+            //9 Prop_Specs
+            if (!params.getString("Specs").isEmpty())
+                fillProperties(1, "Prop_Specs", params);
+            //10 Prop_LocationDetails
+            if (!params.getString("LocationDetails").isEmpty())
+                fillProperties(1, "Prop_LocationDetails", params);
+            //11 Prop_Number
+            if (!params.getString("Number").isEmpty())
+                fillProperties(1, "Prop_Number", params);
+            //12 Prop_InstallationDate
+            if (!params.getString("InstallationDate").isEmpty())
+                fillProperties(1, "Prop_InstallationDate", params);
+            //13 Prop_CreatedAt
+            if (!params.getString("CreatedAt").isEmpty())
+                fillProperties(1, "Prop_CreatedAt", params);
+            else
+                throw new XError("[CreatedAt] не указан");
+            //14 Prop_UpdatedAt
+            if (!params.getString("UpdatedAt").isEmpty())
+                fillProperties(1, "Prop_UpdatedAt", params);
+            else
+                throw new XError("[UpdatedAt] не указан");
+            //15 Prop_Description
+            if (!params.getString("Description").isEmpty())
+                fillProperties(1, "Prop_Description", params);
+            //16 Prop_User
+            if (params.getLong("objUser") > 0)
+                fillProperties(1, "Prop_User", params);
+            else
+                throw new XError("[User] не указан");
+        } else if (mode.equalsIgnoreCase("upd")) {
+            own = params.getLong("id");
+            ue.updateEntity(par);
+            //
+            params.put("own", own);
+
+            //2 Prop_Section
+            if (params.containsKey("idSection")) {
+                if (params.getLong("objSection") > 0)
+                    updateProperties("Prop_Section", params);
+                else
+                    throw new XError("[Место] не указан");
+            }
+
+            //3 Prop_StartKm
+            if (params.containsKey("idStartKm")) {
+                if (params.getLong("StartKm") > 0)
+                    updateProperties("Prop_StartKm", params);
+                else
+                    throw new XError("[Начало (км)] не указан");
+            }
+
+            //4 Prop_FinishKm
+            if (params.containsKey("idFinishKm")) {
+                if (params.getLong("FinishKm") > 0)
+                    updateProperties("Prop_FinishKm", params);
+                else
+                    throw new XError("[Конец (км)] не указан");
+            }
+
+            //5 Prop_StartPicket
+            if (params.containsKey("idStartPicket"))
+                updateProperties("Prop_StartPicket", params);
+            else if (params.getLong("StartPicket") > 0)
+                fillProperties(1, "Prop_StartPicket", params);
+
+            //6 Prop_FinishPicket
+            if (params.containsKey("idFinishPicket"))
+                updateProperties("Prop_FinishPicket", params);
+            else if (params.getLong("FinishPicket") > 0)
+                fillProperties(1, "Prop_FinishPicket", params);
+
+            //7 Prop_PeriodicityReplacement
+            if (params.containsKey("idPeriodicityReplacement"))
+                updateProperties("Prop_PeriodicityReplacement", params);
+            else if (params.getLong("PeriodicityReplacement") > 0)
+                fillProperties(1, "Prop_PeriodicityReplacement", params);
+
+            //8 Prop_Side
+            if (params.containsKey("idSide"))
+                updateProperties("Prop_Side", params);
+            else if (params.getLong("fvSide") > 0)
+                fillProperties(1, "Prop_Side", params);
+
+            //9 Prop_Specs
+            if (params.containsKey("idSpecs"))
+                updateProperties("Prop_Specs", params);
+            else if (!params.getString("Specs").isEmpty())
+                fillProperties(1, "Prop_Specs", params);
+
+            //10 Prop_LocationDetails
+            if (params.containsKey("idLocationDetails"))
+                updateProperties("Prop_LocationDetails", params);
+            else if (!params.getString("LocationDetails").isEmpty())
+                fillProperties(1, "Prop_LocationDetails", params);
+
+            //11 Prop_Number
+            if (params.containsKey("idNumber"))
+                updateProperties("Prop_Number", params);
+            else if (!params.getString("Number").isEmpty())
+                fillProperties(1, "Prop_Number", params);
+
+            //12 Prop_InstallationDate
+            if (params.containsKey("idInstallationDate"))
+                updateProperties("Prop_InstallationDate", params);
+            else if (!params.getString("InstallationDate").isEmpty())
+                fillProperties(1, "Prop_InstallationDate", params);
+
+            //14 Prop_UpdatedAt
+            if (params.containsKey("idUpdatedAt")) {
+                if (!params.getString("UpdatedAt").isEmpty())
+                    updateProperties("Prop_UpdatedAt", params);
+                else
+                    throw new XError("[UpdatedAt] не указан");
+            }
+
+            //15 Prop_Description
+            if (params.containsKey("idDescription"))
+                updateProperties("Prop_Description", params);
+            else if (!params.getString("Description").isEmpty())
+                fillProperties(1, "Prop_Description", params);
+
+            //16 Prop_User
+            if (params.containsKey("idUser")) {
+                if (params.getLong("objUser") > 0)
+                    updateProperties("Prop_User", params);
+                else
+                    throw new XError("[User] не указан");
+            }
+        } else {
+            throw new XError("Unknown mode: " + mode);
+        }
+        //
+        return loadObjectServed(own);
+    }
+
+    private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
+
+        long own = params.getLong("own");
+        String keyValue = cod.split("_")[1];
+        long objRef = params.getLong("obj" + keyValue);
+        long propVal = params.getLong("pv" + keyValue);
+        //
+        List<DbRec> stProp = metaService.getPropInfo(cod);
+        //
+        long prop = stProp.getFirst().getLong("id");
+        long propType = stProp.getFirst().getLong("propType");
+        long attribValType = stProp.getFirst().getLong("attribValType");
+        Integer digit = null;
+        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
+        if (koef == 0) koef = 1;
+        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
+        //
+        long idDP;
+        UtEntityData ue = new UtEntityData(dbObject, "DataProp");
+        DbRec recDP = ue.setDomain("DataProp", params);
+        String whe = "and isObj="+ isObj+" ";
+        if (stProp.getFirst().getLong("statusFactor") > 0) {
+            long fv = metaService.getDefaultStatus(prop);
+            whe += "and status = " + fv;
+        } else {
+            whe += "and status is null ";
+        }
+        whe += " and provider is null ";
+
+        if (stProp.getFirst().getLong("providerTyp") > 0) {
+            whe += "and periodType is not null ";
+        } else {
+            whe += "and periodType is null ";
+        }
+        List<DbRec> stDP = dbObject.loadSql("""
+                    select id from DataProp
+                    where objOrRelObj=:own and prop=:prop
+                """ + whe, Map.of("own", own, "prop", prop));
+        if (!stDP.isEmpty()) {
+            idDP = stDP.getFirst().getLong("id");
+        } else {
+            recDP.put("id", ue.getNextId("DataProp"));
+            recDP.put("isObj", isObj);
+            recDP.put("objOrRelObj", own);
+            recDP.put("prop", prop);
+            if (stProp.getFirst().getLong("statusFactor") > 0) {
+                long fv = metaService.getDefaultStatus(prop);
+                recDP.put("status", fv);
+            }
+            if (stProp.getFirst().getLong("providerTyp") > 0) {
+                //todo
+                // provider
+                //
+            }
+            if (stProp.getFirst().getBoolean("dependPeriod")) {
+                recDP.put("periodType", FD_PeriodType_consts.year);
+            }
+            idDP = dbObject.insertRec("DataProp", recDP);
+        }
+        //
+        DbRec recDPV = ue.setDomain("DataPropVal", params);
+        recDP.put("id", ue.getNextId("DataPropVal"));
+        recDPV.put("dataProp", idDP);
+        // Attrib str
+        if (FD_AttribValType_consts.str == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_Specs") ||
+                    cod.equalsIgnoreCase("Prop_LocationDetails") ||
+                    cod.equalsIgnoreCase("Prop_Number")) {
+                if (params.get(keyValue) != null || params.get(keyValue) != "") {
+                    recDPV.put("strVal", params.getString(keyValue));
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Attrib multiStr
+        if (FD_AttribValType_consts.multistr == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_Description")) {
+                if (params.get(keyValue) != null || params.get(keyValue) != "") {
+                    recDPV.put("multiStrVal", params.getString(keyValue));
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Attrib dt
+        if (FD_AttribValType_consts.dt == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_InstallationDate") ||
+                    cod.equalsIgnoreCase("Prop_CreatedAt") ||
+                    cod.equalsIgnoreCase("Prop_UpdatedAt")) {
+                if (params.get(keyValue) != null || params.get(keyValue) != "") {
+                    recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
+                }
+            } else throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+        }
+        // FV
+        if (FD_PropType_consts.factor == propType) {
+            if (cod.equalsIgnoreCase("Prop_Side")) {    //template
+                if (propVal > 0) {
+                    recDPV.put("propVal", propVal);
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Measure
+        if (FD_PropType_consts.measure == propType) {
+            if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
+                if (propVal > 0) {
+                    recDPV.put("propVal", propVal);
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Meter
+        if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
+            if (cod.equalsIgnoreCase("Prop_StartKm") ||
+                    cod.equalsIgnoreCase("Prop_StartPicket") ||
+                    cod.equalsIgnoreCase("Prop_FinishKm") ||
+                    cod.equalsIgnoreCase("Prop_FinishPicket") ||
+                    cod.equalsIgnoreCase("Prop_PeriodicityReplacement")) {
+                if (params.get(keyValue) != null || params.get(keyValue) != "") {
+                    var v = UtCnv.toDouble(params.get(keyValue));
+                    v = v / koef;
+                    if (digit != null) {
+                        String vf = new DecimalFormat("#0.00").format(v);
+                        v = Double.parseDouble(vf);
+                    }
+                    recDPV.put("numberVal", v);
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Typ
+        if (FD_PropType_consts.typ == propType) {
+            if (cod.equalsIgnoreCase("Prop_ObjectType") ||
+                    cod.equalsIgnoreCase("Prop_Section") ||
+                    cod.equalsIgnoreCase("Prop_User")) {
+                if (objRef > 0) {
+                    recDPV.put("propVal", propVal);
+                    recDPV.put("obj", objRef);
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        //
+        if (recDP.getLong("periodType") > 0) {
+            if (!params.containsKey("dte"))
+                params.put("dte", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
+
+            UtPeriod utPeriod = new UtPeriod();
+            LocalDate d1 = utPeriod.calcDbeg(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
+            LocalDate d2 = utPeriod.calcDend(LocalDate.parse(params.getString("dte"), DateTimeFormatter.ISO_DATE), recDP.getLong("periodType"), 0);
+            recDPV.put("dbeg", d1);
+            recDPV.put("dend", d2);
+
+        } else {
+            recDPV.put("dbeg", LocalDate.parse("1800-01-01", DateTimeFormatter.ISO_DATE));
+            recDPV.put("dend", LocalDate.parse("3333-12-31", DateTimeFormatter.ISO_DATE));
+        }
+        //
+        long au = getUser();
+        recDPV.put("authUser", au);
+        recDPV.put("inputType", FD_InputType_consts.app);
+        long idDPV = ue.getNextId("DataPropVal");
+        recDPV.put("id", idDPV);
+        recDPV.put("ord", idDPV);
+        recDPV.put("timeStamp", LocalDate.now());
+        dbObject.insertRec("DataPropVal", recDPV);
+    }
+
+    private void updateProperties(String cod, DbRec params) throws Exception {
+        //VariantMap mapProp = new VariantMap(params)
+        String keyValue = cod.split("_")[1];
+        long idVal = params.getLong("id" + keyValue);
+        long propVal = params.getLong("pv" + keyValue);
+        long objRef = params.getLong("obj" + keyValue);
+
+        //Store stProp = apiMeta().get(ApiMeta).getPropInfo(cod)
+        List<DbRec> stProp = metaService.getPropInfo(cod);
+
+        //
+        long propType = stProp.getFirst().getLong("propType");
+        long attribValType = stProp.getFirst().getLong("attribValType");
+        Integer digit = null;
+        double koef = UtCnv.toDouble(stProp.getFirst().get("koef"));
+        if (koef == 0) koef = 1;
+        if (stProp.getFirst().get("digit") != null) digit = stProp.getFirst().getInt("digit");
+        String sql = "";
+        //def tmst = XDateTime.create(new Date()).toString(XDateTimeFormatter.ISO_DATE_TIME)
+        LocalDateTime tmst = LocalDateTime.now();
+        String strValue = params.getString(keyValue);
+        // Attrib str
+        if (FD_AttribValType_consts.str == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_Specs") ||
+                    cod.equalsIgnoreCase("Prop_LocationDetails") ||
+                    cod.equalsIgnoreCase("Prop_Number")) {   //For Template
+                if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                } else {
+                    sql = "update DataPropVal set strVal=:strValue, timeStamp=:tmst where id=:idVal";
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Attrib multiStr
+        if (FD_AttribValType_consts.multistr == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_Description")) {
+                if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                } else {
+                    sql = "update DataPropVal set multiStrVal=:strValue, timeStamp=:tmst where id=:idVal";
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        //Attrib dt
+        if (FD_AttribValType_consts.dt == attribValType) {
+            if (cod.equalsIgnoreCase("Prop_InstallationDate") ||
+                    cod.equalsIgnoreCase("Prop_CreatedAt") ||
+                    cod.equalsIgnoreCase("Prop_UpdatedAt")) {
+                if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                } else {
+                    sql = "update DataPropVal set dateTimeVal=:strValue, timeStamp=:tmst where id=:idVal";
+                }
+            } else
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+        }
+
+        // FV
+        if (FD_PropType_consts.factor == propType) {
+            if (cod.equalsIgnoreCase("Prop_Side")) {    //template
+                if (propVal > 0)
+                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
+                else {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+
+        // Measure
+        if (FD_PropType_consts.measure == propType) {
+            if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
+                if (propVal > 0)
+                    sql = "update DataPropVal set propVal=:propVal, timeStamp=:tmst where id=:idVal";
+                else {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Meter
+        double numberVal = 0;
+        if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
+            if (cod.equalsIgnoreCase("Prop_StartKm") ||
+                    cod.equalsIgnoreCase("Prop_StartPicket") ||
+                    cod.equalsIgnoreCase("Prop_FinishKm") ||
+                    cod.equalsIgnoreCase("Prop_FinishPicket") ||
+                    cod.equalsIgnoreCase("Prop_PeriodicityReplacement")) {
+                if (!params.getString(keyValue).isEmpty()) {
+                    double v = UtCnv.toDouble(params.get(keyValue));
+                    numberVal = v / koef;
+                    if (digit != null) {
+                        BigDecimal bd = new BigDecimal(numberVal);
+                        bd = bd.setScale(digit, RoundingMode.HALF_UP);
+                        numberVal = bd.doubleValue();
+                    }
+                    sql = "update DataPropVal set numberVal=:numberVal, timeStamp=:tmst where id=:idVal";
+                } else {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+        // Typ
+        if (FD_PropType_consts.typ == propType) {
+            if (cod.equalsIgnoreCase("Prop_ObjectType") ||
+                    cod.equalsIgnoreCase("Prop_Section") ||
+                    cod.equalsIgnoreCase("Prop_User")) {
+                if (objRef > 0)
+                    sql = "update DataPropVal set propVal=:propVal, obj=:objRef, timeStamp=:tmst where id=:idVal";
+                else {
+                    sql = """
+                        delete from DataPropVal where id=:idVal;
+                        delete from DataProp where id in (
+                            select id from DataProp
+                            except
+                            select dataProp as id from DataPropVal
+                        );
+                    """;
+                }
+            } else {
+                throw new XError("for dev: [{0}] отсутствует в реализации", cod);
+            }
+        }
+
+        dbObject.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
+                "propVal", propVal, "objRef", objRef, "numberVal", numberVal));
+    }
+
+    private long getUser() throws Exception {
+        //AuthService authSvc = mdb.getApp().bean(AuthService.class);
+        long au = 1; //todo authSvc.getCurrentUser().getAttrs().getLong("id");
+        //if (au == 0)
+        //    au = 1//throw new XError("notLogined")
+        return au;
+    }
+
     /**
      *
      * @param idsObj (id1, id2,...)
@@ -145,8 +700,4 @@ public class ObjectDao {
             where o.id in
         """ + params.getString("ids"), params);
     }
-
-
-
-
 }

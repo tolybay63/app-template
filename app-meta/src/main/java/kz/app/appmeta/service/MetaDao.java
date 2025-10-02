@@ -127,4 +127,29 @@ public class MetaDao {
                 Map.of("clsORrel", clsORrel));
     }
 
+    public long getLinkCls(long cls,long typ) throws Exception {
+        List<DbRec> st = dbMeta.loadSql("""
+                with fv as (
+                    select cls,
+                    string_agg (cast(factorval as varchar(2000)), ',' order by factorval) as fvlist
+                    from clsfactorval
+                    where cls=:cls
+                    group by cls
+                )
+                select * from (
+                    select c.cls,
+                    string_agg (cast(c.factorval as varchar(1000)), ',' order by factorval) as fvlist
+                    from clsfactorval c, factor f
+                    where c.factorval =f.id and c.cls in (
+                        select id from Cls where typ=:typ
+                    )
+                    group by c.cls
+                ) t where t.fvlist in (select fv.fvlist from fv)
+                """, Map.of("cls", cls, "typ", typ));
+        if (st.isEmpty())
+            throw new XError("Not found cls");
+
+        return st.getFirst().getLong("cls");
+    }
+
 }
