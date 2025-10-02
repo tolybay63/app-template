@@ -17,7 +17,7 @@ public class AppObjectTest {
     ObjectDao objectDao;
 
     @Test
-    void Test1() throws Exception {
+    void loadObjectServed_test() throws Exception {
         List<DbRec> res = objectDao.loadObjectServed(0);
         UtDb.outTable(res);
     }
