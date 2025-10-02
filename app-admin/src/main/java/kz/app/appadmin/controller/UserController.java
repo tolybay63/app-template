@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 // DAO
 
@@ -57,6 +58,12 @@ public class UserController {
         userDao.deleteUser(user);
     }
 
+    @GetMapping(value = "/loadUser")
+    public DbRec loadUser(@RequestParam long user) throws Exception {
+        return userDao.loadUser(user);
+    }
+
+
     @PostMapping(value = "/insertUser")
     public DbRec insertUser(@RequestBody DbRec rec) throws Exception {
         return userDao.insertUser(rec);
@@ -66,6 +73,37 @@ public class UserController {
     public DbRec updateUser(@RequestBody DbRec rec) throws Exception {
         return userDao.updateUser(rec);
     }
+
+    @GetMapping(value = "/loadUserRoles")
+    public List<DbRec> loadUserRoles(@RequestParam long user) throws Exception {
+        return userDao.loadUserRoles(user);
+    }
+
+    @GetMapping(value = "/loadUserRolesForUpd")
+    public List<DbRec> loadUserRolesForUpd(@RequestParam long user) throws Exception {
+        return userDao.loadUserRolesForUpd(user);
+    }
+
+    @PostMapping(value = "/saveUserRoles")
+    public void saveUserRoles(@RequestBody Map<String, Object> params) throws Exception {
+        userDao.saveUserRoles(params);
+    }
+
+    @GetMapping(value = "/loadUserPermissions")
+    public List<DbRec> loadUserPermissions(@RequestParam long user) throws Exception {
+        return userDao.loadUserPermissions(user);
+    }
+
+    @GetMapping(value = "/loadUserPermissionsForUpd")
+    public List<DbRec> loadUserPermissionsForUpd(@RequestParam long user) throws Exception {
+        return userDao.loadUserPermissionsForUpd(user);
+    }
+
+    @PostMapping(value = "/saveUserPermissions")
+    public void saveUserPermissions(@RequestBody Map<String, Object> params) throws Exception {
+        userDao.saveUserPermissions(params);
+    }
+
 
 
 }

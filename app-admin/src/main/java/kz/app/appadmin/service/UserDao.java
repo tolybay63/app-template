@@ -85,17 +85,25 @@ public class UserDao {
     public DbRec newRec(long gr) throws Exception {
         DbRec rec = new DbRec();
         rec.put("authUserGr", gr);
-        rec.put("locked", false);
+        rec.put("locked", 0);
         rec.put("accessLevel", FD_AccessLevel_consts.common);
         return rec;
     }
 
-    public List<DbRec> loadUsers(long id) throws Exception {
+    public List<DbRec> loadUsers(long group) throws Exception {
         return dbAdmin.loadSql("""
                     select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
                         name, fullName as fullName, passwd, phone, locked, cmt
                     from AuthUser where authUserGr=:id
-                """, Map.of("id", id));
+                """, Map.of("id", group));
+    }
+
+    public DbRec loadUser(long user) throws Exception {
+        return dbAdmin.loadSqlRec("""
+                    select id, authUserGr as authUserGr, accessLevel as accessLevel, login, email,
+                        name, fullName as fullName, passwd, phone, locked, cmt
+                    from AuthUser where id=:id
+                """, Map.of("id", user));
     }
 
     public DbRec insertUser(DbRec rec) throws Exception {
@@ -107,10 +115,6 @@ public class UserDao {
             rec.putIfAbsent("accessLevel", 1L);
             rec.putIfAbsent("fullName", rec.getString("name"));
             rec.remove("psw2");
-            if (rec.getBoolean("locked"))
-                rec.put("locked", 1);
-            else
-                rec.put("locked", 0);
             long id = ue.getNextId("AuthUser");
             rec.put("id", id);
             rec.put("passwd", UtString.md5Str(rec.getString("passwd")));
@@ -139,15 +143,15 @@ public class UserDao {
     public List<DbRec> loadUserPermissions(long user) throws Exception {
         return dbAdmin.loadSql("""
             with a as (
-                select permis from AuthUserPermis where authUser=:user
+                select permis, accessLevel from AuthUserPermis where authUser=:user
             )
-            select p.* from Permis p, a where p.id=a.permis order by p.ord
+            select p.*, a.accessLevel from Permis p, a where p.id=a.permis order by p.ord
         """, Map.of("user", user));
     }
 
     public List<DbRec> loadUserPermissionsForUpd(long user) throws Exception {
         return dbAdmin.loadSql("""
-            select p.*, a.id as idInTable, case when a.id is null then false else true end as checked
+            select p.*, a.id as idInTable, a.accessLevel case when a.id is null then false else true end as checked
             from permis p
             left join AuthUserPermis a on p.id=a.permis and a.authUser=:user
             order by p.ord
@@ -155,7 +159,7 @@ public class UserDao {
     }
 
     @SuppressWarnings("CallToPrintStackTrace")
-    public void saveUserPermis(Map<String, Object> params) throws Exception {
+    public void saveUserPermissions(Map<String, Object> params) throws Exception {
         long user = UtCnv.toLong(params.get("user"));
         List<Map<String, Object>> lstData = (List<Map<String, Object>>) params.get("data");
 
@@ -187,17 +191,20 @@ public class UserDao {
                 r.put("id", id);
                 r.put("authUser", user);
                 r.put("permis", UtCnv.toString(map.get("id")));
+                r.put("accessLevel", UtCnv.toLong(map.get("accessLevel")));
                 dbAdmin.insertRec("AuthUserPermis", r);
             } else {
                 r.put("id", UtCnv.toLong(map.get("idInTable")));
                 r.put("authUser", user);
                 r.put("permis", UtCnv.toString(map.get("id")));
+                r.put("accessLevel", UtCnv.toLong(map.get("accessLevel")));
                 dbAdmin.updateRec("AuthUserPermis", r);
             }
         }
 
     }
 
+    //Roles
 
     public List<DbRec> loadUserRoles(long user) throws Exception {
         return dbAdmin.loadSql("""
@@ -218,7 +225,12 @@ public class UserDao {
     }
 
     @SuppressWarnings("CallToPrintStackTrace")
-    public void saveUserRole(long user, List<Map<String, Long>> data) throws Exception {
+    public void saveUserRoles(Map<String, Object> params) throws Exception {
+        long user = UtCnv.toLong(params.get("user"));
+        List<Map<String, Long>> data = (List<Map<String, Long>>) params.get("dta");
+
+
+        //long user, List<Map<String, Long>> data
         //Old ids : id(AuthRoleUser)
         List<DbRec> oldSt = dbAdmin.loadSql("select id, authRole from AuthRoleUser where authUser=:u", Map.of("u", user));
         Set<Object> oldIds = UtDb.uniqueValues(oldSt, "authRole");

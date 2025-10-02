@@ -73,7 +73,7 @@ public class RoleDao {
 
     public List<DbRec> loadRolePermissionsForUpd(long role) throws Exception {
         return dbAdmin.loadSql("""
-            select p.*, a.id as idInTable, case when a.id is null then false else true end as checked
+            select p.*, a.id as idInTable, a.accessLevel, case when a.id is null then false else true end as checked
             from permis p
             left join AuthRolePermis a on p.id=a.permis and a.authRole=:role
             order by p.ord
