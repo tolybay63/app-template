@@ -16,7 +16,7 @@ public class AppNsiTest {
     NsiDao nsiDao;
 
     @Test
-    void test1() throws Exception {
+    void loadDefects_test() throws Exception {
         List<DbRec> res = nsiDao.loadDefects(0L);
         UtDb.outTable(res);
     }

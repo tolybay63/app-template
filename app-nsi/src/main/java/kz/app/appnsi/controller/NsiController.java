@@ -18,9 +18,7 @@ public class NsiController {
     private NsiDao nsiDao;
 
     @GetMapping(value = "/loadDefects")
-    public List<DbRec> find(
-            @RequestParam("id") long id
-    ) throws Exception {
+    public List<DbRec> loadDefects(@RequestParam long id) throws Exception {
         return nsiDao.loadDefects(id);
     }
 
