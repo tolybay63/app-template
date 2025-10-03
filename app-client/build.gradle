@@ -25,6 +25,11 @@ dependencies {
     implementation project(':app-messagebroker')
     implementation project(':app-data')
     implementation project(':app-meta')
+    implementation project(':app-object')
+    implementation project(':app-plan')
+    implementation project(':app-personnal')
+    implementation project(':app-nsi')
+    implementation project(':app-structure')
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

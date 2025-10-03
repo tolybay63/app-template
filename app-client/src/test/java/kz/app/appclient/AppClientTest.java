@@ -65,7 +65,7 @@ public class AppClientTest {
 
     @Test
     public void deleteClientWithProps_test() throws Exception {
-        clientDao.deleteClientWithProps(1014);
+        clientDao.deleteClientWithProps(1015);
     }
 
 /*

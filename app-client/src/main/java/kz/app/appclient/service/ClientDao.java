@@ -10,6 +10,11 @@ import kz.app.appcore.utils.consts.FD_PropType_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
+import kz.app.appnsi.service.NsiDao;
+import kz.app.appobject.service.ObjectDao;
+import kz.app.apppersonnal.service.PersonnalDao;
+import kz.app.appplan.service.PlanDao;
+import kz.app.structure.service.StructureDao;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -29,10 +34,21 @@ public class ClientDao {
     private final Db dbClient;
 
     private final MetaDao metaService;
+    private final ObjectDao objectService;
+    private final PlanDao planService;
+    private final StructureDao structureService;
+    private final NsiDao nsiService;
+    private final PersonnalDao personnalService;
 
-    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService) {
+    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService, ObjectDao objectService,
+                     PlanDao planService, StructureDao structureService, NsiDao nsiService, PersonnalDao personnalService) {
         this.dbClient = dbClient;
         this.metaService = metaService;
+        this.objectService = objectService;
+        this.planService = planService;
+        this.structureService = structureService;
+        this.nsiService = nsiService;
+        this.personnalService = personnalService;
     }
 
 
@@ -69,58 +85,56 @@ public class ClientDao {
                 """ + whe, map);
     }
 
-    /**
-     *
-     * @param owner id Obj or RelObj
-     * @param isObj if isObj==1: Obj, isObj=0: RelObj
-     * @throws Exception throws
-     */
-    private void validateForDelete(long owner, int isObj) throws Exception {
-
-        String sql;
-        if (isObj == 0) {
-            sql = "select o.relcls as cls, v.name from RelObj o, RelObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
-        } else if (isObj == 1)
-            sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
-        else
-            throw new XError("[isObj] is mismatched");
-
-
-        List<DbRec> stOwn = dbClient.loadSql(sql, Map.of("id", owner));
-        if (!stOwn.isEmpty()) {
+    private void validateForDeleteObj(long owner) throws Exception {
+        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        DbRec recOwn = dbClient.loadSqlRec(sql, Map.of("id", owner), false);
+        if (recOwn != null) {
             List<String> lstService = new ArrayList<>();
-            String name = stOwn.getFirst().getString("name");
-            long cls = stOwn.getFirst().getLong("cls");
-            Set<Long> stPV = metaService.getIdsPV(isObj, cls, "");
+            String name = recOwn.getString("name");
+            long cls = recOwn.getLong("cls");
+            Set<Long> stPV = metaService.getIdsPV(1, cls, "");
             if (!(stPV.size()==1 && stPV.contains(0L))) {
-                String whePV =  "(" + UtString.join(stPV, ",") +")";
-                List<DbRec> st = getRefData(isObj, owner, whePV);
+                String whePV = "(" + UtString.join(stPV, ",") + ")";
+                //clientdata
+                List<DbRec> st = getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("clientdata");
                 }
-                //todo
-                /*
-                ...
-                st = objectService.getRefData(isObj, owner, whePV);
+                //objectdata
+                st =  objectService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
-                st = getRefData(isObj, owner, whePV);
+                //plandata
+                st =  planService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
-                    planService.lstService.add("plandata");
+                    lstService.add("plandata");
                 }
-                ...
-                */
-
+                //personnaldata
+                st =  personnalService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("personnaldata");
+                }
+                //nsidata
+                st =  nsiService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("nsidata");
+                }
+                //structuredata
+                st =  structureService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("structuredata");
+                }
+                //...
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{0}]", name, UtString.join(lstService, ", "));
                 }
             }
-
         }
     }
 
-    public List<DbRec> getRefData(int isObj, long owner, @NotNull String whePV) throws Exception {
+    //todo Метод должен быть во всех data-сервисах
+    public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
         return dbClient.loadSql("""
                     select d.id from DataProp d, DataPropVal v
                     where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
@@ -128,19 +142,9 @@ public class ClientDao {
     }
 
     public void deleteClientWithProps(long id) throws Exception {
-        validateForDelete(id, 1);
-        dbClient.execSql("""
-            delete from DataPropVal
-            where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);
-            delete from DataProp where id in (
-                select id from dataprop
-                except
-                select dataProp as id from DataPropVal
-            );
-        """, Map.of("id", id));
-        //
+        validateForDeleteObj(id);
         UtEntityData ue = new UtEntityData(dbClient, "Obj");
-        ue.deleteEntity(id);
+        ue.deleteObjWithProps(id);
     }
 
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {

@@ -35,5 +35,12 @@ public class PersonnalDao {
         """, Map.of("cls", cls));
     }
 
+    //todo Метод должен быть во всех data-сервисах
+    public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
+        return dbPersonnal.loadSql("""
+                    select d.id from DataProp d, DataPropVal v
+                    where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
+        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
+    }
 
 }

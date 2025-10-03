@@ -209,4 +209,12 @@ public class PlanDao {
         """+params.getString("ids"), params);
     }
 
+    //todo Метод должен быть во всех data-сервисах
+    public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
+        return dbPlan.loadSql("""
+                    select d.id from DataProp d, DataPropVal v
+                    where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
+        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
+    }
+
 }

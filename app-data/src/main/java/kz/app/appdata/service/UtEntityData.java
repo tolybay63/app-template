@@ -209,6 +209,20 @@ public class UtEntityData {
         }
     }
 
+    public void deleteObjWithProps(long obj) throws Exception {
+        db.execSql("""
+            delete from DataPropVal
+            where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);
+            delete from DataProp where id in (
+                select id from dataprop
+                except
+                select dataProp as id from DataPropVal
+            );
+        """, Map.of("id", obj));
+        //
+        deleteEntity(obj);
+    }
+
     protected void checkCod(String cod) throws Exception {
         if (cod.startsWith(EntityConstData.genCodPref)) {
             throw new XError("Код {0} не может начинаться с символа «_»", cod);
@@ -219,7 +233,6 @@ public class UtEntityData {
         }
         checkCodUnique(cod);
     }
-
 
     /**
      * Проверка уникальности кода сущности
@@ -242,6 +255,7 @@ public class UtEntityData {
             throw new XError("Введенный код [{3}] является кодом экземпляра [{1}] сущности [{0}]", entityInfo.getText(), inst, cod);
         }
     }
+
 
 
 }
