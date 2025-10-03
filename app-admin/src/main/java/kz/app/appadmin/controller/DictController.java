@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * End-points для справочников
+ */
 @RestController
 @RequestMapping("/dict")
 public class DictController {

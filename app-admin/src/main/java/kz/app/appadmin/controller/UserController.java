@@ -17,12 +17,22 @@ public class UserController {
     @Autowired
     private UserDao userDao;
 
-
+    /**
+     *
+     * @return Набор записей
+     * @throws Exception Ошибка
+     */
     @GetMapping(value = "/loadGroup")
     public List<DbRec> loadGroup() throws Exception {
         return userDao.loadGroup();
     }
 
+    /**
+     *
+     * @param group id группы пользователей
+     * @return Список пользователей группы [group]
+     * @throws Exception Ошибка
+     */
     @GetMapping(value = "/loadUsers")
     public List<DbRec> loadUsers(@RequestParam long group) throws Exception {
         return userDao.loadUsers(group);
