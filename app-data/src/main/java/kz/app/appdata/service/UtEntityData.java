@@ -6,12 +6,11 @@ import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UtEntityData {
     Db db;
@@ -221,6 +220,45 @@ public class UtEntityData {
         """, Map.of("id", obj));
         //
         deleteEntity(obj);
+    }
+
+    public List<DbRec> saveObjWithProps(String mode, DbRec params, String [] reqProps) throws Exception {
+        Set<String> setFields = new HashSet<String>();
+        for (String key : params.keySet()) {
+            if (key.startsWith("id"))
+                setFields.add(key.substring(2));
+            if (key.startsWith("obj"))
+                setFields.add(key.substring(3));
+            if (key.startsWith("fv"))
+                setFields.add(key.substring(2));
+            if (key.startsWith("pv"))
+                setFields.add(key.substring(2));
+            if (!Set.of("cls", "name", "fullname").contains(key)) {
+                setFields.add(key);
+            }
+        }
+        for (String prop : reqProps) {
+            
+
+            if (!setFields.contains(prop.split("_")[1])) {
+
+            }
+        }
+
+
+
+
+        if (mode.equalsIgnoreCase("ins")) {
+
+        } else if (mode.equalsIgnoreCase("upd")) {
+
+        } else {
+            throw new XError("Unknown mode: " + mode);
+        }
+
+
+
+        return null;
     }
 
     protected void checkCod(String cod) throws Exception {

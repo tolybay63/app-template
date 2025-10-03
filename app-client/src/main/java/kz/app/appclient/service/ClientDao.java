@@ -147,6 +147,11 @@ public class ClientDao {
         ue.deleteObjWithProps(id);
     }
 
+    public List<DbRec> saveClient2(String mode, DbRec params) throws Exception {
+        UtEntityData ue = new UtEntityData(dbClient, "Obj");
+        return ue.saveObjWithProps(mode, params, new String[] {"Prop_BIN", "Prop_ContactPerson", "Prop_ContactDetails"});
+    }
+
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
         long own;
         UtEntityData ue = new UtEntityData(dbClient, "Obj");
