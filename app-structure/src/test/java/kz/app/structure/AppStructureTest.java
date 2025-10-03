@@ -15,7 +15,7 @@ public class AppStructureTest {
     StructureDao structureDao;
 
     @Test
-    void Test1() throws Exception {
+    void getIdsObjLocation_test() throws Exception {
         Set<Object> res = structureDao.getIdsObjLocation(1069);
         System.out.println(res);
     }

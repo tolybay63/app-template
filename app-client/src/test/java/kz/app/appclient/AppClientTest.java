@@ -33,11 +33,12 @@ public class AppClientTest {
     @Test
     public void saveClient_ins_test() throws Exception {
         DbRec map = new DbRec();
-        map.put("name", "Test Save Spring");
+        map.put("name", "Test Save Spring 2");
         map.put("cmtVer", "For Spring");
-        map.put("BIN", "123456789012");
-        map.put("ContactPerson", "Фамилия И.О. Spring");
+        map.put("BIN", "023456789012");
+        map.put("ContactPerson", "Spring Spring");
         map.put("ContactDetails", "г. Астана, ул. 45б, офис 11, тел. 85-858-85 Spring");
+        map.put("Description", "For Spring");
         List<DbRec> res = clientDao.saveClient("ins", map);
         UtDb.outTable(res);
     }

@@ -10,6 +10,7 @@ import kz.app.appcore.utils.consts.FD_PropType_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -76,10 +77,15 @@ public class ClientDao {
      */
     private void validateForDelete(long owner, int isObj) throws Exception {
 
-        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        String sql;
         if (isObj == 0) {
             sql = "select o.relcls as cls, v.name from RelObj o, RelObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
-        }
+        } else if (isObj == 1)
+            sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        else
+            throw new XError("[isObj] is mismatched");
+
+
         List<DbRec> stOwn = dbClient.loadSql(sql, Map.of("id", owner));
         if (!stOwn.isEmpty()) {
             List<String> lstService = new ArrayList<>();
@@ -107,14 +113,14 @@ public class ClientDao {
                 */
 
                 if (!lstService.isEmpty()) {
-                    throw new XError("{0} используется в [{0}]", name, String.join(", ", lstService));
+                    throw new XError("{0} используется в [{0}]", name, UtString.join(lstService, ", "));
                 }
             }
 
         }
     }
 
-    public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
+    public List<DbRec> getRefData(int isObj, long owner, @NotNull String whePV) throws Exception {
         return dbClient.loadSql("""
                     select d.id from DataProp d, DataPropVal v
                     where d.id=v.dataProp and d.isObj=:isObj and v.propVal in

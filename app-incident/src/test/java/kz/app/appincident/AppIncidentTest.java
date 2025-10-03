@@ -16,7 +16,7 @@ public class AppIncidentTest {
     IncidentDao incidentDao;
 
     @Test
-    public void testLoad() throws Exception {
+    public void loadEvent_test() throws Exception {
         List<DbRec> res = incidentDao.loadEvent(0);
         UtDb.outTable(res);
     }

@@ -13,6 +13,7 @@ import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.appnsi.service.NsiDao;
+import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +32,13 @@ public class ObjectDao {
     private final Db dbObject;
     private final MetaDao metaService;
     private final NsiDao nsiService;
+    private final StructureDao structureService;
 
-    public ObjectDao(@Qualifier("dbObject") Db dbObject, MetaDao metaService, NsiDao nsiService) {
+    public ObjectDao(@Qualifier("dbObject") Db dbObject, MetaDao metaService, NsiDao nsiService, StructureDao structureService) {
         this.dbObject = dbObject;
         this.metaService = metaService;
         this.nsiService = nsiService;
+        this.structureService = structureService;
     }
 
     public List<DbRec> loadObjectServed(long id) throws Exception {
