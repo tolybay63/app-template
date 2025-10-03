@@ -1,6 +1,7 @@
 package kz.app.structure.service;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,11 +23,31 @@ public class StructureDao {
         this.metaService = metaService;
     }
 
+    public List<DbRec> loadObjTreeForSelect(String codTyp, String codProp) throws Exception {
+        String idsCls = metaService.getIdsCls(codTyp);
+
+        List<DbRec> st = dbStructure.loadSql("""
+            select o.id, v.name, v.objParent as parent, o.cls, 0 as pv
+            from Obj o
+                left join ObjVer v on o.id=v.ownerVer and v.lastVer=1
+            where o.cls in
+        """ + idsCls + " order by v.name", null);
+
+        for (DbRec r : st) {
+            Set<Long> setPV = metaService.getIdsPV(1, r.getLong("cls"), codProp);
+            if ((Long) setPV.toArray()[0]==0L)
+                throw new XError("Для класса [{0}] и пропа [{1}] не найден propVal", r.getLong("cls"), codProp);
+            r.put("pv", setPV.toArray()[0]);
+        }
+
+
+        return st;
+    }
+
 
     public DbRec getObjRec(long id) throws Exception {
         return dbStructure.loadRec("Obj", id, false);
     }
-
 
     public Set<Object> getIdsObjLocation(long obj) throws Exception {
         List<DbRec> st = dbStructure.loadSql("""

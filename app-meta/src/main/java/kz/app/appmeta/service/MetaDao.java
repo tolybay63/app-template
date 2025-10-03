@@ -1,6 +1,7 @@
 package kz.app.appmeta.service;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,8 +22,6 @@ public class MetaDao {
     public List<DbRec> loadDict(String dictName, long accessLevel) throws Exception {
         return dbMeta.loadSql("select id, text from "+dictName + " where id <= "+accessLevel, null);
     }
-
-
 
     public DbRec getIdFromCodOfEntity(String entity, String cod, String prefixcod) throws Exception {
         String sql = "select id, cod from " + entity + " where cod like :cod";
@@ -119,12 +118,21 @@ public class MetaDao {
         return st.getFirst().getLong("factorVal");
     }
 
-    public List<DbRec> getIdsPV(int isObj, long clsORrel) throws Exception {
+    public Set<Long> getIdsPV(int isObj, long clsORrel, String codProp) throws Exception {
+        String whe = "";
+        if (!codProp.isEmpty()) {
+            DbRec map = getIdFromCodOfEntity("Prop", codProp, "");
+            whe = " and prop="+map.getLong(codProp);
+        }
+
         String fld = "cls";
         if (isObj == 0)
             fld = "relcls";
-        return dbMeta.loadSql("select id as pv from PropVal where " +fld + "=:clsORrel",
+        List<DbRec> st = dbMeta.loadSql("select id as pv from PropVal where " +fld + "=:clsORrel" + whe,
                 Map.of("clsORrel", clsORrel));
+        Set<Long> set = UtDb.uniqueValues(st, "pv");
+        if (set.isEmpty()) set.add(0L);
+        return set;
     }
 
     public long getLinkCls(long cls,long typ) throws Exception {

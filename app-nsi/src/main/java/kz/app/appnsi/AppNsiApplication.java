@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appdbtools",
         //"kz.app.appstorage",
         "kz.app.appmeta",
+        "kz.app.structure",
         "kz.app.appnsi",
 })
 

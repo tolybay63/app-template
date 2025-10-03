@@ -4,6 +4,7 @@ import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
+import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,21 @@ import java.util.Map;
 public class NsiDao {
     private final Db dbNsi;
     private final MetaDao metaService;
+    private final StructureDao structureService;
 
-    public NsiDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService) {
+    public NsiDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService, StructureDao structureService) {
         this.dbNsi = dbNsi;
         this.metaService = metaService;
+        this.structureService = structureService;
     }
 
+    public List<DbRec> loadDepartments(String codTyp, String codProp) throws Exception {
+        return structureService.loadObjTreeForSelect(codTyp, codProp);
+    }
+
+
+
+    //
     public List<DbRec> loadDefects(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Defects", "");
         if (map.isEmpty())

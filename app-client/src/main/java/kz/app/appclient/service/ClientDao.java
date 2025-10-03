@@ -85,9 +85,9 @@ public class ClientDao {
             List<String> lstService = new ArrayList<>();
             String name = stOwn.getFirst().getString("name");
             long cls = stOwn.getFirst().getLong("cls");
-            List<DbRec> stPV = metaService.getIdsPV(isObj, cls);
-            if (!stPV.isEmpty()) {
-                String whePV = UtDb.getWhereIds(stPV, "pv");
+            Set<Long> stPV = metaService.getIdsPV(isObj, cls, "");
+            if (!(stPV.size()==1 && stPV.contains(0L))) {
+                String whePV =  "(" + UtString.join(stPV, ",") +")";
                 List<DbRec> st = getRefData(isObj, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("clientdata");
