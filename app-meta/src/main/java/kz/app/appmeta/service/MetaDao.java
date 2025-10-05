@@ -90,7 +90,7 @@ public class MetaDao {
         return st;
     }
 
-    public List<DbRec> getPropInfo(String codProp) throws Exception {
+    public DbRec getPropInfo(String codProp) throws Exception {
         List<DbRec> res = dbMeta.loadSql("""
                     select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isdependvalueonperiod as dependPeriod,
                         p.statusFactor, p.providerTyp, m.kfrombase as koef, p.digit
@@ -103,7 +103,7 @@ public class MetaDao {
         if (res.isEmpty()) {
             throw new XError("NotFoundPropCod@" + codProp);
         }
-        return res;
+        return res.getFirst();
     }
 
     public List<DbRec> getPropsInfo(String wheCodProps) throws Exception {
@@ -173,6 +173,12 @@ public class MetaDao {
             throw new XError("Not found cls");
 
         return st.getFirst().getLong("cls");
+    }
+
+    public List<DbRec> getFileName(String idsFile) throws Exception {
+        return dbMeta.loadSql("""
+            select id, originalFilename as filename from DbFileStorage where id in (
+        """+idsFile + ")", null);
     }
 
 }

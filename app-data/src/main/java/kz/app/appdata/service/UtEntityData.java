@@ -294,7 +294,7 @@ public class UtEntityData {
         }
     }
 
-    private void fillProperties(String cod, DbRec params, DbRec recProp) throws Exception {
+    public void fillProperties(String cod, DbRec params, DbRec recProp) throws Exception {
         long own = params.getLong("own");
         String keyValue = cod.split("_")[1];
         long objRef = params.getLong("obj" + keyValue);
@@ -444,7 +444,8 @@ public class UtEntityData {
             if (cod.equalsIgnoreCase("Prop_ObjectType") ||
                     cod.equalsIgnoreCase("Prop_Section") ||
                     cod.equalsIgnoreCase("Prop_User") ||
-                    cod.equalsIgnoreCase("Prop_LocationClsSection")) {
+                    cod.equalsIgnoreCase("Prop_LocationClsSection") ||
+                        cod.equalsIgnoreCase("Prop_LocationMulti")) {
                 if (objRef > 0) {
                     recDPV.put("propVal", propVal);
                     recDPV.put("obj", objRef);
@@ -654,7 +655,8 @@ public class UtEntityData {
             if (cod.equalsIgnoreCase("Prop_ObjectType") ||
                     cod.equalsIgnoreCase("Prop_Section") ||
                     cod.equalsIgnoreCase("Prop_User") ||
-                    cod.equalsIgnoreCase("Prop_LocationClsSection")) {
+                    cod.equalsIgnoreCase("Prop_LocationClsSection") ||
+                        cod.equalsIgnoreCase("Prop_LocationMulti")) {
                 if (objRef > 0) {
                     recDPV.put("propval", propVal);
                     recDPV.put("obj", objRef);

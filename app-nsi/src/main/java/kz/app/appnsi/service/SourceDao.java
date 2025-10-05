@@ -1,26 +1,23 @@
 package kz.app.appnsi.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtDb;
-import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
-import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Component
-public class NsiDao {
+public class SourceDao {
     private final Db dbNsi;
     private final MetaDao metaService;
     private final StructureDao structureService;
 
-    public NsiDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService, StructureDao structureService) {
+    public SourceDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService, StructureDao structureService) {
         this.dbNsi = dbNsi;
         this.metaService = metaService;
         this.structureService = structureService;
@@ -64,122 +61,6 @@ public class NsiDao {
         return structureService.loadObjTreeForSelect(codTyp, codProp);
     }
 
-    public DbRec loadDepartmentsWithFile(long obj) throws Exception {
-
-        DbRec map = metaService.getIdFromCodOfEntity("Prop", "Prop_LocationMulti", "");
-        map.put("obj", obj);
-
-        List<DbRec> st = dbNsi.loadSql("""
-            select v.obj
-            from DataProp d
-            left join DataPropVal v on d.id=v.dataprop
-            where d.isObj=1 and d.objOrRelObj=:obj and d.prop=:Prop_LocationMulti
-        """, map);
-
-        Set<Object> ids = UtDb.uniqueValues(st,"obj");
-
-        DbRec mapRez = new DbRec();
-        mapRez.put("departments", UtString.join(ids, ","));
-        //Files
-        List<DbRec> stDbFS = loadAttachedFiles(obj, "Prop_DocumentFiles");
-        //
-        mapRez.put("files", stDbFS);
-
-        return mapRez;
-    }
-
-    List<DbRec> loadAttachedFiles(long obj, String propCod) throws Exception {
-        DbRec map = metaService.getIdFromCodOfEntity("Prop", propCod, "");
-        if (map.isEmpty())
-            throw new XError("NotFoundCod@${propCod}");
-        map.put("id", obj);
-
-        List<DbRec> st = dbNsi.loadSql("""
-            select d.objorrelobj as obj, v.id as idDPV, v.fileVal as fileVal, null as fileName, v.cmt
-            from DataProp d, DataPropVal v
-            where d.id=v.dataprop and d.isObj=1 and d.objorrelobj=:id and d.prop=:propCod
-        """, map);
-
-        Set<Object> ids = UtDb.uniqueValues(st, "fileVal");
-        if (ids.isEmpty()) ids.add(0L);
-        String whe = UtString.join(ids, ",");
-        List<DbRec> stFS = metaService.getFileName(whe);
-        Map<Long, DbRec> mapFS = UtDb.getMapping(stFS);
-
-
-        for (DbRec r : st) {
-            DbRec rr = mapFS.get(r.getLong("fileVal"));
-            if (rr != null) {
-                r.put("fileName", rr.getString("filename"));
-            }
-        }
-        return st;
-    }
-
-    public void saveDepartment(DbRec params) throws Exception {
-        DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Location", "");
-        if (map.isEmpty())
-            throw new XError("NotFoundCod@Cls_Location");
-        long cls = map.getLong("Cls_Location");
-
-        map = metaService.getIdFromCodOfEntity("Prop", "Prop_LocationMulti", "");
-        if (map.isEmpty())
-            throw new XError("NotFoundCod@Prop_LocationMulti");
-        map.put("obj", params.getLong("obj"));
-
-        List<DbRec> stOld = dbNsi.loadSql("""
-            select v.id, v.obj
-            from DataProp d
-                left join DataPropVal v on d.id=v.dataprop
-            where d.isObj=1 and d.objOrRelObj=:obj and d.prop=:Prop_LocationMulti
-        """, map);
-
-        Set<Long> idsOld = UtDb.uniqueValues(stOld, "obj");
-        List<Long> idsNew = UtCnv.toListLong(params.get("ids"));
-
-        Set<Long> idsDelVal = new HashSet<>();
-        //Deleting
-        for (DbRec r : stOld) {
-            if (!idsNew.contains(r.getLong("obj"))) {
-                idsDelVal.add(r.getLong("id"));
-            }
-        }
-        if (!idsDelVal.isEmpty()) {
-            dbNsi.execSql("""
-                delete from DataPropVal where id in (
-            """ + UtString.join(idsDelVal, ",") +
-            """ 
-            );
-            delete from DataProp
-                where id in (
-                    select id from DataProp
-                    except
-                    select dataprop as id from DataPropVal
-                )
-            """, null);
-        }
-        //
-        //Adding
-        DbRec pms = new DbRec();
-        pms.put("own", params.getLong("obj"));
-        //cls ?
-        Map<Long, Long> mapPV = metaService.mapEntityIdFromPV("cls", false);
-        DbRec mapProp = metaService.getPropInfo("Prop_LocationMulti");
-        //
-        UtEntityData ue = new UtEntityData(dbNsi, "Obj");
-        for (long obj : idsNew) {
-            if (!idsOld.contains(obj)) {
-                pms.put("objLocationMulti", obj);
-                pms.put("pvLocationMulti", mapPV.get(cls));
-                ue.fillProperties("Prop_LocationMulti", pms, mapProp);
-            }
-        }
-
-    }
-
-
-
-        //
     public List<DbRec> loadDefects(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Defects", "");
         if (map.isEmpty())

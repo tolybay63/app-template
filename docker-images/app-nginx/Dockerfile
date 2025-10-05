@@ -19,4 +19,4 @@ COPY ./data/error-page /usr/share/nginx/error-page
 CMD ["nginx", "-g", "daemon off;"]
 
 # Открываем порты
-EXPOSE 80 8080 8090 19090
+EXPOSE 80 8080 8090 19090 19092

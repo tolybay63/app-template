@@ -23,11 +23,26 @@ public class AppNsiTest {
         UtDb.outTable(res);
     }
 
+    @Test
+    void loadSourceCollections_test() throws Exception {
+        List<DbRec> res = nsiDao.loadSourceCollections(0L);
+        UtDb.outTable(res);
+    }
 
     @Test
     void loadDepartments_test() throws Exception {
         List<DbRec> res = nsiDao.loadDepartments("Typ_Location", "Prop_LocationMulti");
         UtDb.outTable(res);
+    }
+
+    @Test
+    void loadDepartmentsWithFile_test() throws Exception {
+        DbRec res = nsiDao.loadDepartmentsWithFile(2292);
+        String deps = res.getString("departments");
+        List<DbRec> files = (List<DbRec>) res.get("files");
+
+        System.out.println(deps);
+        UtDb.outTable(files);
     }
 
 

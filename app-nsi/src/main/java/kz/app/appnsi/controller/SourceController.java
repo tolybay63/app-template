@@ -2,42 +2,37 @@ package kz.app.appnsi.controller;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appnsi.service.NsiDao;
+import kz.app.appnsi.service.SourceDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @RestController
-@RequestMapping("/nsi")
-public class NsiController {
+@RequestMapping("/source")
+public class SourceController {
 
     @Autowired
     private NsiDao nsiDao;
 
-    @GetMapping(value = "/source/loadSourceCollections")
+    @GetMapping(value = "/loadSourceCollections")
     public List<DbRec> loadSourceCollections(@RequestParam long obj) throws Exception {
         return nsiDao.loadSourceCollections(obj);
     }
 
-    @GetMapping(value = "/source/loadDepartments")
+    @GetMapping(value = "/loadDepartments")
     public List<DbRec> loadDepartments(@RequestParam String codTyp, String codProp) throws Exception {
         return nsiDao.loadDepartments(codTyp, codProp);
     }
 
-    @GetMapping(value = "/source/loadDepartmentsWithFile")
+    @GetMapping(value = "/loadDepartmentsWithFile")
     public DbRec loadDepartmentsWithFile(@RequestParam long obj) throws Exception {
         return nsiDao.loadDepartmentsWithFile(obj);
     }
 
-    @GetMapping(value = "/loadDefects")
-    public List<DbRec> loadDefects(@RequestParam long id) throws Exception {
-        return nsiDao.loadDefects(id);
+    @PostMapping(value = "/saveDepartment")
+    public void saveDepartment(@RequestBody DbRec rec) throws Exception {
+        nsiDao.saveDepartment(rec);
     }
-
 
 }
