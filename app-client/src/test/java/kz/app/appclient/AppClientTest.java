@@ -3,7 +3,6 @@ package kz.app.appclient;
 import kz.app.appclient.service.ClientDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
-import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +30,19 @@ public class AppClientTest {
     }
 
     @Test
-    public void saveClient_ins_test() throws Exception {
+    public void deleteClientWithProps_test() throws Exception {
+        clientDao.deleteClientWithProps(1020);
+    }
+
+    @Test
+    public void saveClient_test() throws Exception {
         DbRec map = new DbRec();
-        map.put("name", "Test Save Spring 2");
-        map.put("cmtVer", "For Spring");
-        map.put("BIN", "023456789012");
-        map.put("ContactPerson", "Spring Spring");
-        map.put("ContactDetails", "г. Астана, ул. 45б, офис 11, тел. 85-858-85 Spring");
-        map.put("Description", "For Spring");
+        map.put("name", "Test Spring Ver-2");
+        map.put("cmtVer", "For Spring Ver-2");
+        map.put("BIN", "1111111111111");
+        map.put("ContactPerson", "Spring Ver-2");
+        map.put("ContactDetails", "г. Астана, Ver-2");
+        map.put("Description", "For Spring Ver-2");
         List<DbRec> res = clientDao.saveClient("ins", map);
         UtDb.outTable(res);
     }
@@ -46,26 +50,18 @@ public class AppClientTest {
     @Test
     public void saveClient_upd_test() throws Exception {
         DbRec map = new DbRec();
-        map.put("id", 1014);
-        map.put("name", "Test Save Spring Upd");
-        map.put("cmtVer", "For Spring Upd");
-/*
-        map.put("idBIN", 1023);
-        map.put("BIN", "123456789012");
-        map.put("idContactPerson", 1024);
-        map.put("ContactPerson", "Фамилия И.О. Spring");
-        map.put("idContactDetails", 1025);
-        map.put("ContactDetails", "г. Астана, Spring");
-        map.put("idDescription", 1026);
- */
-        map.put("Description", "Test Save Spring Upd Description");
+        map.put("id", 1022);
+        map.put("name", "Test Spring Ver-2");
+        map.put("cmtVer", "For Spring Ver-2");
+        map.put("BIN", "1111111111111");
+        //map.put("idContactPerson", 1072);
+        map.put("ContactPerson", "Spring Ver-2 Update");
+        map.put("idContactDetails", 1074);
+        map.put("ContactDetails", "г. Астана, Ver-2 Update");
+        map.put("idDescription", 1070);
+        map.put("Description", "For Spring Ver-2 Update");
         List<DbRec> res = clientDao.saveClient("upd", map);
         UtDb.outTable(res);
-    }
-
-    @Test
-    public void deleteClientWithProps_test() throws Exception {
-        clientDao.deleteClientWithProps(1015);
     }
 
 /*

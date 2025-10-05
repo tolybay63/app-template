@@ -16,6 +16,7 @@ import kz.app.apppersonnal.service.PersonnalDao;
 import kz.app.appplan.service.PlanDao;
 import kz.app.structure.service.StructureDao;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -147,11 +148,71 @@ public class ClientDao {
         ue.deleteObjWithProps(id);
     }
 
-    public List<DbRec> saveClient2(String mode, DbRec params) throws Exception {
+    public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
+        //*** <begin Определяем обязательные свойства
+        String[] reqProps = new String[] {"Prop_BIN", "Prop_ContactPerson", "Prop_ContactDetails"};
+        //*** end>
+
+        if (params.getString("name").isEmpty()) throw new XError("[name] не указан");
+        params.putIfAbsent("fullname", params.get("name"));
+
+        //**** <begin Определяем класс, если с клиента не придет... *****************
+        if (params.getLong("cls")==0) {
+            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
+            params.put("cls", map.getLong("Cls_Client"));
+        }
+        //**** end>
+
+        Set<String> setFields = new HashSet<String>();
+        for (String key : params.keySet()) {
+            if (key.startsWith("id"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("obj"))
+                setFields.add("Prop_" + key.substring(3));
+            else if (key.startsWith("relobj"))
+                setFields.add("Prop_" + key.substring(6));
+            else if (key.startsWith("fv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("pv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (!Set.of("id", "cls", "name", "fullname", "cmt", "cmtVer").contains(key)) {
+                setFields.add("Prop_" + key);
+            }
+        }
+        //
+        for (String prop : reqProps) {
+            if (!setFields.contains(prop)) {
+                throw new Exception("Значение свойства ["+prop+"] обязательно");
+            }
+        }
+        //
+        String whePrp = "('" + UtString.join(setFields, "','") + "')";
+        List<DbRec> stProp = metaService.getPropsInfo(whePrp);
+        Map<String, DbRec> mapProp = new HashMap<>();
+        for (DbRec prop : stProp) {
+            mapProp.put(prop.getString("cod"), prop);
+        }
+        //
+        long own;
         UtEntityData ue = new UtEntityData(dbClient, "Obj");
-        return ue.saveObjWithProps(mode, params, new String[] {"Prop_BIN", "Prop_ContactPerson", "Prop_ContactDetails"});
+        if (mode.equalsIgnoreCase("ins")) {
+            own = ue.insertEntity(params);
+            params.put("own", own);
+        } else if (mode.equalsIgnoreCase("upd")) {
+            own = params.getLong("id");
+            ue.updateEntity(params);
+            params.put("own", own);
+        } else {
+            throw new XError("Unknown mode: " + mode);
+        }
+        //
+        ue.saveObjWithProps(mode, params, mapProp);
+        //
+        return loadClient(own);
     }
 
+//todo Delete!
+/*
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {
         long own;
         UtEntityData ue = new UtEntityData(dbClient, "Obj");
@@ -205,7 +266,6 @@ public class ClientDao {
         return loadClient(own);
 
     }
-
     private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
 
         long own = params.getLong("own");
@@ -233,12 +293,12 @@ public class ClientDao {
         } else {
             whe += "and status is null ";
         }
-        whe += " and provider is null ";
+        //whe += " and provider is null ";
 
         if (stProp.getFirst().getLong("providerTyp") > 0) {
-            whe += "and periodType is not null ";
+            whe += "and provider is not null ";
         } else {
-            whe += "and periodType is null ";
+            whe += "and provider is null ";
         }
         List<DbRec> stDP = dbClient.loadSql("""
                     select id from DataProp
@@ -371,7 +431,6 @@ public class ClientDao {
         recDPV.put("timeStamp", LocalDate.now());
         dbClient.insertRec("DataPropVal", recDPV);
     }
-
     private void updateProperties(String cod, DbRec params) throws Exception {
         //VariantMap mapProp = new VariantMap(params)
         String keyValue = cod.split("_")[1];
@@ -541,15 +600,6 @@ public class ClientDao {
         dbClient.execSql(sql, Map.of("idVal", idVal, "strValue", strValue, "tmst", tmst,
                 "propVal", propVal, "objRef", objRef, "numberVal", numberVal));
     }
-
-
-    private long getUser() throws Exception {
-        //AuthService authSvc = mdb.getApp().bean(AuthService.class);
-        long au = 1; //todo authSvc.getCurrentUser().getAttrs().getLong("id");
-        //if (au == 0)
-        //    au = 1//throw new XError("notLogined")
-        return au;
-    }
-
+*/
 
 }

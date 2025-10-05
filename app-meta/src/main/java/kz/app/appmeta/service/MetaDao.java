@@ -61,7 +61,6 @@ public class MetaDao {
         return res;
     }
 
-
     public String getIdsCls(String codTyp) throws Exception {
         DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");
         long id = pms.getLong(codTyp);
@@ -91,7 +90,6 @@ public class MetaDao {
         return st;
     }
 
-
     public List<DbRec> getPropInfo(String codProp) throws Exception {
         List<DbRec> res = dbMeta.loadSql("""
                     select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isdependvalueonperiod as dependPeriod,
@@ -104,6 +102,23 @@ public class MetaDao {
 
         if (res.isEmpty()) {
             throw new XError("NotFoundPropCod@" + codProp);
+        }
+        return res;
+    }
+
+    public List<DbRec> getPropsInfo(String wheCodProps) throws Exception {
+        List<DbRec> res = dbMeta.loadSql("""
+                    select p.id, p.cod, p.propType, a.attribValType, p.isUniq, p.isDependValueOnPeriod as dependPeriod,
+                        p.statusFactor, p.providerTyp, m.kFromBase as koef, p.digit, ps.factorVal as fvStatus
+                    from Prop p
+                        left join Attrib a on a.id=p.attrib
+                        left join Measure m on m.id=p.measure
+                        left join propstatus ps on p.id=ps.prop and ps.isDefault=1
+                    where p.cod in
+                """+wheCodProps, null);
+
+        if (res.isEmpty()) {
+            throw new XError("Не правильный параметр");
         }
         return res;
     }
