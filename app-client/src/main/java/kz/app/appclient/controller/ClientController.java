@@ -14,17 +14,15 @@ import java.util.List;
 // DAO
 
 @RestController
-@RequestMapping("/client")
+@RequestMapping("/service")
 public class ClientController {
 
     @Autowired
     private ClientDao clientDao;
 
 
-    @GetMapping(value = "/loadClient")
-    public List<DbRec> find(
-            @RequestParam("id") long id
-    ) throws Exception {
+    @GetMapping(value = "/client/loadClient")
+    public List<DbRec> loadClient(@RequestParam long id) throws Exception {
         return clientDao.loadClient(id);
     }
 
