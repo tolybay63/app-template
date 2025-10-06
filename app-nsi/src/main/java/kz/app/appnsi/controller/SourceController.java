@@ -42,8 +42,8 @@ public class SourceController {
         return nsiDao.saveSourceCollections(mode, rec);
     }
 
-    @GetMapping(value = "/deleteClientWithProps")
-    public void deleteClientWithProps(@RequestParam long obj) throws Exception {
+    @GetMapping(value = "/deleteOwnerWithProperties")
+    public void deleteOwnerWithProperties(@RequestParam long obj) throws Exception {
         nsiDao.deleteClientWithProps(obj);
     }
 
