@@ -35,4 +35,18 @@ public class SourceController {
         nsiDao.saveDepartment(rec);
     }
 
+    @PostMapping(value = "/saveSourceCollections")
+    public List<DbRec> saveSourceCollections(@RequestBody DbRec rec) throws Exception {
+        String mode = rec.getString("mode");
+        rec.remove("mode");
+        return nsiDao.saveSourceCollections(mode, rec);
+    }
+
+    @GetMapping(value = "/deleteClientWithProps")
+    public void deleteClientWithProps(@RequestParam long obj) throws Exception {
+        nsiDao.deleteClientWithProps(obj);
+    }
+
+
+
 }

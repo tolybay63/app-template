@@ -177,9 +177,125 @@ public class NsiDao {
 
     }
 
+    public List<DbRec> saveSourceCollections(String mode, DbRec params) throws Exception {
+        //*** <begin Определяем обязательные свойства
+        String[] reqProps = new String[] {"Prop_DocumentNumber", "Prop_DocumentApprovalDate", "Prop_DocumentAuthor"};
+        //*** end>
 
+        if (params.getString("name").isEmpty()) throw new XError("[name] не указан");
+        params.putIfAbsent("fullname", params.get("name"));
 
+        //**** <begin Определяем класс, если с клиента не придет... *****************
+        if (params.getLong("cls")==0) {
+            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Collections", "");
+            params.put("cls", map.getLong("Cls_Collections"));
+        }
+        //**** end>
+        Set<String> setFields = new HashSet<String>();
+        for (String key : params.keySet()) {
+            if (key.startsWith("id"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("obj"))
+                setFields.add("Prop_" + key.substring(3));
+            else if (key.startsWith("relobj"))
+                setFields.add("Prop_" + key.substring(6));
+            else if (key.startsWith("fv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("pv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (!Set.of("id", "cls", "name", "fullname", "cmt", "cmtVer").contains(key)) {
+                setFields.add("Prop_" + key);
+            }
+        }
         //
+        for (String prop : reqProps) {
+            if (!setFields.contains(prop)) {
+                throw new Exception("Значение свойства ["+prop+"] обязательно");
+            }
+        }
+        //
+        String whePrp = "('" + UtString.join(setFields, "','") + "')";
+        List<DbRec> stProp = metaService.getPropsInfo(whePrp);
+        Map<String, DbRec> mapProp = new HashMap<>();
+        for (DbRec prop : stProp) {
+            mapProp.put(prop.getString("cod"), prop);
+        }
+        //
+        long own;
+        UtEntityData ue = new UtEntityData(dbNsi, "Obj");
+        if (mode.equalsIgnoreCase("ins")) {
+            own = ue.insertEntity(params);
+            params.put("own", own);
+        } else if (mode.equalsIgnoreCase("upd")) {
+            own = params.getLong("id");
+            ue.updateEntity(params);
+            params.put("own", own);
+        } else {
+            throw new XError("Unknown mode: " + mode);
+        }
+        //
+        ue.saveObjWithProps(mode, params, mapProp);
+        //
+        return loadSourceCollections(own);
+    }
+
+    public void deleteClientWithProps(long obj) throws Exception {
+        validateForDeleteObj(obj);
+        UtEntityData ue = new UtEntityData(dbNsi, "Obj");
+        ue.deleteObjWithProps(obj);
+    }
+
+    private void validateForDeleteObj(long owner) throws Exception {
+        String sql = "select o.cls, v.name from Obj o, ObjVer v where o.id=v.ownerVer and v.lastVer=1 and o.id=:id";
+        DbRec recOwn = dbNsi.loadSqlRec(sql, Map.of("id", owner), false);
+        if (recOwn != null) {
+            List<String> lstService = new ArrayList<>();
+            String name = recOwn.getString("name");
+            long cls = recOwn.getLong("cls");
+            Set<Long> stPV = metaService.getIdsPV(1, cls, "");
+            if (!(stPV.size()==1 && stPV.contains(0L))) {
+                String whePV = "(" + UtString.join(stPV, ",") + ")";
+                //clientdata
+                List<DbRec> st = getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("clientdata");
+                }
+                //objectdata
+/*
+                st =  objectService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("objectdata");
+                }
+                //plandata
+                st =  planService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("plandata");
+                }
+                //personnaldata
+                st =  personnalService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("personnaldata");
+                }
+                //nsidata
+                st =  nsiService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("nsidata");
+                }
+*/
+
+                //structuredata
+                st =  structureService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("structuredata");
+                }
+                //...
+                if (!lstService.isEmpty()) {
+                    throw new XError("{0} используется в [{0}]", name, UtString.join(lstService, ", "));
+                }
+            }
+        }
+    }
+    //************************
     public List<DbRec> loadDefects(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Defects", "");
         if (map.isEmpty())

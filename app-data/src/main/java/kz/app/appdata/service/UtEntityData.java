@@ -361,7 +361,9 @@ public class UtEntityData {
                     cod.equalsIgnoreCase("Prop_Number") ||
                     cod.equalsIgnoreCase("Prop_BIN") ||
                     cod.equalsIgnoreCase("Prop_ContactPerson") ||
-                    cod.equalsIgnoreCase("Prop_ContactDetails")) {
+                    cod.equalsIgnoreCase("Prop_ContactDetails") ||
+                    cod.equalsIgnoreCase("Prop_DocumentNumber") ||
+                    cod.equalsIgnoreCase("Prop_DocumentAuthor")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("strVal", params.getString(keyValue));
                 }
@@ -385,7 +387,10 @@ public class UtEntityData {
             //Необходимо добавить коды всех свойств типа [dt]
             if (cod.equalsIgnoreCase("Prop_InstallationDate") ||
                     cod.equalsIgnoreCase("Prop_CreatedAt") ||
-                    cod.equalsIgnoreCase("Prop_UpdatedAt")) {
+                    cod.equalsIgnoreCase("Prop_UpdatedAt") ||
+                    cod.equalsIgnoreCase("Prop_DocumentApprovalDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentStartDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentEndDate")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
                 }
@@ -515,7 +520,9 @@ public class UtEntityData {
                     cod.equalsIgnoreCase("Prop_Number") ||
                     cod.equalsIgnoreCase("Prop_BIN") ||
                     cod.equalsIgnoreCase("Prop_ContactPerson") ||
-                    cod.equalsIgnoreCase("Prop_ContactDetails")) {
+                    cod.equalsIgnoreCase("Prop_ContactDetails") ||
+                    cod.equalsIgnoreCase("Prop_DocumentNumber") ||
+                    cod.equalsIgnoreCase("Prop_DocumentAuthor")) {
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
                     db.execSql("""
                         delete from DataPropVal where id=:idVal;
@@ -557,7 +564,10 @@ public class UtEntityData {
             //Необходимо добавить коды всех свойств типа [dt]
             if (cod.equalsIgnoreCase("Prop_InstallationDate") ||
                     cod.equalsIgnoreCase("Prop_CreatedAt") ||
-                    cod.equalsIgnoreCase("Prop_UpdatedAt") ) {
+                    cod.equalsIgnoreCase("Prop_UpdatedAt") ||
+                    cod.equalsIgnoreCase("Prop_DocumentApprovalDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentStartDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentEndDate")) {
                 if (!params.containsKey(keyValue) || strValue.trim().isEmpty()) {
                     db.execSql("""
                         delete from DataPropVal where id=:idVal;
