@@ -267,25 +267,46 @@ public class UtEntityData {
                             !params.getString(keyProp.split("_")[1]).isEmpty() ) {
                         updateProperties(keyProp, params, mapProp.get(keyProp));
                     }
+                    if ( params.getLong("id" + keyProp.split("_")[1]) == 0 &&
+                            !params.getString(keyProp.split("_")[1]).isEmpty() ) {
+                        fillProperties(keyProp, params, mapProp.get(keyProp));
+                    }
+
                 } else if (mapProp.get(keyProp).getLong("propType")== FD_PropType_consts.factor) {
                     if (params.getLong("id" + keyProp.split("_")[1]) > 0 &&
                             params.getLong("fv" + keyProp.split("_")[1]) > 0 ) {
                         updateProperties(keyProp, params, mapProp.get(keyProp));
+                    }
+                    if (params.getLong("id" + keyProp.split("_")[1]) == 0 &&
+                            params.getLong("fv" + keyProp.split("_")[1]) > 0 ) {
+                        fillProperties(keyProp, params, mapProp.get(keyProp));
                     }
                 }  else if (mapProp.get(keyProp).getLong("propType")== FD_PropType_consts.typ) {
                     if (params.getLong("id" + keyProp.split("_")[1]) > 0 &&
                             params.getLong("obj" + keyProp.split("_")[1]) > 0 ) {
                         updateProperties(keyProp, params, mapProp.get(keyProp));
                     }
+                    if (params.getLong("id" + keyProp.split("_")[1]) == 0 &&
+                            params.getLong("obj" + keyProp.split("_")[1]) > 0 ) {
+                        fillProperties(keyProp, params, mapProp.get(keyProp));
+                    }
                 }  else if (mapProp.get(keyProp).getLong("propType")== FD_PropType_consts.reltyp) {
                     if (params.getLong("id" + keyProp.split("_")[1]) > 0 &&
                             params.getLong("relobj" + keyProp.split("_")[1]) > 0 ) {
                         updateProperties(keyProp, params, mapProp.get(keyProp));
                     }
+                    if (params.getLong("id" + keyProp.split("_")[1]) == 0 &&
+                            params.getLong("relobj" + keyProp.split("_")[1]) > 0 ) {
+                        fillProperties(keyProp, params, mapProp.get(keyProp));
+                    }
                 }  else if (mapProp.get(keyProp).getLong("propType")== FD_PropType_consts.measure) {
                     if (params.getLong("id" + keyProp.split("_")[1]) > 0 &&
                             params.getLong("mea" + keyProp.split("_")[1]) > 0 ) {
                         updateProperties(keyProp, params, mapProp.get(keyProp));
+                    }
+                    if (params.getLong("id" + keyProp.split("_")[1]) == 0 &&
+                            params.getLong("mea" + keyProp.split("_")[1]) > 0 ) {
+                        fillProperties(keyProp, params, mapProp.get(keyProp));
                     }
                 }
             }
