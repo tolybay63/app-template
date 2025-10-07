@@ -142,10 +142,10 @@ public class ClientDao {
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
 
-    public void deleteClientWithProps(long id) throws Exception {
+    public void deleteOwnerWithProperties(long id) throws Exception {
         validateForDeleteObj(id);
         UtEntityData ue = new UtEntityData(dbClient, "Obj");
-        ue.deleteObjWithProps(id);
+        ue.deleteOwnerWithProperties(id);
     }
 
     public List<DbRec> saveClient(String mode, DbRec params) throws Exception {

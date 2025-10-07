@@ -216,7 +216,7 @@ public class UtEntityData {
         }
     }
 
-    public void deleteObjWithProps(long obj) throws Exception {
+    public void deleteOwnerWithProperties(long obj) throws Exception {
         db.execSql("""
             delete from DataPropVal
             where dataProp in (select id from DataProp where isObj=1 and objorrelobj=:id);

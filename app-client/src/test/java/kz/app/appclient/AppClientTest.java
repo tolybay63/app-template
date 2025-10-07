@@ -30,8 +30,8 @@ public class AppClientTest {
     }
 
     @Test
-    public void deleteClientWithProps_test() throws Exception {
-        clientDao.deleteClientWithProps(1020);
+    public void deleteOwnerWithProperties_test() throws Exception {
+        clientDao.deleteOwnerWithProperties(1020);
     }
 
     @Test

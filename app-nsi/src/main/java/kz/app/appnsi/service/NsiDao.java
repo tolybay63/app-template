@@ -40,10 +40,10 @@ public class NsiDao {
         return dbNsi.loadSql("""
             select o.id, o.cls, v.name,
                 v1.id as idDocumentNumber, v1.strVal as DocumentNumber,
-                v2.id as idDocumentApprovalDate, v2.datetimeVal as DocumentApprovalDate,
+                v2.id as idDocumentApprovalDate, CAST(v2.datetimeVal as date) as DocumentApprovalDate,
                 v3.id as idDocumentAuthor, v3.strVal as DocumentAuthor,
-                v4.id as idDocumentStartDate, v4.datetimeVal as DocumentStartDate,
-                v5.id as idDocumentEndDate, v5.datetimeVal as DocumentEndDate
+                v4.id as idDocumentStartDate, CAST(v4.datetimeVal as date) as DocumentStartDate,
+                v5.id as idDocumentEndDate, CAST(v5.datetimeVal as date) as DocumentEndDate
             from Obj o
                 left join ObjVer v on o.id=v.ownerver and v.lastver=1
                 left join DataProp d1 on d1.isObj=1 and d1.objorrelobj=o.id and d1.prop=:Prop_DocumentNumber   --1082
@@ -239,10 +239,10 @@ public class NsiDao {
         return loadSourceCollections(own);
     }
 
-    public void deleteClientWithProps(long obj) throws Exception {
+    public void deleteOwnerWithProperties(long obj) throws Exception {
         validateForDeleteObj(obj);
         UtEntityData ue = new UtEntityData(dbNsi, "Obj");
-        ue.deleteObjWithProps(obj);
+        ue.deleteOwnerWithProperties(obj);
     }
 
     private void validateForDeleteObj(long owner) throws Exception {
