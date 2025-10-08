@@ -4,9 +4,15 @@ import kz.app.appcore.model.DbRec;
 import kz.app.appnsi.service.NsiDao;
 import kz.app.appnsi.service.SourceDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/source")
@@ -47,6 +53,22 @@ public class SourceController {
         nsiDao.deleteOwnerWithProperties(obj);
     }
 
+    @PostMapping("/upload")
+    public ResponseEntity<String> handleFileUpload(
+            @RequestParam MultipartFile file,
+            @RequestParam long obj, @RequestParam String cod,
+            @RequestParam String model, @RequestParam String metamodel) throws Exception {
+        // Обработка файла
+
+        String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
+        if (!(new File(dir).exists()))
+            new File(dir).mkdir();
+        String fileName = file.getOriginalFilename();
+        long idFileVal = nsiDao.toDbFileStorage(dir, fileName);
+
+        file.transferTo(new File(dir + idFileVal + "_" + fileName));
+        return ResponseEntity.ok("Файл успешно загружен!");
+    }
 
 
 }

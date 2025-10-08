@@ -181,4 +181,12 @@ public class MetaDao {
         """+idsFile + ")", null);
     }
 
+    public long toDbFileStorage(String path, String filename) throws Exception {
+        UtEntityMeta ue = new UtEntityMeta(dbMeta, "DbFileStorage");
+        DbRec rec = new DbRec();
+        rec.put("id", ue.getNextId("DbFileStorage"));
+        rec.put("path", path);
+        rec.put("originalFilename", filename);
+        return dbMeta.insertRec("DbFileStorage", rec);
+    }
 }

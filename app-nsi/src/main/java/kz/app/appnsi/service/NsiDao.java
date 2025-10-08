@@ -347,4 +347,8 @@ public class NsiDao {
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
 
+    public long toDbFileStorage(String path, String filename) throws Exception {
+        return metaService.toDbFileStorage(path, filename);
+    }
+
 }
