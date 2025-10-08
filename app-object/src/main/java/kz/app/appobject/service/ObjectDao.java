@@ -1,10 +1,7 @@
 package kz.app.appobject.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtDb;
-import kz.app.appcore.utils.UtPeriod;
-import kz.app.appcore.utils.XError;
+import kz.app.appcore.utils.*;
 import kz.app.appcore.utils.consts.FD_AttribValType_consts;
 import kz.app.appcore.utils.consts.FD_InputType_consts;
 import kz.app.appcore.utils.consts.FD_PeriodType_consts;
@@ -22,8 +19,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
@@ -126,7 +122,74 @@ public class ObjectDao {
     }
 
     public List<DbRec> saveObjectServed(String mode, DbRec params) throws Exception {
+        //*** <begin Определяем обязательные свойства
+        String[] reqProps = new String[] {"Prop_ObjectType", "Prop_Section", "Prop_StartKm", "Prop_FinishKm",
+                                            "Prop_CreatedAt", "Prop_UpdatedAt", "Prop_User"};
+        //*** end>
+
+        if (params.getString("name").isEmpty()) throw new XError("[name] не указан");
+        params.putIfAbsent("fullname", params.get("fullName"));
+
+        //**** <begin Определяем класс, если с клиента не придет... *****************
+//        if (params.getLong("cls") == 0) {
+//            DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Client", "");
+//            params.put("cls", map.getLong("Cls_Client"));
+//        }
+        //**** end>
+
+        // find cls(linkCls)
+        long linkCls = params.getLong("linkCls");
+        DbRec map = metaService.getIdFromCodOfEntity("Typ", "Typ_Object", "");
+        if (map.isEmpty())
+            throw new XError("NotFoundCod@Typ_Object");
+        long cls = metaService.getLinkCls(linkCls, map.getLong("Typ_Object"));
+        params.put("cls", cls);
+        //...
+
+        Set<String> setFields = new HashSet<String>();
+        for (String key : params.keySet()) {
+            if (key.startsWith("id"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("obj"))
+                setFields.add("Prop_" + key.substring(3));
+            else if (key.startsWith("relobj"))
+                setFields.add("Prop_" + key.substring(6));
+            else if (key.startsWith("fv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("pv"))
+                setFields.add("Prop_" + key.substring(2));
+            else if (!Set.of("id", "cls", "name", "fullname", "cmt", "cmtVer").contains(key)) {
+                setFields.add("Prop_" + key);
+            }
+        }
+        //
+        for (String prop : reqProps) {
+            if (!setFields.contains(prop)) {
+                throw new Exception("Значение свойства ["+prop+"] обязательно");
+            }
+        }
+        //
+        String whePrp = "('" + UtString.join(setFields, "','") + "')";
+        List<DbRec> stProp = metaService.getPropsInfo(whePrp);
+        Map<String, DbRec> mapProp = new HashMap<>();
+        for (DbRec prop : stProp) {
+            mapProp.put(prop.getString("cod"), prop);
+        }
         long own;
+        UtEntityData ue = new UtEntityData(dbObject, "Obj");
+        if (mode.equalsIgnoreCase("ins")) {
+            own = ue.insertEntity(params);
+            params.put("own", own);
+        } else if (mode.equalsIgnoreCase("upd")) {
+            own = params.getLong("id");
+            ue.updateEntity(params);
+            params.put("own", own);
+        } else {
+            throw new XError("Unknown mode: " + mode);
+        }
+        //
+        ue.saveObjWithProps(mode, params, mapProp);
+/*        long own;
         UtEntityData ue = new UtEntityData(dbObject, "Obj");
 
         DbRec par = new DbRec(params);
@@ -304,7 +367,7 @@ public class ObjectDao {
             }
         } else {
             throw new XError("Unknown mode: " + mode);
-        }
+        }*/
         //
         return loadObjectServed(own);
     }
@@ -317,7 +380,7 @@ public class ObjectDao {
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
 
-    private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
+/*    private void fillProperties(int isObj, String cod, DbRec params) throws Exception {
 
         long own = params.getLong("own");
         String keyValue = cod.split("_")[1];
@@ -667,7 +730,7 @@ public class ObjectDao {
         recDPV.put("inputtype", FD_InputType_consts.app);
         recDPV.put("timestamp", LocalDate.now());
         dbObject.updateRec("DataPropVal", recDPV);
-    }
+    }*/
 
     private long getUser() throws Exception {
         //AuthService authSvc = mdb.getApp().bean(AuthService.class);
