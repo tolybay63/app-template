@@ -189,4 +189,10 @@ public class MetaDao {
         rec.put("originalFilename", filename);
         return dbMeta.insertRec("DbFileStorage", rec);
     }
+
+    public List<DbRec> loadDbFileStorage(String wheIds) throws Exception {
+        return dbMeta.loadSql("""
+            select id, originalFilename as filename from DbFileStorage where id in (
+        """+wheIds+")", null);
+    }
 }

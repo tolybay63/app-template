@@ -36,6 +36,11 @@ public class SourceController {
         return nsiDao.loadDepartmentsWithFile(obj);
     }
 
+    @GetMapping(value = "/loadAttachedFiles")
+    public List<DbRec> loadAttachedFiles(@RequestParam long obj, @RequestParam String codProp) throws Exception {
+        return nsiDao.loadAttachedFiles(obj, codProp);
+    }
+
     @PostMapping(value = "/saveDepartment")
     public void saveDepartment(@RequestBody DbRec rec) throws Exception {
         nsiDao.saveDepartment(rec);
@@ -56,8 +61,7 @@ public class SourceController {
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(
             @RequestParam MultipartFile file,
-            @RequestParam long obj, @RequestParam String cod,
-            @RequestParam String model, @RequestParam String metamodel) throws Exception {
+            @RequestParam long obj, @RequestParam String cod) throws Exception {
         // Обработка файла
 
         String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
@@ -65,7 +69,11 @@ public class SourceController {
             new File(dir).mkdir();
         String fileName = file.getOriginalFilename();
         long idFileVal = nsiDao.toDbFileStorage(dir, fileName);
-
+        DbRec rec = new DbRec();
+        rec.put("own", obj);
+        rec.put("codProp", cod);
+        rec.put("fileVal", idFileVal);
+        nsiDao.attachFile(rec);
         file.transferTo(new File(dir + idFileVal + "_" + fileName));
         return ResponseEntity.ok("Файл успешно загружен!");
     }

@@ -5,6 +5,7 @@ import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
+import kz.app.appcore.utils.consts.FD_InputType_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
@@ -12,6 +13,7 @@ import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -88,17 +90,17 @@ public class NsiDao {
         return mapRez;
     }
 
-    List<DbRec> loadAttachedFiles(long obj, String propCod) throws Exception {
-        DbRec map = metaService.getIdFromCodOfEntity("Prop", propCod, "");
+    public List<DbRec> loadAttachedFiles(long obj, String codProp) throws Exception {
+        DbRec map = metaService.getIdFromCodOfEntity("Prop", codProp, "");
         if (map.isEmpty())
-            throw new XError("NotFoundCod@${propCod}");
+            throw new XError("NotFoundCod@" + codProp);
         map.put("id", obj);
 
         List<DbRec> st = dbNsi.loadSql("""
             select d.objorrelobj as obj, v.id as idDPV, v.fileVal as fileVal, null as fileName, v.cmt
             from DataProp d, DataPropVal v
-            where d.id=v.dataprop and d.isObj=1 and d.objorrelobj=:id and d.prop=:propCod
-        """, map);
+            where d.id=v.dataprop and d.isObj=1 and d.objorrelobj=:id and d.prop=
+        :"""+codProp, map);
 
         Set<Object> ids = UtDb.uniqueValues(st, "fileVal");
         if (ids.isEmpty()) ids.add(0L);
@@ -295,7 +297,7 @@ public class NsiDao {
             }
         }
     }
-    //************************
+
     public List<DbRec> loadDefects(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Defects", "");
         if (map.isEmpty())
@@ -350,5 +352,70 @@ public class NsiDao {
     public long toDbFileStorage(String path, String filename) throws Exception {
         return metaService.toDbFileStorage(path, filename);
     }
+
+    public void attachFile(DbRec rec) throws Exception {
+
+        rec.putIfAbsent("dbeg", "1800-01-01");
+        rec.putIfAbsent("dend", "3333-12-31");
+        if (rec.get("fileVal")==null) {
+            throw new XError("fileValue is required");
+        }
+
+        DbRec map = metaService.getIdFromCodOfEntity("Prop", rec.getString("codProp"), "");
+        if (map.isEmpty())
+            throw new XError("NotFoundCod@" + rec.getString("codProp"));
+
+        DbRec params = new DbRec();
+
+        UtEntityData ue = new UtEntityData(dbNsi, "DataProp");
+        long idDP = ue.getNextId("DataProp");
+        params.put("id", idDP);
+        params.put("objOrRelObj", rec.get("own"));
+        params.put("isObj", 1);
+        params.put("prop", map.get(rec.getString("codProp")));
+        dbNsi.insertRec("DataProp", params);
+        params.clear();
+        long id = ue.getNextId("DataPropVal");
+        params.put("id", id);
+        params.put("dataProp", idDP);
+        params.put("fileVal", rec.get("fileVal"));
+        params.put("authUser", 1L); //todo
+        params.put("inputType", FD_InputType_consts.app);
+        params.put("ord", id);
+        params.put("timeStamp", LocalDateTime.now());
+        dbNsi.insertRec("DataPropVal", params);
+    }
+
+
+/*    public List<DbRec> loadAttachedFiles(long obj, String codProp) throws Exception {
+        //Map<String, Long> map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", propCod, "")
+        DbRec map = metaService.getIdFromCodOfEntity("Prop", codProp, "");
+        if (map.isEmpty())
+            throw new XError("NotFoundCod@"+ codProp);
+        map.put("id", obj);
+        //Store st = mdb.createStore("Obj.file")
+        List<DbRec> st = dbNsi.loadSql("""
+            select d.objorrelobj as obj, v.id as idDPV, v.fileVal, null as fileName, v.cmt
+            from DataProp d, DataPropVal v
+            where d.id=v.dataprop and d.isObj=1 and d.objorrelobj=:id and d.prop=
+        :"""+codProp, map);
+
+        Set<Object> ids = UtDb.uniqueValues(st, "fileVal");
+        if (ids.isEmpty()) ids.add(0L);
+        List<DbRec> stFS = metaService.loadDbFileStorage(UtString.join(ids, ","));
+        String whe = ids.join(",")
+        Store stFS = apiMeta().get(ApiMeta).loadSql("""
+            select id, originalfilename as filename from DbFileStorage where id in (${whe})
+        """, "")
+        StoreIndex indFS = stFS.getIndex("id")
+        for (StoreRecord r : st) {
+            StoreRecord rr = indFS.get(r.getLong("fileVal"))
+            if (rr != null) {
+                r.set("fileName", rr.getString("filename"))
+            }
+        }
+        return st
+    }*/
+
 
 }
