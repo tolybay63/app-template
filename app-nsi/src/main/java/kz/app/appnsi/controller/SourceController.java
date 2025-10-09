@@ -5,12 +5,18 @@ import kz.app.appnsi.service.NsiDao;
 import kz.app.appnsi.service.SourceDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,6 +87,18 @@ public class SourceController {
     @GetMapping(value = "/deleteFileValue")
     public void deleteFileValue(@RequestParam long idDPV, long fileVal) throws Exception {
         nsiDao.deleteFileValue(idDPV, fileVal);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(@RequestParam String filename) throws IOException {
+        String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
+        Path filePath = Paths.get(dir + filename);
+        Resource resource = new UrlResource(filePath.toUri());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .body(resource);
     }
 
 
