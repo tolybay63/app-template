@@ -2,9 +2,7 @@ package kz.app.appnsi.controller;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appnsi.service.NsiDao;
-import kz.app.appnsi.service.SourceDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/source")
@@ -71,8 +68,9 @@ public class SourceController {
         // Обработка файла
 
         String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
-        if (!(new File(dir).exists()))
-            new File(dir).mkdir();
+        if (!(new File(dir).exists())) {
+            boolean b = new File(dir).mkdir();
+        }
         String fileName = file.getOriginalFilename();
         long idFileVal = nsiDao.toDbFileStorage(dir, fileName);
         DbRec rec = new DbRec();
