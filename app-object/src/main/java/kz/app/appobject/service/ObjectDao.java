@@ -128,7 +128,7 @@ public class ObjectDao {
         //*** end>
 
         if (params.getString("name").isEmpty()) throw new XError("[name] не указан");
-        params.putIfAbsent("fullname", params.get("fullName"));
+        params.putIfAbsent("fullName", params.get("name"));
 
         //**** <begin Определяем класс, если с клиента не придет... *****************
 //        if (params.getLong("cls") == 0) {

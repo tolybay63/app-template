@@ -47,6 +47,8 @@ public class AppObjectTest {
         map.put("pvUser", 1087);
         map.put("objSection", 1870);
         map.put("pvSection", 1243);
+        map.put("objClient", 1017);
+        map.put("pvClient", 1320);
         List<DbRec> res = objectDao.saveObjectServed("ins", map);
         UtDb.outTable(res);
     }

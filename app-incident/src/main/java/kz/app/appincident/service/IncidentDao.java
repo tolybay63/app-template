@@ -6,6 +6,7 @@ import kz.app.appmeta.service.MetaDao;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -35,8 +36,12 @@ public class IncidentDao {
     private void validateForDelete(long owner, int isObj) throws Exception {
     }
 
+    //todo Метод должен быть во всех data-сервисах
     public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
-        return null;
+        return dbIncident.loadSql("""
+                    select d.id from DataProp d, DataPropVal v
+                    where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
+        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
 
     public void deleteClientWithProps(long id) throws Exception {

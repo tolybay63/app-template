@@ -471,7 +471,8 @@ public class UtEntityData {
                     cod.equalsIgnoreCase("Prop_Section") ||
                     cod.equalsIgnoreCase("Prop_User") ||
                     cod.equalsIgnoreCase("Prop_LocationClsSection") ||
-                        cod.equalsIgnoreCase("Prop_LocationMulti")) {
+                    cod.equalsIgnoreCase("Prop_LocationMulti") ||
+                    cod.equalsIgnoreCase("Prop_Client")) {
                 if (objRef > 0) {
                     recDPV.put("propVal", propVal);
                     recDPV.put("obj", objRef);

@@ -31,11 +31,11 @@ public class AppClientTest {
 
     @Test
     public void deleteOwnerWithProperties_test() throws Exception {
-        clientDao.deleteOwnerWithProperties(1020);
+        clientDao.deleteOwnerWithProperties(1017);
     }
 
     @Test
-    public void saveClient_test() throws Exception {
+    public void saveClient_ins_test() throws Exception {
         DbRec map = new DbRec();
         map.put("name", "Test Spring Ver-2");
         map.put("cmtVer", "For Spring Ver-2");

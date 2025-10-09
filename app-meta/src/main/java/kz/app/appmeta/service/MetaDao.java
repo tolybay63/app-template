@@ -199,7 +199,7 @@ public class MetaDao {
 
     public void removeFile(long id) throws Exception {
         List<DbRec> stFS = loadDbFileStorage(""+id);
-        String fullPath = "C:\\minio_storage\\dtj\\"+id + "_" + "fillMeter.xlsx";  //stFS.getFirst().getString("path")+stFS.getFirst().getString("filename");
+        String fullPath = "C:\\minio_storage\\dtj\\"+id + "_" + stFS.getFirst().getString("filename");
         //fullPath.replaceAll("\\\\", File.separator);
         boolean b = new File(fullPath).delete();
         if (b) {
