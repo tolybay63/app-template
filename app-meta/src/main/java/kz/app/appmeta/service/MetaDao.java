@@ -7,6 +7,7 @@ import kz.app.appdbtools.repository.Db;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -192,7 +193,22 @@ public class MetaDao {
 
     public List<DbRec> loadDbFileStorage(String wheIds) throws Exception {
         return dbMeta.loadSql("""
-            select id, originalFilename as filename from DbFileStorage where id in (
+            select id, path, originalFilename as filename from DbFileStorage where id in (
         """+wheIds+")", null);
     }
+
+    public void removeFile(long id) throws Exception {
+        List<DbRec> stFS = loadDbFileStorage(""+id);
+        String fullPath = "C:\\minio_storage\\dtj\\"+id + "_" + "fillMeter.xlsx";  //stFS.getFirst().getString("path")+stFS.getFirst().getString("filename");
+        //fullPath.replaceAll("\\\\", File.separator);
+        boolean b = new File(fullPath).delete();
+        if (b) {
+            dbMeta.deleteRec("DbFileStorage", id);
+        } else {
+            throw new XError("Ошибка при удалении файла [{0}]", id);
+        }
+
+    }
+
+
 }

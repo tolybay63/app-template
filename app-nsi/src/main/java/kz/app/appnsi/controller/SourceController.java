@@ -78,5 +78,10 @@ public class SourceController {
         return ResponseEntity.ok("Файл успешно загружен!");
     }
 
+    @GetMapping(value = "/deleteFileValue")
+    public void deleteFileValue(@RequestParam long idDPV, long fileVal) throws Exception {
+        nsiDao.deleteFileValue(idDPV, fileVal);
+    }
+
 
 }

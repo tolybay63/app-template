@@ -13,6 +13,7 @@ import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -386,36 +387,22 @@ public class NsiDao {
         dbNsi.insertRec("DataPropVal", params);
     }
 
+    public void deleteFileValue(long idDPV, long fileVal) throws Exception {
+        //
+        metaService.removeFile(fileVal);
+        //
+        dbNsi.execSql("""
+            delete from DataPropVal where id=:id;
+            with d as (
+                select id from DataProp
+                except
+                select dataProp as id from DataPropVal
+            )
+            delete from DataProp where id in (select id from d);
+        """, Map.of("id", idDPV));
+    }
 
-/*    public List<DbRec> loadAttachedFiles(long obj, String codProp) throws Exception {
-        //Map<String, Long> map = apiMeta().get(ApiMeta).getIdFromCodOfEntity("Prop", propCod, "")
-        DbRec map = metaService.getIdFromCodOfEntity("Prop", codProp, "");
-        if (map.isEmpty())
-            throw new XError("NotFoundCod@"+ codProp);
-        map.put("id", obj);
-        //Store st = mdb.createStore("Obj.file")
-        List<DbRec> st = dbNsi.loadSql("""
-            select d.objorrelobj as obj, v.id as idDPV, v.fileVal, null as fileName, v.cmt
-            from DataProp d, DataPropVal v
-            where d.id=v.dataprop and d.isObj=1 and d.objorrelobj=:id and d.prop=
-        :"""+codProp, map);
 
-        Set<Object> ids = UtDb.uniqueValues(st, "fileVal");
-        if (ids.isEmpty()) ids.add(0L);
-        List<DbRec> stFS = metaService.loadDbFileStorage(UtString.join(ids, ","));
-        String whe = ids.join(",")
-        Store stFS = apiMeta().get(ApiMeta).loadSql("""
-            select id, originalfilename as filename from DbFileStorage where id in (${whe})
-        """, "")
-        StoreIndex indFS = stFS.getIndex("id")
-        for (StoreRecord r : st) {
-            StoreRecord rr = indFS.get(r.getLong("fileVal"))
-            if (rr != null) {
-                r.set("fileName", rr.getString("filename"))
-            }
-        }
-        return st
-    }*/
 
 
 }
