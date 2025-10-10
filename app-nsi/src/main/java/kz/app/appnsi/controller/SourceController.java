@@ -1,6 +1,7 @@
 package kz.app.appnsi.controller;
 
 import kz.app.appcore.model.DbRec;
+import kz.app.appcore.utils.XError;
 import kz.app.appnsi.service.NsiDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -70,6 +71,9 @@ public class SourceController {
         String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
         if (!(new File(dir).exists())) {
             boolean b = new File(dir).mkdir();
+            if (!b) {
+                throw new XError("Не найден файл-хранилище");
+            }
         }
         String fileName = file.getOriginalFilename();
         long idFileVal = nsiDao.toDbFileStorage(dir, fileName);
@@ -87,7 +91,7 @@ public class SourceController {
         nsiDao.deleteFileValue(idDPV, fileVal);
     }
 
-    @GetMapping("/download")
+    @PostMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam String filename) throws IOException {
         String dir = "C:" + File.separator + "minio_storage" + File.separator + "dtj" + File.separator;
         Path filePath = Paths.get(dir + filename);
