@@ -38,25 +38,29 @@ public class ClientDao {
 
     private final MetaDao metaService;
     private final ObjectDao objectService;
-    private final PlanDao planService;
+/*    private final PlanDao planService;
     private final StructureDao structureService;
     private final NsiDao nsiService;
     private final PersonnalDao personnalService;
     private final InspectionDao inspectionService;
-    private final IncidentDao incidentService;
+    private final IncidentDao incidentService;*/
 
-    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService, ObjectDao objectService,
-                     PlanDao planService, StructureDao structureService, NsiDao nsiService,
-                     PersonnalDao personnalService, InspectionDao inspectionService, IncidentDao incidentService) {
+    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService, ObjectDao objectService
+/*            ,PlanDao planService, StructureDao structureService, NsiDao nsiService,
+                     PersonnalDao personnalService, InspectionDao inspectionService, IncidentDao incidentService
+    */) {
         this.dbClient = dbClient;
         this.metaService = metaService;
         this.objectService = objectService;
+
+/*
         this.planService = planService;
         this.structureService = structureService;
         this.nsiService = nsiService;
         this.personnalService = personnalService;
         this.inspectionService = inspectionService;
         this.incidentService = incidentService;
+*/
     }
 
 
@@ -124,38 +128,7 @@ public class ClientDao {
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
-                //plandata
-                st =  planService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("plandata");
-                }
-                //personnaldata
-                st =  personnalService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("personnaldata");
-                }
-                //nsidata
-                st =  nsiService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("nsidata");
-                }
-                //structuredata
-                st =  structureService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("structuredata");
-                }
-                //inspectiondata
-                st =  inspectionService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("inspectiondata");
-                }
-                //incidentdata
-                st =  incidentService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("incidentdata");
-                }
-
-                //...
+                //
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));
                 }

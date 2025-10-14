@@ -13,7 +13,6 @@ import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -268,17 +267,20 @@ public class NsiDao {
                     lstService.add("nsidata");
                 }
                 //objectdata
+
 /*
                 st =  objectService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
+*/
                 //structuredata
                 st =  structureService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("structuredata");
                 }
                 //plandata
+/*
                 st =  planService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("plandata");
@@ -291,7 +293,7 @@ public class NsiDao {
 */
 
                 if (!lstService.isEmpty()) {
-                    throw new XError("{0} используется в [{0}]", name, UtString.join(lstService, ", "));
+                    throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));
                 }
             }
         }
