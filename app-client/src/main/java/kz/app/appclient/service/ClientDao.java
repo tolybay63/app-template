@@ -192,30 +192,35 @@ public class ClientDao {
         }
         //**** end>
 
-        Set<String> setFields = new HashSet<String>();
+        Set<String> idFields = new HashSet<String>();
+        Set<String> valueFields = new HashSet<String>();
         for (String key : params.keySet()) {
             if (key.startsWith("id"))
-                setFields.add("Prop_" + key.substring(2));
+                idFields.add("Prop_" + key.substring(2));
             else if (key.startsWith("obj"))
-                setFields.add("Prop_" + key.substring(3));
+                valueFields.add("Prop_" + key.substring(3));
             else if (key.startsWith("relobj"))
-                setFields.add("Prop_" + key.substring(6));
+                valueFields.add("Prop_" + key.substring(6));
             else if (key.startsWith("fv"))
-                setFields.add("Prop_" + key.substring(2));
+                valueFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("mea"))
+                valueFields.add("Prop_" + key.substring(3));
             else if (key.startsWith("pv"))
-                setFields.add("Prop_" + key.substring(2));
-            else if (!Set.of("id", "cls", "name", "fullname", "cmt", "cmtVer").contains(key)) {
-                setFields.add("Prop_" + key);
+                valueFields.add("Prop_" + key.substring(2));
+            else if (!key.isEmpty() && Character.isUpperCase(key.charAt(0))) {
+                valueFields.add("Prop_" + key);
             }
         }
         //
         for (String prop : reqProps) {
-            if (!setFields.contains(prop)) {
+            if (!valueFields.contains(prop)) {
                 throw new Exception("Значение свойства ["+prop+"] обязательно");
             }
         }
         //
-        String whePrp = "('" + UtString.join(setFields, "','") + "')";
+        valueFields.addAll(idFields);
+        String whePrp = "('" + UtString.join(valueFields, "','") + "')";
+        //
         List<DbRec> stProp = metaService.getPropsInfo(whePrp);
         Map<String, DbRec> mapProp = new HashMap<>();
         for (DbRec prop : stProp) {

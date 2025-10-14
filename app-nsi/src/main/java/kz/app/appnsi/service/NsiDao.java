@@ -133,7 +133,7 @@ public class NsiDao {
         List<DbRec> stOld = dbNsi.loadSql("""
             select v.id, v.obj
             from DataProp d
-                left join DataPropVal v on d.id=v.dataprop
+                left join DataPropVal v on d.id=v.dataProp
             where d.isObj=1 and d.objOrRelObj=:obj and d.prop=:Prop_LocationMulti
         """, map);
 
@@ -194,30 +194,34 @@ public class NsiDao {
             params.put("cls", map.getLong("Cls_Collections"));
         }
         //**** end>
-        Set<String> setFields = new HashSet<String>();
+        Set<String> idFields = new HashSet<String>();
+        Set<String> valueFields = new HashSet<String>();
         for (String key : params.keySet()) {
             if (key.startsWith("id"))
-                setFields.add("Prop_" + key.substring(2));
+                idFields.add("Prop_" + key.substring(2));
             else if (key.startsWith("obj"))
-                setFields.add("Prop_" + key.substring(3));
+                valueFields.add("Prop_" + key.substring(3));
             else if (key.startsWith("relobj"))
-                setFields.add("Prop_" + key.substring(6));
+                valueFields.add("Prop_" + key.substring(6));
             else if (key.startsWith("fv"))
-                setFields.add("Prop_" + key.substring(2));
+                valueFields.add("Prop_" + key.substring(2));
+            else if (key.startsWith("mea"))
+                valueFields.add("Prop_" + key.substring(3));
             else if (key.startsWith("pv"))
-                setFields.add("Prop_" + key.substring(2));
-            else if (!Set.of("id", "cls", "name", "fullname", "cmt", "cmtVer").contains(key)) {
-                setFields.add("Prop_" + key);
+                valueFields.add("Prop_" + key.substring(2));
+            else if (!key.isEmpty() && Character.isUpperCase(key.charAt(0))) {
+                valueFields.add("Prop_" + key);
             }
         }
         //
         for (String prop : reqProps) {
-            if (!setFields.contains(prop)) {
+            if (!valueFields.contains(prop)) {
                 throw new Exception("Значение свойства ["+prop+"] обязательно");
             }
         }
         //
-        String whePrp = "('" + UtString.join(setFields, "','") + "')";
+        valueFields.addAll(idFields);
+        String whePrp = "('" + UtString.join(valueFields, "','") + "')";
         List<DbRec> stProp = metaService.getPropsInfo(whePrp);
         Map<String, DbRec> mapProp = new HashMap<>();
         for (DbRec prop : stProp) {
@@ -258,10 +262,10 @@ public class NsiDao {
             Set<Long> stPV = metaService.getIdsPV(1, cls, "");
             if (!(stPV.size()==1 && stPV.contains(0L))) {
                 String whePV = "(" + UtString.join(stPV, ",") + ")";
-                //clientdata
+                //nsidata
                 List<DbRec> st = getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
-                    lstService.add("clientdata");
+                    lstService.add("nsidata");
                 }
                 //objectdata
 /*
@@ -269,29 +273,23 @@ public class NsiDao {
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
-                //plandata
-                st =  planService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("plandata");
-                }
-                //personnaldata
-                st =  personnalService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("personnaldata");
-                }
-                //nsidata
-                st =  nsiService.getRefData(1, owner, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("nsidata");
-                }
-*/
-
                 //structuredata
                 st =  structureService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("structuredata");
                 }
-                //...
+                //plandata
+                st =  planService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("plandata");
+                }
+                //inspectiondata
+                st =  inspectionService.getRefData(1, owner, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("inspectiondata");
+                }
+*/
+
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{0}]", name, UtString.join(lstService, ", "));
                 }
