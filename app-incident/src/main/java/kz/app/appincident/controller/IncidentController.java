@@ -1,8 +1,8 @@
 package kz.app.appincident.controller;
 
 
-import kz.app.appincident.service.IncidentDao;
 import kz.app.appcore.model.DbRec;
+import kz.app.appincident.service.IncidentDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

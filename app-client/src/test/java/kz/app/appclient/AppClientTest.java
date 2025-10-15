@@ -37,20 +37,20 @@ public class AppClientTest {
     @Test
     public void saveClient_ins_test() throws Exception {
         DbRec map = new DbRec();
-        map.put("name", "Test Spring Ver-2");
-        map.put("cmtVer", "For Spring Ver-2");
-        map.put("BIN", "1111111111111");
-        map.put("ContactPerson", "Spring Ver-2");
-        map.put("ContactDetails", "г. Астана, Ver-2");
-        map.put("Description", "For Spring Ver-2");
+        map.put("name", "Test Spring Ver-3");
+        map.put("cmtVer", "For Spring Ver-3");
+        map.put("BIN", "11111111113333");
+        map.put("ContactPerson", "Spring Ver-3");
+        map.put("ContactDetails", "г. Астана, Ver-3");
+        //map.put("Description", "For Spring Ver-3");
         List<DbRec> res = clientDao.saveClient("ins", map);
         UtDb.outTable(res);
     }
 
     @Test
     public void saveClient_upd_test() throws Exception {
-        DbRec map = new DbRec();
-        map.put("id", 1022);
+        DbRec map = clientDao.loadClient(1018).getFirst();
+/*        map.put("id", 1018);
         map.put("name", "Test Spring Ver-2");
         map.put("cmtVer", "For Spring Ver-2");
         map.put("BIN", "1111111111111");
@@ -58,8 +58,9 @@ public class AppClientTest {
         map.put("ContactPerson", "Spring Ver-2 Update");
         map.put("idContactDetails", 1074);
         map.put("ContactDetails", "г. Астана, Ver-2 Update");
-        map.put("idDescription", 1070);
-        map.put("Description", "For Spring Ver-2 Update");
+        map.put("idDescription", 1070);*/
+        //map.put("Description", "qqq");
+        map.remove("ContactPerson");
         List<DbRec> res = clientDao.saveClient("upd", map);
         UtDb.outTable(res);
     }

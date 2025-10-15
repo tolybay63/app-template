@@ -1,21 +1,9 @@
 package kz.app.appmeta.service;
 
 import kz.app.appcore.model.DbRec;
-import kz.app.appcore.utils.UtCnv;
-import kz.app.appcore.utils.UtPeriod;
-import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
-import kz.app.appcore.utils.consts.FD_AttribValType_consts;
-import kz.app.appcore.utils.consts.FD_InputType_consts;
-import kz.app.appcore.utils.consts.FD_PeriodType_consts;
-import kz.app.appcore.utils.consts.FD_PropType_consts;
 import kz.app.appdbtools.repository.Db;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
