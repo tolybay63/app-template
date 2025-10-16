@@ -9,7 +9,6 @@ import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
-import kz.app.appobject.service.ObjectDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -20,32 +19,11 @@ import java.util.*;
 public class ClientDao {
 
     private final Db dbClient;
-
     private final MetaDao metaService;
-    private final ObjectDao objectService;
-/*    private final PlanDao planService;
-    private final StructureDao structureService;
-    private final NsiDao nsiService;
-    private final PersonnalDao personnalService;
-    private final InspectionDao inspectionService;
-    private final IncidentDao incidentService;*/
 
-    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService, ObjectDao objectService
-/*            ,PlanDao planService, StructureDao structureService, NsiDao nsiService,
-                     PersonnalDao personnalService, InspectionDao inspectionService, IncidentDao incidentService
-    */) {
+    public ClientDao(@Qualifier("dbClient") Db dbClient, MetaDao metaService) {
         this.dbClient = dbClient;
         this.metaService = metaService;
-        this.objectService = objectService;
-
-/*
-        this.planService = planService;
-        this.structureService = structureService;
-        this.nsiService = nsiService;
-        this.personnalService = personnalService;
-        this.inspectionService = inspectionService;
-        this.incidentService = incidentService;
-*/
     }
 
 
@@ -109,10 +87,12 @@ public class ClientDao {
                     lstService.add("clientdata");
                 }
                 //objectdata
+/*
                 st =  objectService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
+                */
                 //
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));

@@ -7,8 +7,6 @@ import kz.app.appcore.utils.XError;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
-import kz.app.appnsi.service.NsiDao;
-import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +18,10 @@ public class ObjectDao {
 
     private final Db dbObject;
     private final MetaDao metaService;
-    private final NsiDao nsiService;
-    private final StructureDao structureService;
 
-    public ObjectDao(@Qualifier("dbObject") Db dbObject, MetaDao metaService, NsiDao nsiService, StructureDao structureService) {
+    public ObjectDao(@Qualifier("dbObject") Db dbObject, MetaDao metaService) {
         this.dbObject = dbObject;
         this.metaService = metaService;
-        this.nsiService = nsiService;
-        this.structureService = structureService;
     }
 
     public List<DbRec> loadObjectServed(long id) throws Exception {
@@ -90,7 +84,7 @@ public class ObjectDao {
             left join ObjVer ov15 on ov15.ownerVer=v15.obj and ov15.lastVer=1
         where
         """+whe, map);
-
+/*
         //... Пересечение
         //nameObjectType
         String idsObjectType = UtDb.getWhereIds(st, "objObjectType");
@@ -110,6 +104,7 @@ public class ObjectDao {
                 rec.put("nameSide", mapSide.get(rec.getLong("pvSide")).getString("name"));
             }
         }
+        */
         //
         return st;
     }
