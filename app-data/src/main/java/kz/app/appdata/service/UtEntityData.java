@@ -356,7 +356,14 @@ public class UtEntityData {
         // Attrib str
         if (FD_AttribValType_consts.str == attribValType) {
             //Необходимо добавить коды всех свойств типа [str]
-            if (cod.equalsIgnoreCase("Prop_Specs") || cod.equalsIgnoreCase("Prop_LocationDetails") || cod.equalsIgnoreCase("Prop_Number") || cod.equalsIgnoreCase("Prop_BIN") || cod.equalsIgnoreCase("Prop_ContactPerson") || cod.equalsIgnoreCase("Prop_ContactDetails") || cod.equalsIgnoreCase("Prop_DocumentNumber") || cod.equalsIgnoreCase("Prop_DocumentAuthor")) {
+            if (cod.equalsIgnoreCase("Prop_Specs") ||
+                    cod.equalsIgnoreCase("Prop_LocationDetails") ||
+                    cod.equalsIgnoreCase("Prop_Number") ||
+                    cod.equalsIgnoreCase("Prop_BIN") ||
+                    cod.equalsIgnoreCase("Prop_ContactPerson") ||
+                    cod.equalsIgnoreCase("Prop_ContactDetails") ||
+                    cod.equalsIgnoreCase("Prop_DocumentNumber") ||
+                    cod.equalsIgnoreCase("Prop_DocumentAuthor")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("strVal", params.getString(keyValue));
                 }
@@ -378,7 +385,12 @@ public class UtEntityData {
         // Attrib dt
         if (FD_AttribValType_consts.dt == attribValType) {
             //Необходимо добавить коды всех свойств типа [dt]
-            if (cod.equalsIgnoreCase("Prop_InstallationDate") || cod.equalsIgnoreCase("Prop_CreatedAt") || cod.equalsIgnoreCase("Prop_UpdatedAt") || cod.equalsIgnoreCase("Prop_DocumentApprovalDate") || cod.equalsIgnoreCase("Prop_DocumentStartDate") || cod.equalsIgnoreCase("Prop_DocumentEndDate")) {
+            if (cod.equalsIgnoreCase("Prop_InstallationDate") ||
+                    cod.equalsIgnoreCase("Prop_CreatedAt") ||
+                    cod.equalsIgnoreCase("Prop_UpdatedAt") ||
+                    cod.equalsIgnoreCase("Prop_DocumentApprovalDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentStartDate") ||
+                    cod.equalsIgnoreCase("Prop_DocumentEndDate")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     recDPV.put("dateTimeVal", LocalDate.parse(params.getString(keyValue), DateTimeFormatter.ISO_DATE));
                 }
@@ -396,7 +408,9 @@ public class UtEntityData {
         // FV
         if (FD_PropType_consts.factor == propType) {
             //Необходимо добавить коды всех свойств типа [factor]
-            if (cod.equalsIgnoreCase("Prop_Side") || cod.equalsIgnoreCase("Prop_UserSex") || cod.equalsIgnoreCase("Prop_Status")) {
+            if (cod.equalsIgnoreCase("Prop_Side") ||
+                    cod.equalsIgnoreCase("Prop_UserSex") ||
+                    cod.equalsIgnoreCase("Prop_Status")) {
                 if (propVal > 0) {
                     recDPV.put("propVal", propVal);
                 }
@@ -407,7 +421,8 @@ public class UtEntityData {
         // Measure
         if (FD_PropType_consts.measure == propType) {
             //Необходимо добавить коды всех свойств типа [measure]
-            if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
+            if (cod.equalsIgnoreCase("Prop_ParamsMeasure") ||
+                    cod.equalsIgnoreCase("Prop_Measure")) {
                 if (propVal > 0) {
                     recDPV.put("propVal", propVal);
                 }
@@ -419,7 +434,11 @@ public class UtEntityData {
         double numberVal = 0;
         if (FD_PropType_consts.meter == propType || FD_PropType_consts.rate == propType) {
             //Необходимо добавить коды всех свойств типа [meter]
-            if (cod.equalsIgnoreCase("Prop_StartKm") || cod.equalsIgnoreCase("Prop_StartPicket") || cod.equalsIgnoreCase("Prop_FinishKm") || cod.equalsIgnoreCase("Prop_FinishPicket") || cod.equalsIgnoreCase("Prop_PeriodicityReplacement")) {
+            if (cod.equalsIgnoreCase("Prop_StartKm") ||
+                    cod.equalsIgnoreCase("Prop_StartPicket") ||
+                    cod.equalsIgnoreCase("Prop_FinishKm") ||
+                    cod.equalsIgnoreCase("Prop_FinishPicket") ||
+                    cod.equalsIgnoreCase("Prop_PeriodicityReplacement")) {
                 if (params.get(keyValue) != null || params.get(keyValue) != "") {
                     double v = UtCnv.toDouble(params.get(keyValue));
                     numberVal = v / koef;
@@ -437,7 +456,12 @@ public class UtEntityData {
         // Typ
         if (FD_PropType_consts.typ == propType) {
             //Необходимо добавить коды всех свойств типа [typ]
-            if (cod.equalsIgnoreCase("Prop_ObjectType") || cod.equalsIgnoreCase("Prop_Section") || cod.equalsIgnoreCase("Prop_User") || cod.equalsIgnoreCase("Prop_LocationClsSection") || cod.equalsIgnoreCase("Prop_LocationMulti") || cod.equalsIgnoreCase("Prop_Client")) {
+            if (cod.equalsIgnoreCase("Prop_ObjectType") ||
+                    cod.equalsIgnoreCase("Prop_Section") ||
+                    cod.equalsIgnoreCase("Prop_User") ||
+                    cod.equalsIgnoreCase("Prop_LocationClsSection") ||
+                    cod.equalsIgnoreCase("Prop_LocationMulti") ||
+                    cod.equalsIgnoreCase("Prop_Client")) {
                 if (objRef > 0) {
                     recDPV.put("propVal", propVal);
                     recDPV.put("obj", objRef);
@@ -595,7 +619,7 @@ public class UtEntityData {
         //Необходимо добавить коды всех свойств типа [factor]
         if (cod.equalsIgnoreCase("Prop_Side") ||
                 cod.equalsIgnoreCase("Prop_UserSex") ||
-                    cod.equalsIgnoreCase("Prop_Status")) {
+                cod.equalsIgnoreCase("Prop_Status")) {
             if (propVal > 0) {
                 recDPV.put("propval", propVal);
             } else {
@@ -616,7 +640,8 @@ public class UtEntityData {
     // Measure
     if (FD_PropType_consts.measure ==propType) {
         //Необходимо добавить коды всех свойств типа [measure]
-        if (cod.equalsIgnoreCase("Prop_ParamsMeasure")) {
+        if (cod.equalsIgnoreCase("Prop_ParamsMeasure") ||
+                cod.equalsIgnoreCase("Prop_Measure")) {
             if (propVal > 0)
                 recDPV.put("propval", propVal);
             else {

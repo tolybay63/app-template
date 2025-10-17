@@ -3,6 +3,8 @@ package kz.app.applink.service;
 import kz.app.appclient.service.ClientDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
+import kz.app.appcore.utils.UtString;
+import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appincident.service.IncidentDao;
 import kz.app.appinspection.service.InspectionDao;
@@ -15,8 +17,10 @@ import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class LinkDao {
@@ -73,5 +77,34 @@ public class LinkDao {
         }
 
         return st;
+    }
+
+    public void deleteOwnerWithProperties(long id) throws Exception {
+        List<String> lstService = new ArrayList<>();
+        DbRec recOwn = objectService.getObjInfo(id);
+        if (recOwn != null) {
+            String name = recOwn.getString("name");
+            long cls = recOwn.getLong("cls");
+            Set<Long> stPV = metaService.getIdsPV(1, cls, "");
+            if (!(stPV.size() == 1 && stPV.contains(0L))) {
+                String whePV = "(" + UtString.join(stPV, ",") + ")";
+                //objectdata
+                List<DbRec> st = objectService.getRefData(1, id, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("objectdata");
+                }
+                //plandata
+                st = planService.getRefData(1, id, whePV);
+                if (!st.isEmpty()) {
+                    lstService.add("plandata");
+                }
+                if (!lstService.isEmpty()) {
+                    throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));
+                }
+            }
+            //
+            objectService.deleteOwnerWithProperties(id);
+        } else
+            throw new XError("Запись не найдена");
     }
 }

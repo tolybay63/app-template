@@ -20,6 +20,11 @@ public class AppLinkTest {
         List<DbRec> res = linkDao.loadObjectServed(0);
         UtDb.outTable(res);
     }
+    //
+    @Test
+    void deleteOwnerWithProperties_test() throws Exception {
+        linkDao.deleteOwnerWithProperties(1199);
+    }
 
 
 }
