@@ -183,6 +183,7 @@ public class ObjectDao {
             throw new XError("Данный объект является участником отношения [{0}]",
                     UtString.join(UtDb.uniqueValues(stMem, "name"), ", "));
         }
+        //todo Провека есть ли дочерные элементы
     }
 
     public void deleteOwnerWithProperties(long id) throws Exception {
