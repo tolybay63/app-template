@@ -57,7 +57,7 @@ public class LinkDao {
         List<DbRec> stObjectType = nsiService.getObjInfo(idsObjectType, "");
         Map<Long, DbRec> mapObjectType = UtDb.getMapping(stObjectType);
 
-        //nameObjectType
+        //fvSide, nameSide
         String pvsSide = UtDb.getWhereIds(st, "pvSide");
         List<DbRec> stSide = metaService.getFactorValsInfo(pvsSide);
         Map<Long, DbRec> mapSide = UtDb.getMapping(stSide);

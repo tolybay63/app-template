@@ -32,7 +32,7 @@ public class ObjectDao {
         if (id == 0)
             whe = " o.cls in " + idsCls;
 
-        List<DbRec> st = dbObject.loadSql("""
+        return dbObject.loadSql("""
             select o.id, o.cls, v.name, v.fullName,
             v1.id as idObjectType, v1.propVal as pvObjectType, v1.obj as objObjectType, null as nameObjectType,
             v2.id as idStartKm, v2.numberVal as StartKm,
@@ -45,8 +45,8 @@ public class ObjectDao {
             v9.id as idLocationDetails, v9.strVal as LocationDetails,
             v10.id as idNumber, v10.strVal as Number,
             v11.id as idInstallationDate, v11.dateTimeVal as InstallationDate,
-            v12.id as idCreatedAt, v12.dateTimeVal as CreatedAt,
-            v13.id as idUpdatedAt, v13.dateTimeVal as UpdatedAt,
+            v12.id as idCreatedAt, cast(v12.dateTimeVal as date) as CreatedAt,
+            v13.id as idUpdatedAt, cast(v13.dateTimeVal as date) as UpdatedAt,
             v14.id as idDescription, v14.multiStrVal as Description,
             v15.id as idSection, v15.propVal as pvSection, v15.obj as objSection, ov15.name as nameSection
         from Obj o
@@ -84,29 +84,6 @@ public class ObjectDao {
             left join ObjVer ov15 on ov15.ownerVer=v15.obj and ov15.lastVer=1
         where
         """+whe, map);
-/*
-        //... Пересечение
-        //nameObjectType
-        String idsObjectType = UtDb.getWhereIds(st, "objObjectType");
-        List<DbRec> stObjectType = nsiService.getObjInfo(idsObjectType, "");
-        Map<Long, DbRec> mapObjectType = UtDb.getMapping(stObjectType);
-        //nameObjectType
-        String pvsSide = UtDb.getWhereIds(st, "pvSide");
-        List<DbRec> stSide = metaService.getFactorValsInfo(pvsSide);
-        Map<Long, DbRec> mapSide = UtDb.getMapping(stSide);
-
-        for (DbRec rec : st) {
-            if (mapObjectType.containsKey(rec.getLong("objObjectType"))) {
-                rec.put("nameObjectType", mapObjectType.get(rec.getLong("objObjectType")).getString("name"));
-            }
-            if (mapSide.containsKey(rec.getLong("pvSide"))) {
-                rec.put("fvSide", mapSide.get(rec.getLong("pvSide")).getString("factorVal"));
-                rec.put("nameSide", mapSide.get(rec.getLong("pvSide")).getString("name"));
-            }
-        }
-        */
-        //
-        return st;
     }
 
     public List<DbRec> saveObjectServed(String mode, DbRec params) throws Exception {
