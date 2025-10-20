@@ -18,12 +18,14 @@ public class InspectionController {
     @Autowired
     private InspectionDao inspectionDao;
 
+/*
     @GetMapping(value = "/loadInspection")
     public List<DbRec> find(
             @RequestParam("params") DbRec params
     ) throws Exception {
         return inspectionDao.loadInspection(params);
     }
+*/
 
 
 

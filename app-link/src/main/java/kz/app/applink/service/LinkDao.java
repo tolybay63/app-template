@@ -1,110 +1,97 @@
 package kz.app.applink.service;
 
-import kz.app.appclient.service.ClientDao;
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtDb;
-import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appdbtools.repository.Db;
-import kz.app.appincident.service.IncidentDao;
-import kz.app.appinspection.service.InspectionDao;
-import kz.app.appmeta.service.MetaDao;
-import kz.app.appnsi.service.NsiDao;
-import kz.app.appobject.service.ObjectDao;
-import kz.app.apppersonnal.service.PersonnalDao;
-import kz.app.appplan.service.PlanDao;
-import kz.app.structure.service.StructureDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class LinkDao {
     private final Db dbLink;
-    private final MetaDao metaService;
-    private final NsiDao nsiService;
-    private final ObjectDao objectService;
-    private final ClientDao clientService;
-    private final PlanDao planService;
-    private final StructureDao structureService;
-    private final PersonnalDao personnalService;
-    private final InspectionDao inspectionService;
-    private final IncidentDao incidentService;
 
-    public LinkDao(@Qualifier("dbLink") Db dbLink, MetaDao metaService, NsiDao nsiService,
-                   ObjectDao objectService, ClientDao clientService, PlanDao planService,
-                   StructureDao structureService, PersonnalDao personnalService,
-                   InspectionDao inspectionService, IncidentDao incidentService) {
+
+    public LinkDao(@Qualifier("dbLink") Db dbLink) {
         this.dbLink = dbLink;
-        this.metaService = metaService;
-        this.nsiService = nsiService;
-        this.objectService = objectService;
-        this.clientService = clientService;
-        this.planService = planService;
-        this.structureService = structureService;
-        this.personnalService = personnalService;
-        this.inspectionService = inspectionService;
-        this.incidentService = incidentService;
     }
 
-
-    public List<DbRec> loadObjectServed(long id) throws Exception {
-        List<DbRec> st = objectService.loadObjectServed(id);
-
-        //... Пересечение
-        //nameObjectType
-        String idsObjectType = UtDb.getWhereIds(st, "objObjectType");
-        List<DbRec> stObjectType = nsiService.getObjInfo(idsObjectType, "");
-        Map<Long, DbRec> mapObjectType = UtDb.getMapping(stObjectType);
-
-        //fvSide, nameSide
-        String pvsSide = UtDb.getWhereIds(st, "pvSide");
-        List<DbRec> stSide = metaService.getFactorValsInfo(pvsSide);
-        Map<Long, DbRec> mapSide = UtDb.getMapping(stSide);
-
-        for (DbRec rec : st) {
-            if (mapObjectType.containsKey(rec.getLong("objObjectType"))) {
-                rec.put("nameObjectType", mapObjectType.get(rec.getLong("objObjectType")).getString("name"));
-            }
-            if (mapSide.containsKey(rec.getLong("pvSide"))) {
-                rec.put("fvSide", mapSide.get(rec.getLong("pvSide")).getString("factorVal"));
-                rec.put("nameSide", mapSide.get(rec.getLong("pvSide")).getString("name"));
-            }
+    public List<DbRec> getCls(String codTyp) throws Exception {
+        DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");
+        long id = pms.getLong(codTyp);
+        List<DbRec> st = dbLink.loadSql("""
+            select c.id, v.name  from Cls c, ClsVer v
+            where c.id=v.ownerVer and v.lastVer=1 and c.typ=:id
+        """, Map.of("id", id));
+        if (st.isEmpty()) {
+            throw new XError("NotFoundCod@{0}", codTyp);
         }
-
         return st;
     }
 
-    public void deleteOwnerWithProperties(long id) throws Exception {
-        List<String> lstService = new ArrayList<>();
-        DbRec recOwn = objectService.getObjInfo(id);
-        if (recOwn != null) {
-            String name = recOwn.getString("name");
-            long cls = recOwn.getLong("cls");
-            Set<Long> stPV = metaService.getIdsPV(1, cls, "");
-            if (!(stPV.size() == 1 && stPV.contains(0L))) {
-                String whePV = "(" + UtString.join(stPV, ",") + ")";
-                //objectdata
-                List<DbRec> st = objectService.getRefData(1, id, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("objectdata");
-                }
-                //plandata
-                st = planService.getRefData(1, id, whePV);
-                if (!st.isEmpty()) {
-                    lstService.add("plandata");
-                }
-                if (!lstService.isEmpty()) {
-                    throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));
-                }
-            }
-            //
-            objectService.deleteOwnerWithProperties(id);
-        } else
-            throw new XError("Запись не найдена");
+    public String getIdsCls(String codTyp) throws Exception {
+        DbRec pms = getIdFromCodOfEntity("Typ", codTyp, "");
+        long id = pms.getLong(codTyp);
+        List<DbRec> st = dbLink.loadSql("select id from Cls where typ=:id", Map.of("id", id));
+        if (st.isEmpty()) {
+            throw new XError("NotFoundCod@{0}", codTyp);
+        }
+        Set<Long> ids = st.stream()
+                .map(map -> (Long) map.get("id"))
+                .collect(Collectors.toSet());
+        String whe = ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        return "(" + whe + ")";
     }
+
+    public DbRec getIdFromCodOfEntity(String entity, String cod, String prefixcod) throws Exception {
+        String sql = "select id, cod from " + entity + " where cod like :cod";
+        if (!prefixcod.isEmpty()) {
+            sql = "select id, cod from " + entity + " where cod like :prefixcod";
+        }
+        List<DbRec> st = dbLink.loadSql(sql, Map.of("cod", cod, "prefixcod", prefixcod));
+        if (st.isEmpty()) {
+            String cd = cod.isEmpty() ? prefixcod : cod;
+            throw new XError("NotFoundCod@{0}", cd);
+        }
+        DbRec map = new DbRec();
+        for (DbRec r : st) {
+            map.put(r.getString("cod"), r.getLong("id"));
+        }
+        return map;
+    }
+
+    public List<DbRec> getFactorValsInfo(String idsPV) throws Exception {
+        return dbLink.loadSql("""
+                    select pv.id, pv.factorVal, f.name
+                    from PropVal pv
+                        left join Factor f on pv.factorVal=f.id
+                    where pv.id in
+                """ + idsPV, null);
+    }
+
+    public Set<Long> getIdsPV(int isObj, long clsORrel, String codProp) throws Exception {
+        String whe = "";
+        if (!codProp.isEmpty()) {
+            DbRec map = getIdFromCodOfEntity("Prop", codProp, "");
+            whe = " and prop=" + map.getLong(codProp);
+        }
+
+        String fld = "cls";
+        if (isObj == 0)
+            fld = "relcls";
+        List<DbRec> st = dbLink.loadSql("select id as pv from PropVal where " + fld + "=:clsORrel" + whe,
+                Map.of("clsORrel", clsORrel));
+        Set<Long> set = UtDb.uniqueValues(st, "pv");
+        if (set.isEmpty()) set.add(0L);
+        return set;
+    }
+
+
 }

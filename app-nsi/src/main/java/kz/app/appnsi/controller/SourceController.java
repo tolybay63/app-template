@@ -25,6 +25,7 @@ public class SourceController {
     @Autowired
     private NsiDao nsiDao;
 
+
     @GetMapping(value = "/loadSourceCollections")
     public List<DbRec> loadSourceCollections(@RequestParam long obj) throws Exception {
         return nsiDao.loadSourceCollections(obj);

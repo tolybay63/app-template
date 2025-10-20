@@ -28,6 +28,15 @@ public class NsiDao {
         this.structureService = structureService;
     }
 
+
+    public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
+        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
+        return dbNsi.loadSql("""
+                     select o.id, o.cls, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
+                """ + whe, null);
+    }
+
+
     public List<DbRec> loadSourceCollections(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Collections", "");
         if (map.isEmpty())
@@ -273,13 +282,15 @@ public class NsiDao {
                 if (!st.isEmpty()) {
                     lstService.add("objectdata");
                 }
-*/
+*//*
+
                 //structuredata
                 st =  structureService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
                     lstService.add("structuredata");
                 }
                 //plandata
+*/
 /*
                 st =  planService.getRefData(1, owner, whePV);
                 if (!st.isEmpty()) {
@@ -291,6 +302,7 @@ public class NsiDao {
                     lstService.add("inspectiondata");
                 }
 */
+
 
                 if (!lstService.isEmpty()) {
                     throw new XError("{0} используется в [{1}]", name, UtString.join(lstService, ", "));
@@ -335,12 +347,6 @@ public class NsiDao {
         return st;
     }
 
-    public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
-        String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;
-        return dbNsi.loadSql("""
-                     select o.id, o.cls, v.name, v.fullName from Obj o, ObjVer v where o.id=v.ownerVer and
-                """ + whe, null);
-    }
 
     //todo Метод должен быть во всех data-сервисах
     public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {

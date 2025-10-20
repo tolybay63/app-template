@@ -15,6 +15,7 @@ public class AppInspectionTest {
     @Autowired
     InspectionDao inspectionDao;
 
+/*
     @Test
     void loadInspection_test() throws Exception {
         DbRec params = new DbRec();
@@ -24,6 +25,7 @@ public class AppInspectionTest {
         List<DbRec> res = inspectionDao.loadInspection(params);
         UtDb.outTable(res);
     }
+*/
 
 
 }

@@ -15,6 +15,7 @@ public class AppObjectTest {
     @Autowired
     ObjectDao objectDao;
 
+/*
     @Test
     void loadObjectServed_test() throws Exception {
         List<DbRec> res = objectDao.loadObjectServed(0);
@@ -83,6 +84,7 @@ public class AppObjectTest {
         List<DbRec> resQ = objectDao.saveObjectServed("upd", map);
         UtDb.outTable(resQ);
     }
+*/
 
     @Test
     void Test3() throws Exception {

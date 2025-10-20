@@ -22,25 +22,30 @@ import java.util.stream.Collectors;
 @Component
 public class InspectionDao {
     private final Db dbInspection;
+/*
     private final MetaDao metaService;
     private final StructureDao structureService;
     private final NsiDao nsiService;
     private final ObjectDao objectService;
     private final PersonnalDao personnalService;
     private final PlanDao planService;
+*/
 
-    public InspectionDao(Db dbInspection, MetaDao metaService, StructureDao structureService, NsiDao nsiService,
-                         ObjectDao objectService, PersonnalDao personnalService, PlanDao planService) {
+    public InspectionDao(Db dbInspection/*, MetaDao metaService, StructureDao structureService, NsiDao nsiService,
+                         ObjectDao objectService, PersonnalDao personnalService, PlanDao planService*/) {
         this.dbInspection = dbInspection;
+/*
         this.metaService = metaService;
         this.structureService = structureService;
         this.nsiService = nsiService;
         this.objectService = objectService;
         this.personnalService = personnalService;
         this.planService = planService;
+*/
     }
 
 
+/*
     public List<DbRec> loadInspection(DbRec params) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Inspection", "");
         String whe;
@@ -213,7 +218,7 @@ public class InspectionDao {
         //
         return stInspection;
     }
-
+*/
     //todo Метод должен быть во всех data-сервисах
     public List<DbRec> getRefData(int isObj, long owner, String whePV) throws Exception {
         return dbInspection.loadSql("""
@@ -221,5 +226,6 @@ public class InspectionDao {
                     where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
+
 
 }

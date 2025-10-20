@@ -18,6 +18,7 @@ public class PlanController {
     @Autowired
     private PlanDao planDao;
 
+/*
     @GetMapping(value = "/loadPlan")
     public List<DbRec> find(
             @RequestParam("params") DbRec params
@@ -25,6 +26,7 @@ public class PlanController {
         return planDao.loadPlan(params);
     }
 
+*/
 
 
 }

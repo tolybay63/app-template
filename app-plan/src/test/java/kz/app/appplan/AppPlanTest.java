@@ -15,6 +15,7 @@ public class AppPlanTest {
     @Autowired
     PlanDao planDao;
 
+/*
     @Test
     void loadPlan_test() throws Exception {
         DbRec params = new DbRec();
@@ -24,6 +25,7 @@ public class AppPlanTest {
         List<DbRec> res = planDao.loadPlan(params);
         UtDb.outTable(res);
     }
+*/
 
 
 }

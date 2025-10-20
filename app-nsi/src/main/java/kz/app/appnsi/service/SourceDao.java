@@ -14,15 +14,20 @@ import java.util.Map;
 @Component
 public class SourceDao {
     private final Db dbNsi;
+/*
     private final MetaDao metaService;
     private final StructureDao structureService;
+*/
 
-    public SourceDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService, StructureDao structureService) {
+    public SourceDao(@Qualifier("dbNsi") Db dbNsi/*, MetaDao metaService, StructureDao structureService*/) {
         this.dbNsi = dbNsi;
+/*
         this.metaService = metaService;
         this.structureService = structureService;
+*/
     }
 
+/*
     public List<DbRec> loadSourceCollections(long obj) throws Exception {
         DbRec map = metaService.getIdFromCodOfEntity("Cls", "Cls_Collections", "");
         if (map.isEmpty())
@@ -96,6 +101,7 @@ public class SourceDao {
         //
         return st;
     }
+*/
 
     public List<DbRec> getObjInfo(String idsObj, String idsCls) throws Exception {
         String whe = idsCls.isEmpty() ? " o.id in "+idsObj : " o.cls in "+idsCls;

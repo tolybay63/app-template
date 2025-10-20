@@ -18,9 +18,11 @@ public class ObjectController {
     private ObjectDao objectDao;
 
 
+/*
     @GetMapping(value = "/loadObjectServed")
     public List<DbRec> loadObjectServed(@RequestParam long id) throws Exception {
         return objectDao.loadObjectServed(id);
     }
+*/
 
 }
