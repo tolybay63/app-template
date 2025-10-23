@@ -151,7 +151,8 @@ public class UserDao {
 
     public List<DbRec> loadUserPermissionsForUpd(long user) throws Exception {
         return dbAdmin.loadSql("""
-            select p.*, a.id as idInTable, a.accessLevel case when a.id is null then false else true end as checked
+            select p.*, a.id as idInTable, a.accessLevel,
+             case when a.id is null then false else true end as checked
             from permis p
             left join AuthUserPermis a on p.id=a.permis and a.authUser=:user
             order by p.ord
