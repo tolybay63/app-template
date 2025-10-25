@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         //"kz.app.appstorage",
         "kz.app.appadmin",
         "kz.app.appmeta",
+        "kz.app.apppersonnal",
 })
 public class AppAdminApplication {
 

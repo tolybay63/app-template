@@ -8,6 +8,7 @@ import kz.app.appcore.utils.XError;
 import kz.app.appcore.utils.consts.FD_AccessLevel_consts;
 import kz.app.appdata.service.UtEntityData;
 import kz.app.appdbtools.repository.Db;
+import kz.app.apppersonnal.service.PersonnalDao;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -19,9 +20,11 @@ import java.util.Set;
 public class UserDao {
 
     private final Db dbAdmin;
+    private final PersonnalDao personnalService;
 
-    public UserDao(Db dbAdmin) {
+    public UserDao(Db dbAdmin, PersonnalDao personnalService) {
         this.dbAdmin = dbAdmin;
+        this.personnalService = personnalService;
     }
 
 
@@ -131,10 +134,7 @@ public class UserDao {
     }
 
     public void deleteUser(long idUser) throws Exception {
-        String str = checkAccount(idUser);
-        if (!str.isEmpty()) {
-            throw new XError("Существует аккаунт пользователя [{0}]", str);
-        }
+        checkAccount(idUser);
         dbAdmin.deleteRec("AuthUser", idUser);
     }
 
@@ -268,9 +268,9 @@ public class UserDao {
     }
 
     //************* todo
-    private String checkAccount(long idUser) throws Exception {
-        //...
-        return "";
+    private void checkAccount(long idUser) throws Exception {
+        //For DTJ
+        personnalService.checkUser(idUser);
     }
 
 }

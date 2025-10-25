@@ -94,16 +94,5 @@ public class StructureDao {
                     where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
         """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
     }
-    /*
-    public List<DbRec> objectService.getRefData(int isObj, long owner, String whePV) throws Exception {
-        return dbStructure.loadSql("""
-                    select d.id from DataProp d, DataPropVal v
-                    where d.id=v.dataProp and d.isObj=:isObj and v.propVal in
-        """ + whePV + " and obj=:owner", Map.of("isObj", isObj, "owner", owner));
-    }
 
-
-
-
-     */
 }

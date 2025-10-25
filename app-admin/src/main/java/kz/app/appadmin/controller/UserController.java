@@ -63,9 +63,9 @@ public class UserController {
         return userDao.newRec(group);
     }
 
-    @GetMapping(value = "/deleteUser")
-    public void deleteUser(@RequestParam long user) throws Exception {
-        userDao.deleteUser(user);
+    @PostMapping(value = "/deleteUser")
+    public void deleteUser(@RequestBody DbRec map) throws Exception {
+        userDao.deleteUser(map.getLong("user"));
     }
 
     @GetMapping(value = "/loadUser")
