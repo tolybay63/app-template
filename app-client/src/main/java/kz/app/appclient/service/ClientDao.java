@@ -6,7 +6,7 @@ import kz.app.appcore.utils.UtCnv;
 import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
-import kz.app.appdata.service.UtEntityData;
+import kz.app.common.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import org.springframework.beans.factory.annotation.Qualifier;

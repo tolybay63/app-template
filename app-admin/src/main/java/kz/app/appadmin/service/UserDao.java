@@ -6,7 +6,7 @@ import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appcore.utils.consts.FD_AccessLevel_consts;
-import kz.app.appdata.service.UtEntityData;
+import kz.app.common.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.apppersonnal.service.PersonnalDao;
 import org.springframework.stereotype.Component;

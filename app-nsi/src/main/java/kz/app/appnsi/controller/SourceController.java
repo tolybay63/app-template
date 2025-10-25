@@ -31,10 +31,12 @@ public class SourceController {
         return nsiDao.loadSourceCollections(obj);
     }
 
+/*
     @GetMapping(value = "/loadDepartments")
     public List<DbRec> loadDepartments(@RequestParam String codTyp, String codProp) throws Exception {
         return nsiDao.loadDepartments(codTyp, codProp);
     }
+*/
 
     @GetMapping(value = "/loadDepartmentsWithFile")
     public DbRec loadDepartmentsWithFile(@RequestParam long obj) throws Exception {

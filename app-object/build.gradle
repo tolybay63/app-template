@@ -23,8 +23,9 @@ dependencies {
     //implementation project(':app-auth')
     implementation project(':app-storage')
     implementation project(':app-messagebroker')
-    implementation project(':app-data')
+    implementation project(':app-common')
     implementation project(':app-meta')
+    implementation project(':app-structure')
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

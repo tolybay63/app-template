@@ -6,7 +6,7 @@ import kz.app.appcore.utils.UtDb;
 import kz.app.appcore.utils.UtString;
 import kz.app.appcore.utils.XError;
 import kz.app.appcore.utils.consts.FD_InputType_consts;
-import kz.app.appdata.service.UtEntityData;
+import kz.app.common.UtEntityData;
 import kz.app.appdbtools.repository.Db;
 import kz.app.appmeta.service.MetaDao;
 import kz.app.structure.service.StructureDao;
@@ -20,12 +20,12 @@ import java.util.*;
 public class NsiDao {
     private final Db dbNsi;
     private final MetaDao metaService;
-    private final StructureDao structureService;
+    //private final StructureDao structureService;
 
     public NsiDao(@Qualifier("dbNsi") Db dbNsi, MetaDao metaService, StructureDao structureService) {
         this.dbNsi = dbNsi;
         this.metaService = metaService;
-        this.structureService = structureService;
+        //this.structureService = structureService;
     }
 
 
@@ -71,9 +71,11 @@ public class NsiDao {
             """ + whe + " order by o.id", map);
     }
 
+/*
     public List<DbRec> loadDepartments(String codTyp, String codProp) throws Exception {
         return structureService.loadObjTreeForSelect(codTyp, codProp);
     }
+*/
 
     public DbRec loadDepartmentsWithFile(long obj) throws Exception {
 

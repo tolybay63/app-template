@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
         "kz.app.appcore",
         "kz.app.appdbtools",
         "kz.app.appmeta",
-        "kz.app.appdata",
+        "kz.app.common",
         "kz.app.applink",
         "kz.app.appnsi",
         "kz.app.appobject",

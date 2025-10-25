@@ -10,9 +10,9 @@
 
     <!-- Логирование в файл -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/app-data.log</file>
+        <file>logs/app-meta.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/old/app-data-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/old/app-meta-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -22,9 +22,9 @@
 
     <!-- Логирование в отдельный файл для app.track -->
     <appender name="FILE_TRACK" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/app-data.track.log</file>
+        <file>logs/app-meta.track.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/old/app-data-%d{yyyy-MM-dd}.track.log</fileNamePattern>
+            <fileNamePattern>logs/old/app-meta-%d{yyyy-MM-dd}.track.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>

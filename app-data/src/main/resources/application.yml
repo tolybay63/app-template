@@ -1,7 +1,0 @@
-spring:
-  config:
-    import:
-      - classpath:/application-app-storage.properties
-      - classpath:/application-app-dbtools.properties
-      #- classpath:/application-app-auth.properties
-

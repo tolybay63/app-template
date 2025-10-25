@@ -1,4 +1,4 @@
-package kz.app.appdata.service;
+package kz.app.common;
 
 import kz.app.appcore.model.DbRec;
 import kz.app.appcore.utils.UtCnv;

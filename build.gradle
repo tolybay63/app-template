@@ -32,7 +32,7 @@ subprojects {
 }
 
 /*
-project(':app-database') {
+project(':app-commonbase') {
     apply plugin: 'org.springframework.boot'
 
     bootJar {
@@ -54,7 +54,7 @@ project(':app-database') {
 
 /*
 task runAppDatabase {
-    dependsOn ':app-database:runAppDatabase'
+    dependsOn ':app-commonbase:runAppDatabase'
 }
 
 subprojects {
