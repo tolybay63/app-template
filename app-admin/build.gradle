@@ -24,6 +24,7 @@ dependencies {
     implementation project(':app-storage')
     implementation project(':app-messagebroker')
     implementation project(':app-common')
+    implementation project(':app-grpc')
     implementation project(':app-meta')
     implementation project(':app-personnal')
 

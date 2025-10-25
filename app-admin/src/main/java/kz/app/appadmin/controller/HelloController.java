@@ -1,15 +1,15 @@
-package kz.app.grpc;
+package kz.app.appadmin.controller;
 
-import kz.app.grpc.*;
+import kz.app.grpc.HelloGrpcClient;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class HelloController {
 
-    private final HelloClient client;
+    private final HelloGrpcClient client;
 
-    public HelloController(HelloClient client) {
+    public HelloController(HelloGrpcClient client) {
         this.client = client;
     }
 

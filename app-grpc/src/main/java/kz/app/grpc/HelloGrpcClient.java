@@ -4,7 +4,7 @@ import net.devh.boot.grpc.client.inject.*;
 import org.springframework.stereotype.*;
 
 @Service
-public class HelloClient {
+public class HelloGrpcClient {
 
     @GrpcClient("local-grpc-server")
     private HelloServiceGrpc.HelloServiceBlockingStub stub;
